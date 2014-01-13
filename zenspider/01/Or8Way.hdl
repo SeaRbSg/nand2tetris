@@ -31,7 +31,7 @@ CHIP Or8Way {
     Nand(a=in[6], b=in[6], out=w7); Nand(a=in[7], b=in[7], out=w8); Nand(a=w7, b=w8, out=x4);
 
     Nand(a=x1, b=x1, out=y1);       Nand(a=x2, b=x2, out=y2);       Nand(a=y1, b=y2, out=z1);
-    Nand(a=x3, b=x3, out=y3);       Nand(a=x4, b=x4, out=y4);       Nand(a=y3, b=w4, out=z2);
+    Nand(a=x3, b=x3, out=y3);       Nand(a=x4, b=x4, out=y4);       Nand(a=y3, b=y4, out=z2);
 
     Nand(a=z1, b=z1, out=q1);       Nand(a=z2, b=z2, out=q2);       Nand(a=q1, b=q2, out=out);
 
