@@ -1,0 +1,19 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/And.hdl
+
+/**
+ * And gate: out = 1 if {a==1 and b==1}, 0 otherwise
+ * And gate: if {a==1 and b==1} then out = 1 else out = 0
+ */
+
+CHIP And3Way {
+    IN a, b, c;
+    OUT out;
+
+    PARTS:
+
+    And(a=a, b=b, out=w1);
+    And(a=w1, b=c, out=out);
+}
