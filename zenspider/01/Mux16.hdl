@@ -12,6 +12,42 @@ CHIP Mux16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
-}
 
+    // Mux(a=a[0],  b=b[0],  sel=sel, out=out[0]);
+    // Mux(a=a[1],  b=b[1],  sel=sel, out=out[1]);
+    // Mux(a=a[2],  b=b[2],  sel=sel, out=out[2]);
+    // Mux(a=a[3],  b=b[3],  sel=sel, out=out[3]);
+    // Mux(a=a[4],  b=b[4],  sel=sel, out=out[4]);
+    // Mux(a=a[5],  b=b[5],  sel=sel, out=out[5]);
+    // Mux(a=a[6],  b=b[6],  sel=sel, out=out[6]);
+    // Mux(a=a[7],  b=b[7],  sel=sel, out=out[7]);
+    // Mux(a=a[8],  b=b[8],  sel=sel, out=out[8]);
+    // Mux(a=a[9],  b=b[9],  sel=sel, out=out[9]);
+    // Mux(a=a[10], b=b[10], sel=sel, out=out[10]);
+    // Mux(a=a[11], b=b[11], sel=sel, out=out[11]);
+    // Mux(a=a[12], b=b[12], sel=sel, out=out[12]);
+    // Mux(a=a[13], b=b[13], sel=sel, out=out[13]);
+    // Mux(a=a[14], b=b[14], sel=sel, out=out[14]);
+    // Mux(a=a[15], b=b[15], sel=sel, out=out[15]);
+
+    // Translates and "optimizes" to:
+
+    Nand(a=sel, b=sel, out=nsel); // optimized!
+
+    Nand(a=nsel, b=a[0],  out=w0);  Nand(a=sel, b=b[0],  out=w1);  Nand(a=w0,  b=w1,  out=out[0]);
+    Nand(a=nsel, b=a[1],  out=w2);  Nand(a=sel, b=b[1],  out=w3);  Nand(a=w2,  b=w3,  out=out[1]);
+    Nand(a=nsel, b=a[2],  out=w4);  Nand(a=sel, b=b[2],  out=w5);  Nand(a=w4,  b=w5,  out=out[2]);
+    Nand(a=nsel, b=a[3],  out=w6);  Nand(a=sel, b=b[3],  out=w7);  Nand(a=w6,  b=w7,  out=out[3]);
+    Nand(a=nsel, b=a[4],  out=w8);  Nand(a=sel, b=b[4],  out=w9);  Nand(a=w8,  b=w9,  out=out[4]);
+    Nand(a=nsel, b=a[5],  out=w10); Nand(a=sel, b=b[5],  out=w11); Nand(a=w10, b=w11, out=out[5]);
+    Nand(a=nsel, b=a[6],  out=w12); Nand(a=sel, b=b[6],  out=w13); Nand(a=w12, b=w13, out=out[6]);
+    Nand(a=nsel, b=a[7],  out=w14); Nand(a=sel, b=b[7],  out=w15); Nand(a=w14, b=w15, out=out[7]);
+    Nand(a=nsel, b=a[8],  out=w16); Nand(a=sel, b=b[8],  out=w17); Nand(a=w16, b=w17, out=out[8]);
+    Nand(a=nsel, b=a[9],  out=w18); Nand(a=sel, b=b[9],  out=w19); Nand(a=w18, b=w19, out=out[9]);
+    Nand(a=nsel, b=a[10], out=w20); Nand(a=sel, b=b[10], out=w21); Nand(a=w20, b=w21, out=out[10]);
+    Nand(a=nsel, b=a[11], out=w22); Nand(a=sel, b=b[11], out=w23); Nand(a=w22, b=w23, out=out[11]);
+    Nand(a=nsel, b=a[12], out=w24); Nand(a=sel, b=b[12], out=w25); Nand(a=w24, b=w25, out=out[12]);
+    Nand(a=nsel, b=a[13], out=w26); Nand(a=sel, b=b[13], out=w27); Nand(a=w26, b=w27, out=out[13]);
+    Nand(a=nsel, b=a[14], out=w28); Nand(a=sel, b=b[14], out=w29); Nand(a=w28, b=w29, out=out[14]);
+    Nand(a=nsel, b=a[15], out=w30); Nand(a=sel, b=b[15], out=w31); Nand(a=w30, b=w31, out=out[15]);
+}
