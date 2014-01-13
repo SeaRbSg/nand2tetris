@@ -12,5 +12,22 @@ CHIP Xor {
     OUT out;
 
     PARTS:
-    // Put your code here:
+
+    // Not(in=a, out=w1);
+    // And(a=w1, b=b, out=w3);
+    //
+    // Not(in=b, out=w2);
+    // And(a=a, b=w2, out=w4);
+    //
+    // Or(a=w3, b=w4, out=out);
+
+    // Translates and optimizes to:
+
+    Nand(a=a, b=a, out=w1);
+    Nand(a=w1, b=b, out=w3);
+
+    Nand(a=b, b=b, out=w2);
+    Nand(a=a, b=w2, out=w4);
+
+    Nand(a=w3, b=w4, out=out);
 }

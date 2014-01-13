@@ -12,5 +12,21 @@ CHIP Or {
     OUT out;
 
     PARTS:
-    // Put your code here:
+
+    // Not(in=a, out=w1);
+    // Not(in=b, out=w2);
+    // And(a=w1, b=w2, out=w3);
+    // Not(in=w3, out=out);
+
+    // optimizes to:
+
+    // Not(in=a, out=w1);
+    // Not(in=b, out=w2);
+    // Nand(a=w1, b=w2, out=out);
+
+    // translates to:
+
+    Nand(a=a, b=a, out=w1);
+    Nand(a=b, b=b, out=w2);
+    Nand(a=w1, b=w2, out=out);
 }
