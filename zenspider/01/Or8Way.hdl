@@ -12,5 +12,28 @@ CHIP Or8Way {
     OUT out;
 
     PARTS:
-    // Put your code here:
+
+    // Or(a=in[0], b=in[1], out=w1);
+    // Or(a=in[2], b=in[3], out=w2);
+    // Or(a=in[4], b=in[5], out=w3);
+    // Or(a=in[6], b=in[7], out=w4);
+    //
+    // Or(a=w1, b=w2, out=w5);
+    // Or(a=w3, b=w4, out=w6);
+    //
+    // Or(a=w5, b=w6, out=out);
+
+    // Translates to:
+
+    Nand(a=in[0], b=in[0], out=w1); Nand(a=in[1], b=in[1], out=w2); Nand(a=w1, b=w2, out=x1);
+    Nand(a=in[2], b=in[2], out=w3); Nand(a=in[3], b=in[3], out=w4); Nand(a=w3, b=w4, out=x2);
+    Nand(a=in[4], b=in[4], out=w5); Nand(a=in[5], b=in[5], out=w6); Nand(a=w5, b=w6, out=x3);
+    Nand(a=in[6], b=in[6], out=w7); Nand(a=in[7], b=in[7], out=w8); Nand(a=w7, b=w8, out=x4);
+
+    Nand(a=x1, b=x1, out=y1);       Nand(a=x2, b=x2, out=y2);       Nand(a=y1, b=y2, out=z1);
+    Nand(a=x3, b=x3, out=y3);       Nand(a=x4, b=x4, out=y4);       Nand(a=y3, b=w4, out=z2);
+
+    Nand(a=z1, b=z1, out=q1);       Nand(a=z2, b=z2, out=q2);       Nand(a=q1, b=q2, out=out);
+
+    // I don't think any further optimations are possible
 }
