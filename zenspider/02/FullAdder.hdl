@@ -13,5 +13,40 @@ CHIP FullAdder {
         carry;   // Left bit of a + b + c
 
     PARTS:
-    // Put you code here:
+
+    // Xor(a=a, b=b, out=w1);     // sum
+    // Xor(a=w1, b=c, out=sum);
+    // And(a=a, b=b, out=w2);     // carry
+    // And(a=w1, b=c, out=w3);
+    // Or(a=w2, b=w3, out=carry);
+
+    // reduces and optimizes to (13 -> 11 gates):
+
+    // Nand(a=a, b=b, out=w1);     // first xor
+    // Nand(a=a, b=w1, out=w2);
+    // Nand(a=w1, b=b, out=w3);
+    // Nand(a=w2, b=w3, out=w4);
+    //
+    // Nand(a=w4, b=c, out=w5);     // second xor
+    // Nand(a=w4, b=w5, out=w6);
+    // Nand(a=w5, b=c, out=w7);
+    // Nand(a=w6, b=w7, out=sum);
+    //
+    // Nand(a=w4, b=c, out=w8);     // second and
+    // Nand(a=a, b=b, out=w9);      // first and
+    // Nand(a=w8, b=w9, out=carry); // or
+
+    // which further reduces to (9 gates):
+
+    Nand(a=a, b=b, out=w1);     // first xor
+    Nand(a=a, b=w1, out=w2);
+    Nand(a=w1, b=b, out=w3);
+    Nand(a=w2, b=w3, out=w4);
+
+    Nand(a=w4, b=c, out=w5);     // second xor
+    Nand(a=w4, b=w5, out=w6);
+    Nand(a=w5, b=c, out=w7);
+    Nand(a=w6, b=w7, out=sum);
+
+    Nand(a=w5, b=w1, out=carry); // or of second and first and
 }
