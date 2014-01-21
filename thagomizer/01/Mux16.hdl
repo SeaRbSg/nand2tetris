@@ -12,6 +12,69 @@ CHIP Mux16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
-}
+    Nand(a=sel, b=sel, out=notsel);
 
+    Nand(a=a[0], b=notsel, out=w001);
+    Nand(a=b[0], b=sel, out=w002);
+    Nand(a=w001, b=w002, out=out[0]);
+
+    Nand(a=a[1], b=notsel, out=w011);
+    Nand(a=b[1], b=sel, out=w012);
+    Nand(a=w011, b=w012, out=out[1]);
+
+    Nand(a=a[2], b=notsel, out=w021);
+    Nand(a=b[2], b=sel, out=w022);
+    Nand(a=w021, b=w022, out=out[2]);
+
+    Nand(a=a[3], b=notsel, out=w031);
+    Nand(a=b[3], b=sel, out=w032);
+    Nand(a=w031, b=w032, out=out[3]);
+
+    Nand(a=a[4], b=notsel, out=w041);
+    Nand(a=b[4], b=sel, out=w042);
+    Nand(a=w041, b=w042, out=out[4]);
+
+    Nand(a=a[5], b=notsel, out=w051);
+    Nand(a=b[5], b=sel, out=w052);
+    Nand(a=w051, b=w052, out=out[5]);
+
+    Nand(a=a[6], b=notsel, out=w061);
+    Nand(a=b[6], b=sel, out=w062);
+    Nand(a=w061, b=w062, out=out[6]);
+
+    Nand(a=a[7], b=notsel, out=w071);
+    Nand(a=b[7]n, b=sel, out=w072);
+    Nand(a=w071, b=w072, out=out[7]);
+
+    Nand(a=a[8], b=notsel, out=w081);
+    Nand(a=b[8], b=sel, out=w082);
+    Nand(a=w081, b=w082, out=out[8]);
+
+    Nand(a=a[9], b=notsel, out=w091);
+    Nand(a=b[9], b=sel, out=w092);
+    Nand(a=w091, b=w092, out=out[9]);
+
+    Nand(a=a[10], b=notsel, out=w101);
+    Nand(a=b[10], b=sel, out=w102);
+    Nand(a=w101, b=w102, out=out[10]);
+
+    Nand(a=a[11], b=notsel, out=w111);
+    Nand(a=b[11], b=sel, out=w112);
+    Nand(a=w111, b=w112, out=out[11]);
+
+    Nand(a=a[12], b=notsel, out=w121);
+    Nand(a=b[12], b=sel, out=w122);
+    Nand(a=w121, b=w122, out=out[12]);
+
+    Nand(a=a[13], b=notsel, out=w131);
+    Nand(a=b[13], b=sel, out=w132);
+    Nand(a=w131, b=w132, out=out[13]);
+
+    Nand(a=a[14], b=notsel, out=w141);
+    Nand(a=b[14], b=sel, out=w142);
+    Nand(a=w141, b=w142, out=out[14]);
+
+    Nand(a=a[15], b=notsel, out=w151);
+    Nand(a=b[15], b=sel, out=w152);
+    Nand(a=w151, b=w152, out=out[15]);
+}
