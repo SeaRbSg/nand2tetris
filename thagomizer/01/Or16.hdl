@@ -13,20 +13,67 @@ CHIP Or16 {
     OUT out[16];
 
     PARTS:
-    Or(a=a[0], b=b[0], out=out[0]);
-    Or(a=a[1], b=b[1], out=out[1]);
-    Or(a=a[2], b=b[2], out=out[2]);
-    Or(a=a[3], b=b[3], out=out[3]);
-    Or(a=a[4], b=b[4], out=out[4]);
-    Or(a=a[5], b=b[5], out=out[5]);
-    Or(a=a[6], b=b[6], out=out[6]);
-    Or(a=a[7], b=b[7], out=out[7]);
-    Or(a=a[8], b=b[8], out=out[8]);
-    Or(a=a[9], b=b[9], out=out[9]);
-    Or(a=a[10], b=b[10], out=out[10]);
-    Or(a=a[11], b=b[11], out=out[11]);
-    Or(a=a[12], b=b[12], out=out[12]);
-    Or(a=a[13], b=b[13], out=out[13]);
-    Or(a=a[14], b=b[14], out=out[14]);
-    Or(a=a[15], b=b[15], out=out[15]);
+    Nand(a=a[0], b=a[0], out=nota0);
+    Nand(a=b[0], b=b[0], out=notb0);
+    Nand(a=nota0, b=notb0, out=out[0]);
+
+    Nand(a=a[1], b=a[1], out=nota1);
+    Nand(a=b[1], b=b[1], out=notb1);
+    Nand(a=nota1, b=notb1, out=out[1]);
+
+    Nand(a=a[2], b=a[2], out=nota2);
+    Nand(a=b[2], b=b[2], out=notb2);
+    Nand(a=nota2, b=notb2, out=out[2]);
+
+    Nand(a=a[3], b=a[3], out=nota3);
+    Nand(a=b[3], b=b[3], out=notb3);
+    Nand(a=nota3, b=notb3, out=out[3]);
+
+    Nand(a=a[4], b=a[4], out=nota4);
+    Nand(a=b[4], b=b[4], out=notb4);
+    Nand(a=nota4, b=notb4, out=out[4]);
+
+    Nand(a=a[5], b=a[5], out=nota5);
+    Nand(a=b[5], b=b[5], out=notb5);
+    Nand(a=nota5, b=notb5, out=out[5]);
+
+    Nand(a=a[6], b=a[6], out=nota6);
+    Nand(a=b[6], b=b[6], out=notb6);
+    Nand(a=nota6, b=notb6, out=out[6]);
+
+    Nand(a=a[7], b=a[7], out=nota7);
+    Nand(a=b[7], b=b[7], out=notb7);
+    Nand(a=nota7, b=notb7, out=out[7]);
+
+    Nand(a=a[8], b=a[8], out=nota8);
+    Nand(a=b[8], b=b[8], out=notb8);
+    Nand(a=nota8, b=notb8, out=out[8]);
+
+    Nand(a=a[9], b=a[9], out=nota9);
+    Nand(a=b[9], b=b[9], out=notb9);
+    Nand(a=nota9, b=notb9, out=out[9]);
+
+    Nand(a=a[10], b=a[10], out=nota10);
+    Nand(a=b[10], b=b[10], out=notb10);
+    Nand(a=nota10, b=notb10, out=out[10]);
+
+    Nand(a=a[11], b=a[11], out=nota11);
+    Nand(a=b[11], b=b[11], out=notb11);
+    Nand(a=nota11, b=notb11, out=out[11]);
+
+    Nand(a=a[12], b=a[12], out=nota12);
+    Nand(a=b[12], b=b[12], out=notb12);
+    Nand(a=nota12, b=notb12, out=out[12]);
+
+    Nand(a=a[13], b=a[13], out=nota13);
+    Nand(a=b[13], b=b[13], out=notb13);
+    Nand(a=nota13, b=notb13, out=out[13]);
+
+    Nand(a=a[14], b=a[14], out=nota14);
+    Nand(a=b[14], b=b[14], out=notb14);
+    Nand(a=nota14, b=notb14, out=out[14]);
+
+    Nand(a=a[15], b=a[15], out=nota15);
+    Nand(a=b[15], b=b[15], out=notb15);
+    Nand(a=nota15, b=notb15, out=out[15]);
 }
