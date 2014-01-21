@@ -20,5 +20,4 @@ CHIP DMux {
     Nand(a=w1, b=w1, out=a);
     Nand(a=sel, b=in, out=w2);
     Nand(a=w2, b=w2, out=b);
-
 }
