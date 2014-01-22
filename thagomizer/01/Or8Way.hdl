@@ -13,37 +13,37 @@ CHIP Or8Way {
 
     PARTS:
     // Or(a=in[0], b=in[1], out=w01);
-    // Or(a=in[2], b=in[3], out=w23);
-    // Or(a=in[4], b=in[5], out=w45);
-    // Or(a=in[6], b=in[7], out=w67);
-    // Or(a=w01, b=w23, out=w0123);
-    // Or(a=w45, b=w67, out=w4567);
-    // Or(a=w0123, b=w4567, out=out);
-
     Nand(a=in[0], b=in[0], out=notin0);
     Nand(a=in[1], b=in[1], out=notin1);
+    Nand(a=notin0, b=notin1, out=w01);
+
+    // Or(a=in[2], b=in[3], out=w23);
     Nand(a=in[2], b=in[2], out=notin2);
     Nand(a=in[3], b=in[3], out=notin3);
+    Nand(a=notin2, b=notin3, out=w23);
+
+    // Or(a=in[4], b=in[5], out=w45);
     Nand(a=in[4], b=in[4], out=notin4);
     Nand(a=in[5], b=in[5], out=notin5);
+    Nand(a=notin4, b=notin5, out=w45);
+
+    // Or(a=in[6], b=in[7], out=w67);
     Nand(a=in[6], b=in[6], out=notin6);
     Nand(a=in[7], b=in[7], out=notin7);
-
-    Nand(a=notin0, b=notin1, out=w01);
-    Nand(a=notin2, b=notin3, out=w23);
-    Nand(a=notin4, b=notin5, out=w45);
     Nand(a=notin6, b=notin7, out=w67);
 
+    // Or(a=w01, b=w23, out=w0123);
     Nand(a=w01, b=w01, out=notw01);
     Nand(a=w23, b=w23, out=notw23);
+    Nand(a=notw01, b=notw23, out=w0123);
+
+    // Or(a=w45, b=w67, out=w4567);
     Nand(a=w45, b=w45, out=notw45);
     Nand(a=w67, b=w67, out=notw67);
-    
-    Nand(a=notw01, b=notw23, out=w0123);
     Nand(a=notw45, b=notw67, out=w4567);
 
+    // Or(a=w0123, b=w4567, out=out);
     Nand(a=w0123, b=w0123, out=notw0123);
     Nand(a=w4567, b=w4567, out=notw4567);
-
     Nand(a=notw0123, b=notw4567, out=out);
 }
