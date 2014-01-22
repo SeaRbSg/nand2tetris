@@ -19,7 +19,6 @@ CHIP DMux4Way {
     Not(in=sel[0], out=notsel0);
     Not(in=sel[1], out=notsel1);
 
-    
     // Channel a
     And(a=notsel1, b=notsel0, out=usea);
     And(a=usea, b=in, out=a);
