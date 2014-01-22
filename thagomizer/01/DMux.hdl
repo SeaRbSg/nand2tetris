@@ -15,9 +15,14 @@ CHIP DMux {
     OUT a, b;
 
     PARTS:
+    // Not(in=sel, out=notsel);
     Nand(a=sel, b=sel, out=notsel);
+
+    // And(a=notsel, b=in, out=a);
     Nand(a=notsel, b=in, out=w1);
     Nand(a=w1, b=w1, out=a);
+
+    // And(a=sel, b=in, out=b);
     Nand(a=sel, b=in, out=w2);
     Nand(a=w2, b=w2, out=b);
 }
