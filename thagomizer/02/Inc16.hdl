@@ -12,5 +12,7 @@ CHIP Inc16 {
     OUT out[16];
 
     PARTS:
-   // Put you code here:
+    Not16(in=in, out=notin);
+    Add16(a=notin, b=true, out=w1);
+    Not16(in=w1, out=out);
 }
