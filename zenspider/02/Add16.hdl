@@ -17,6 +17,11 @@ CHIP Add16 {
     // I know there is a faster way to design this. Ripple adder is
     // O(N) but a carry adder would be O(log2(N)), but I can't for the
     // life of me understand the writeups.
+    //
+    // Added: OK. I totally understand the writeups now. But nand2tetris
+    // doesn't allow for "circles" between user defined chips. As a result,
+    // I need to write the whole damn thing in one fell swoop instead of
+    // factoring to a PartialFullAdder and CarryLookahead chips.
 
     FullAdder(a=a[0],  b=b[0],  c=false,   sum=out[0],  carry=carry0);
     FullAdder(a=a[1],  b=b[1],  c=carry0,  sum=out[1],  carry=carry1);
