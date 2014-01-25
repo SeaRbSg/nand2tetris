@@ -12,5 +12,8 @@ CHIP Mux {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    Or(a=a, b=sel, out=v1);
+    And(a=b, b=sel, out=v2);
+    Xor(a=v1, b=v2, out=v3);
+    Xor(a=v3, b=sel, out=out);
 }
