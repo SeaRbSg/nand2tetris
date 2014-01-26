@@ -1,16 +1,7 @@
-<<<<<<< HEAD
 // This file is part of www.nOr2tetris.org
 // Or the book "The Elements of Computing Systems"
 // by Nisan Or Schocken, MIT Press.
 // File name: projects/01/Or16.hdl
-
-=======
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/01/Or16.hdl
-
->>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1
 
 /**
  * 16-bit bitwise Or gate: for i=0..15 out[i] = a[i] or b[i].
@@ -21,7 +12,6 @@ CHIP Or16 {
     OUT out[16];
 
     PARTS:
-<<<<<<< HEAD
     Or(a=a[0], b=b[0], out=out[0]);
     Or(a=a[1], b=b[1], out=out[1]);
     Or(a=a[2], b=b[2], out=out[2]);
@@ -38,7 +28,5 @@ CHIP Or16 {
     Or(a=a[13], b=b[13], out=out[13]);
     Or(a=a[14], b=b[14], out=out[14]);
     Or(a=a[15], b=b[15], out=out[15]);}
-=======
-    // Put your code here:
+
 }
->>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1

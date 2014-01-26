@@ -12,7 +12,6 @@ CHIP Or8Way {
     OUT out;
 
     PARTS:
-<<<<<<< HEAD
     Or(a=in[0], b=in[1], out=foo);
     Or(a=foo, b=in[2], out=bar);
     Or(a=bar, b=in[3], out=baz);
@@ -20,7 +19,5 @@ CHIP Or8Way {
     Or(a=quux, b=in[5], out=gzonk);
     Or(a=gzonk, b=in[6], out=wibble);
     Or(a=wibble, b=in[7], out=out);
-=======
-    // Put your code here:
->>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1
+
 }

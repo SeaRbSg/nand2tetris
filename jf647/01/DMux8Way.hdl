@@ -17,7 +17,6 @@ CHIP DMux8Way {
     OUT a, b, c, d, e, f, g, h;
 
     PARTS:
-<<<<<<< HEAD
     DMux(in=in, sel=sel[2], a=foo, b=bar);
     DMux(in=foo, sel=sel[1], a=baz, b=quux);
     DMux(in=bar, sel=sel[1], a=gzonk, b=wibble);
@@ -25,7 +24,5 @@ CHIP DMux8Way {
     DMux(in=quux, sel=sel[0], a=c, b=d);
     DMux(in=gzonk, sel=sel[0], a=e, b=f);
     DMux(in=wibble  , sel=sel[0], a=g, b=h);
-=======
-    // Put your code here:
->>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1
+
 }
