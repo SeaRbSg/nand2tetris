@@ -12,10 +12,14 @@ CHIP Xor {
     OUT out;
 
     PARTS:
+<<<<<<< HEAD
     Not(in=a, out=foo);
     Not(in=b, out=bar);
     And(a=a, b=bar, out=baz);
     And(a=foo, b=b, out=quux);
     Or(a=baz, b=quux, out=out);
 
+=======
+    // Put your code here:
+>>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1
 }

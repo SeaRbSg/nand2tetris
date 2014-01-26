@@ -13,6 +13,10 @@ CHIP And {
     OUT out;
 
     PARTS:
+<<<<<<< HEAD
     Nand(a=a, b=b, out=foo);
     Not(in=foo, out=out);
+=======
+    // Put your code here:
+>>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1
 }

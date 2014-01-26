@@ -12,5 +12,9 @@ CHIP Not {
     OUT out;
 
     PARTS:
+<<<<<<< HEAD
     Nand(a=in, b=in, out=out);
+=======
+    // Put your code here:
+>>>>>>> 2b058044bd3ac63f820e46c58ac4f5b0ceb62fa1
 }
