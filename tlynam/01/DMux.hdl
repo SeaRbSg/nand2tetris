@@ -7,6 +7,29 @@
  * Demultiplexor.
  * {a,b} = {in,0} if sel==0
  *         {0,in} if sel==1
+
+ sel = 0
+ in = 1
+ a=1 b=0
+
+ sel = 1
+ in = 1
+ a=0 b=1
+
+ sel = 0
+ in = 0
+ a=0 b=0
+
+ sel = 1
+ in = 0
+ a=0 b=0
+
+ notsel=1 and in=1, a=1 b=0
+ sel=1 and in=1, a=0 b=1
+
+ notsel=1 and in=0, a=0 b=0
+ sel=1 and in=0, a=0 b=0
+
  */
 
 
@@ -15,5 +38,8 @@ CHIP DMux {
     OUT a, b;
 
     PARTS:
-    // Put your code here:
+    Not(in=sel, out=notsel);
+    And(a=notsel, b=in, out=a);
+    And(a=sel, b=in, out=b);
+
 }

@@ -9,6 +9,18 @@
  *             {0,in,0,0} if sel==01
  *             {0,0,in,0} if sel==10
  *             {0,0,0,in} if sel==11
+
+ CHIP DMux {
+    IN in, sel;
+    OUT a, b;
+
+    PARTS:
+    Not(in=sel, out=notsel);
+    And(a=notsel, b=in, out=a);
+    And(a=sel, b=in, out=b);
+
+}
+
  */
 
 CHIP DMux4Way {
@@ -16,5 +28,7 @@ CHIP DMux4Way {
     OUT a, b, c, d;
 
     PARTS:
-    // Put your code here:
+    
+    DMux(a=, b=, out=out1);
+
 }
