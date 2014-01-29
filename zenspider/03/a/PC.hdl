@@ -16,9 +16,22 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+
+    Inc16(in=in0, out=incr);
+
+    Or(a=reset, b=load, out=load0);
+    Or(a=load0, b=inc,  out=load1);   // should we load the register?
+
+    Not(in=reset, out=nreset);
+    And(a=nreset, b=load, out=load2); // load and not reset
+
+    Or(a=reset, b=load, out=rl);
+    Not(in=rl, out=nrl);
+    And(a=nrl, b=inc, out=inc0);      // inc and not (load or reset)
+
+    Mux16(a=in0, b=false, sel=reset, out=w0); // chained muxes
+    Mux16(a=w0,  b=in,    sel=load2, out=w1);
+    Mux16(a=w1,  b=incr,  sel=inc0,  out=w2);
+
+    Register(in=w2, load=load1, out=out, out=in0);
 }
-
-
-
-
