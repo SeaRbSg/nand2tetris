@@ -1,0 +1,11 @@
+// I really needed to make this. It was driving me crazy.
+
+CHIP Or16Way {
+    IN in[16];
+    OUT out;
+
+    PARTS:
+    Or8Way(in = in[0..7], out = w0);
+    Or8Way(in = in[8..15], out = w1);
+    Or(a = w0, b = w1, out = out);
+}

@@ -45,5 +45,31 @@ CHIP ALU {
         ng; // 1 if (out<0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // x, or x = zero if zx is set.
+    Mux16(a = x, b = false, sel = zx, out = x0);
+
+    // y, or y = zero if zy is set.
+    Mux16(a = y, b = false, sel = zy, out = y0);
+
+    // x, or !x if nx is set
+    Not16(in = x0, out = nx0);
+    Mux16(a = x0, b = nx0, sel = nx, out = x1);
+
+    // y, or !y if ny is set);
+    Not16(in = y0, out = ny0);
+    Mux16(a = y0, b = ny0, sel = ny, out = y1);
+
+    Add16(a = x1, b = y1, out = xySum);
+    And16(a = x1, b = y1, out = xyAnd);
+
+    // output either x+y, or x&y
+    Mux16(a = xyAnd, b = xySum, sel = f, out = output);
+
+    // invert the output if no is set. If the MSB is set, then it is negative.
+    Not16(in = output, out = output0);
+    Mux16(a = output, b = output0, sel = no, out = out, out = temp, out[15] = ng);
+
+    // if output = 0, set zr. (I had to make Or16Way)
+    Or16Way(in = temp, out = outgt0);
+    Not(in = outgt0, out = zr);
 }
