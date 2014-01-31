@@ -5,6 +5,49 @@
 
 /**
  * Computes the sum of three bits.
+
+|   a   |   b   |   c   |  sum  | carry |
+|   0   |   0   |   0   |   0   |   0   |
+|   0   |   0   |   1   |   1   |   0   |
+|   0   |   1   |   0   |   1   |   0   |
+|   0   |   1   |   1   |   0   |   1   |
+|   1   |   0   |   0   |   1   |   0   |
+|   1   |   0   |   1   |   0   |   1   |
+|   1   |   1   |   0   |   0   |   1   |
+|   1   |   1   |   1   |   1   |   1   |
+
+|   a   |   b   |  suma | carrya|
+|   0   |   0   |   0   |   0   |
+|   0   |   0   |   0   |   0   |
+|   0   |   1   |   1   |   0   |
+|   0   |   1   |   1   |   0   |
+|   1   |   0   |   1   |   0   |
+|   1   |   0   |   1   |   0   |
+|   1   |   1   |   0   |   1   |
+|   1   |   1   |   1   |   1   |
+
+|   c   |   suma |  carrya|  sum | carry |
+|   0   |   0    |   0    |   0  |   0   |
+|   1   |   0    |   0    |   1  |   0   |
+|   0   |   1    |   0    |   1  |   0   |
+|   1   |   1    |   0    |   0  |   1   |
+|   0   |   1    |   0    |   1  |   0   | 
+|   1   |   1    |   0    |   0  |   1   |
+|   0   |   0    |   1    |   0  |   1   |
+|   1   |   1    |   1    |   1  |   1   |
+
+
+CHIP HalfAdder {
+    IN a, b;    // 1-bit inputs
+    OUT sum,    // Right bit of a + b 
+        carry;  // Left bit of a + b
+
+    PARTS:
+    Xor(a=a, b=b, out=sum);
+    And(a=a, b=b, out=carry);
+
+}
+
  */
 
 CHIP FullAdder {
@@ -13,5 +56,9 @@ CHIP FullAdder {
         carry;   // Left bit of a + b + c
 
     PARTS:
-    // Put you code here:
+    HalfAdder(a=a, b=b, sum=suma, carry=carrya);
+    Xor(a=c, b=suma, out=sum);
+    And(a=c, b=suma, out=carryb);
+    Or(a=carryb, b=carrya, out=carry);
+
 }

@@ -6,6 +6,7 @@
 /*
  * Adds two 16-bit values.
  * The most-significant carry bit is ignored.
+
  */
 
 CHIP Add16 {
@@ -13,5 +14,5 @@ CHIP Add16 {
     OUT out[16];
 
     PARTS:
-   // Put you code here:
+
 }
