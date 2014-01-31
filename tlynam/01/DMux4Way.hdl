@@ -19,6 +19,22 @@
     And(a=notsel, b=in, out=a);
     And(a=sel, b=in, out=b);
 
+ sel = 0
+ in = 1
+ a=1 b=0
+
+ sel = 1
+ in = 1
+ a=0 b=1
+
+ sel = 0
+ in = 0
+ a=0 b=0
+
+ sel = 1
+ in = 0
+ a=0 b=0
+
 }
 
  */
