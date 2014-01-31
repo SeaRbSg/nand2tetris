@@ -1,0 +1,38 @@
+
+// File name: projects/01/Mux4.hdl
+
+/**
+ * 4 bit multiplexor. If sel==1 then out=b else out=a.
+ */
+
+ /** I do not use the Mux gate, 
+ as that would unnecessarily copy
+ the gate which inverts the select input
+*/
+
+CHIP Mux4 {
+    IN a[4], b[4], sel;
+    OUT out[4];
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel,out=nsel);
+
+    Nand(a=sel, b=b[0], out=NotBsel00);
+    Nand(a=a[0], b=nsel, out=NotAsel00);
+    Nand(a=NotAsel00, b=NotBsel00, out=out[0]);
+
+    Nand(a=sel, b=b[1], out=NotBsel01);
+    Nand(a=a[1], b=nsel, out=NotAsel01);
+    Nand(a=NotAsel01, b=NotBsel01, out=out[1]);
+
+    Nand(a=sel, b=b[2], out=NotBsel02);
+    Nand(a=a[2], b=nsel, out=NotAsel02);
+    Nand(a=NotAsel02, b=NotBsel02, out=out[2]);
+
+    Nand(a=sel, b=b[3], out=NotBsel03);
+    Nand(a=a[3], b=nsel, out=NotAsel03);
+    Nand(a=NotAsel03, b=NotBsel03, out=out[3]);
+
+}
+
