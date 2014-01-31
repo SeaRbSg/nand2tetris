@@ -2,6 +2,7 @@ task :default => :test
 
 user = ENV["GH"]
 user = "zenspider" if ENV["USER"] == "ryan"
+user = "nanoxd" if ENV["USER"] == "nano"
 
 if user then
   %w(01 02 03/a 03/b).reverse.each do |n|
