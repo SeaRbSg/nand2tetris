@@ -78,7 +78,7 @@ class SquareGame {
                 do moveSquare();
             }
         }
-            
+
         return;
 	}
 

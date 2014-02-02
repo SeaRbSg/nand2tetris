@@ -5,8 +5,8 @@
 
 /**
  * Memory of 16K registers, each 16 bit-wide. Out holds the value
- * stored at the memory location specified by address. If load=1, then 
- * the in value is loaded into the memory location specified by address 
+ * stored at the memory location specified by address. If load=1, then
+ * the in value is loaded into the memory location specified by address
  * (the loaded value will be emitted to out after the next time step.)
  */
 

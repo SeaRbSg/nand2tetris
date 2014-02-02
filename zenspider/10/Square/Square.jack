@@ -5,7 +5,7 @@
 
 /**
  * Implements a graphic square. A graphic square has a screen location
- * and a size. It also has methods for drawing, erasing, moving on the 
+ * and a size. It also has methods for drawing, erasing, moving on the
  * screen, and changing its size.
  */
 class Square {

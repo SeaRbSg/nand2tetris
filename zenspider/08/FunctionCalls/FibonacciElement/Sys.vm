@@ -5,7 +5,7 @@
 
 // Pushes n onto the stack and calls the Main.fibonacii function,
 // which computes the n'th element of the Fibonacci series.
-// The Sys.init function is called "automatically" by the 
+// The Sys.init function is called "automatically" by the
 // bootstrap code.
 
 function Sys.init 0

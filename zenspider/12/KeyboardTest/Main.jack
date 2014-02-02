@@ -12,7 +12,7 @@ class Main {
     	var String s;
     	var int i;
     	var boolean ok;
-    
+
         let ok = false;
         do Output.printString("keyPressed test:");
         do Output.println();
@@ -25,16 +25,16 @@ class Main {
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
             }
-        
+
             do Output.println();
-        
+
             if (c = 137) {
        	        do Output.printString("ok");
 	        do Output.println();
 	        let ok = true;
 	    }
 	}
-	
+
 	let ok = false;
         do Output.printString("readChar test:");
         do Output.println();
@@ -43,16 +43,16 @@ class Main {
         while (~ok) {
             do Output.printString("Please press the number '3': ");
     	    let c = Keyboard.readChar();
-        
+
             do Output.println();
-        
+
             if (c = 51) {
 	        do Output.printString("ok");
 	        do Output.println();
 	        let ok = true;
 	    }
 	}
-	
+
 	let ok = false;
         do Output.printString("readLine test:");
         do Output.println();
@@ -84,10 +84,10 @@ class Main {
 	        let ok = true;
 	    }
 	}
-        
+
         do Output.println();
         do Output.printString("Test completed successfully");
-        
+
         return;
     }
 

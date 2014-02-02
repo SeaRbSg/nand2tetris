@@ -28,15 +28,15 @@ class Ball {
 
     /** Constructs a new Ball with a given initial location
      *  and the locations of the walls. */
-    constructor Ball new(int Ax, int Ay, int AleftWall, int ArightWall, int AtopWall, int AbottomWall) {    	
-	let x = Ax;		
+    constructor Ball new(int Ax, int Ay, int AleftWall, int ArightWall, int AtopWall, int AbottomWall) {
+	let x = Ax;
 	let y = Ay;
 	let leftWall = AleftWall;
 	let rightWall = ArightWall - 6; // -6 for ball size
-	let topWall = AtopWall; 
+	let topWall = AtopWall;
 	let bottomWall = AbottomWall - 6; // -6 for ball size
 	let wall = 0;
-    	
+
         do show();
 
         return this;
@@ -161,19 +161,19 @@ class Ball {
 	}
 
 	if (~(x > leftWall)) {
-	    let wall = 1;    
+	    let wall = 1;
 	    let x = leftWall;
 	}
         if (~(x < rightWall)) {
-	    let wall = 2;    
+	    let wall = 2;
 	    let x = rightWall;
 	}
         if (~(y > topWall)) {
-            let wall = 3;    
+            let wall = 3;
 	    let y = topWall;
         }
         if (~(y < bottomWall)) {
-            let wall = 4;    
+            let wall = 4;
 	    let y = bottomWall;
         }
 

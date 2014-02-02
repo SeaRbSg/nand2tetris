@@ -9,7 +9,7 @@ compare-to ComputerRect-external.cmp,
 output-list time%S1.4.1;
 
 // Load a program written in the Hack machine language.
-// The program draws a rectangle of width 16 pixels and 
+// The program draws a rectangle of width 16 pixels and
 // length RAM[0] at the top left of the screen.
 ROM32K load Rect.hack,
 

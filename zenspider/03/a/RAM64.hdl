@@ -5,8 +5,8 @@
 
 /**
  * Memory of 64 registers, each 16 bit-wide. Out hold the value
- * stored at the memory location specified by address. If load=1, then 
- * the in value is loaded into the memory location specified by address 
+ * stored at the memory location specified by address. If load=1, then
+ * the in value is loaded into the memory location specified by address
  * (the loaded value will be emitted to out after the next time step.)
  */
 
@@ -16,7 +16,7 @@ CHIP RAM64 {
 
     PARTS:
 
-    DMux8Way(in=load, sel=address[3..5], 
+    DMux8Way(in=load, sel=address[3..5],
              a=reg0, b=reg1, c=reg2, d=reg3,
              e=reg4, f=reg5, g=reg6, h=reg7);
 

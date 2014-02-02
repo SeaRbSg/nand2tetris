@@ -10,7 +10,7 @@ class Keyboard {
 
     /** Initializes the keyboard. */
     function void init() {
-    } 
+    }
 
     /**
      * Returns the ASCII code (as char) of the currently pressed key,
@@ -35,7 +35,7 @@ class Keyboard {
     function char keyPressed() {
     }
 
-    /**								
+    /**
      * Reads the next character from the keyboard.
      * waits until a key is pressed and then released, then echoes
      * the key to the screen, and returns the value of the pressed key.
@@ -43,14 +43,14 @@ class Keyboard {
     function char readChar() {
     }
 
-    /**								
+    /**
      * Prints the message on the screen, reads the next line
      * (until a newline character) from the keyboard, and returns its value.
      */
     function String readLine(String message) {
-    }   
+    }
 
-    /**								
+    /**
      * Prints the message on the screen, reads the next line
      * (until a newline character) from the keyboard, and returns its
      * integer value (until the first non numeric character).

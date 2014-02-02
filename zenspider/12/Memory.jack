@@ -5,7 +5,7 @@
 
 /**
  * Memory operations library.
- */ 
+ */
 class Memory {
 
     /** Initializes memory parameters. */
@@ -21,12 +21,12 @@ class Memory {
     function void poke(int address, int value) {
     }
 
-    /** finds and allocates from the heap a memory block of the 
+    /** finds and allocates from the heap a memory block of the
      *  specified size and returns a reference to its base address. */
     function int alloc(int size) {
     }
 
     /** De-allocates the given object and frees its space. */
     function void deAlloc(int object) {
-    }    
+    }
 }

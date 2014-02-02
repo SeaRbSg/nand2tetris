@@ -3,8 +3,8 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/08/FunctionCalls/StaticsTest/Sys.vm
 
-// Tests that different functions, stored in two different 
-// class files, manipulate the static segment correctly. 
+// Tests that different functions, stored in two different
+// class files, manipulate the static segment correctly.
 function Sys.init 0
 push constant 6
 push constant 8
