@@ -14,13 +14,32 @@ CHIP FullAdder {
 
     PARTS:
     // HalfAdder(a=a, b=b, sum=s1, carry=c1);
-    Xor(a=a, b=b, out=s1);
-    And(a=a, b=b, out=c1);
-
     // HalfAdder(a=s1, b=c, sum=sum, carry=c2);
-    Xor(a=s1, b=c, out=sum);
-    And(a=s1, b=c, out=c2);
-
     // Or(a=c1, b=c2, out=carry);
-    Or(a=c1, b=c2, out=carry);
+
+    // ALSO
+
+    // Xor(a=a, b=b, out=s1);
+    // And(a=a, b=b, out=c1);
+    // Xor(a=s1, b=c, out=sum);
+    // And(a=s1, b=c, out=c2);
+    // Or(a=c1, b=c2, out=carry);
+
+
+    // REDUCED
+
+    // First Half Adder
+    Nand(a=a,   b=b,   out=w11);  // Xor(a=a, b=b, out=s1);
+    Nand(a=a,   b=w11, out=w12);
+    Nand(a=b,   b=w11, out=w13);
+    Nand(a=w12, b=w13, out=s1);
+
+    // Second Half Adder
+    Nand(a=s1,  b=c,   out=w21);  // Xor(a=s1, b=c, out=sum);
+    Nand(a=s1,  b=w21, out=w22);
+    Nand(a=c,   b=w21, out=w23);
+    Nand(a=w22, b=w23, out=sum);
+
+    // Or-ing for the carry-out
+    Nand(a=w11, b=w21, out=carry);
 }
