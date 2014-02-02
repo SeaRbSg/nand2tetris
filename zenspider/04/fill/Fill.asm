@@ -12,18 +12,19 @@
         @last
         M=0             // last = 0
 
-        @RESET
-        0;JMP
-
 (TOP)                   // while true do
         @last
         D=M
         @KBD
         D=D-M
         @TOP
-        D;JEQ           // goto DRAW if kbd != last
+        D;JEQ           // goto TOP if kbd == last
 
-(DRAW)
+        @SCREEN
+        D=A
+        @pos
+        M=D             // pos = SCREEN (address, not value)
+
         @KBD
         D=M
         @last
@@ -52,12 +53,6 @@
         D=A-D
         @WORD           // repeat if pos < size of screen
         D;JGE
-
-(RESET)
-        @SCREEN
-        D=A
-        @pos
-        M=D             // pos = SCREEN (address, not value)
 
         @TOP
         0;JMP           // end
