@@ -21,7 +21,19 @@ else
   warn "Run or define GH=<your-github-username> for automated testing."
 end
 
-task :run do
+def run cmd
   f = File.expand_path ENV["F"] if ENV["F"]
-  sh "./tools/HardwareSimulator.sh #{f}"
+  sh "./tools/#{cmd}.sh #{f}"
+end
+
+task :hdl do
+  run "HardwareSimulator"
+end
+
+task :asm do
+  run "Assembler"
+end
+
+task :cpu do
+  run "CPUEmulator"
 end
