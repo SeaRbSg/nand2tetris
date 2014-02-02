@@ -16,11 +16,6 @@ CHIP Mux4Way16 {
     OUT out[16];
 
     PARTS:
-    Not(in=sel[0], out=notsel0);    
-    Not(in=sel[1], out=notsel1);    
-    Not(in=notsel0, out=sel0);
-    Not(in=notsel1, out=sel1);
-
     // Decide pairs based on least significant bit
     Mux16(a=a, b=b, sel=sel[0], out=wab);
     Mux16(a=c, b=d, sel=sel[0], out=wcd);
