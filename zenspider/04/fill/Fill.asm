@@ -9,56 +9,31 @@
 // i.e. writes "black" in every pixel. When no key is pressed, the
 // program clears the screen, i.e. writes "white" in every pixel.
 
-        @R1
-        M=0
-        @R2
-        M=0
-
         @color
         M=0             // color = 0
 
         @pos
         M=0             // pos = 0
 
-        // @8192
-        // D=A
-        // @i
-        // M=D             // i = 8192 (# of 16 bit words on screen)
-
-(TOP)                   // while true do
-        // if kbd != color then
-        // aka: if (kbd & !color) || (!kbd & color) then
-        @color
-        D=!M
-        @KBD
-        D=D&M
-        @DRAW
-        D;JNE           // goto DRAW if kbd & !color
-
-        @KBD
-        D=!M
-        @color
-        D=D&M
-        @DRAW
-        D;JNE           // goto DRAW if !kbd & color
-
-        @TOP
+        @RESET
         0;JMP
 
-(DRAW)
-        @R1
-        M=M+1
+(TOP)                   // while true do
+        @color
+        D=M
+        @KBD
+        D=D-M
+        @DRAW
+        D;JNE           // goto DRAW if kbd != color
 
+        @TOP
+        0;JMP           // goto TOP
+
+(DRAW)
         @KBD
         D=M
         @color
-        M=D            // color = kbd
-
-        // TODO: refactor with above
-        @8192           // # of 16 bit words on screen
-        D=A
-        @i
-        M=D             // i = 8192
+        M=D             // color = kbd
 
 (WORD)                  // begin
         @i
@@ -90,6 +65,12 @@
 
         @WORD           // end while i > 0
         D;JNE
+
+(RESET)
+        @8192           // # of 16 bit words on screen
+        D=A
+        @i
+        M=D             // i = 8192
 
         @TOP
         0;JMP           // end
