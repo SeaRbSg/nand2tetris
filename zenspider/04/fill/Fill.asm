@@ -30,19 +30,22 @@
         @last
         M=D             // last = kbd
 
-(WORD)                  // begin
-        @last           // if last
-        D=M
         @BLACK
-        D;JNE
+        D;JNE           // if last
 
-        D=0             //   then color =  0
-        @WHITE
+        @color
+        M=0             //   then color =  0
+
+        @WORD
         0;JMP
 (BLACK)
-        D=-1            //   else color = -1
-(WHITE)
+        @color
+        M=-1            //   else color = -1
 
+(WORD)                  // begin
+
+        @color
+        D=M
         @pos
         A=M             // *pos
         M=D             //      = color
