@@ -9,8 +9,8 @@
 // i.e. writes "black" in every pixel. When no key is pressed, the
 // program clears the screen, i.e. writes "white" in every pixel.
 
-        @color
-        M=0             // color = 0
+        @last
+        M=0             // last = 0
 
         @pos
         M=0             // pos = 0
@@ -19,12 +19,12 @@
         0;JMP
 
 (TOP)                   // while true do
-        @color
+        @last
         D=M
         @KBD
         D=D-M
         @DRAW
-        D;JNE           // goto DRAW if kbd != color
+        D;JNE           // goto DRAW if kbd != last
 
         @TOP
         0;JMP           // goto TOP
@@ -32,8 +32,8 @@
 (DRAW)
         @KBD
         D=M
-        @color
-        M=D             // color = kbd
+        @last
+        M=D             // last = kbd
 
 (WORD)                  // begin
         @i
@@ -44,16 +44,16 @@
         @pos
         M=D             // pos = screen + i
 
-        @color
+        @last           // if last
         D=M
         @BLACK
         D;JNE
 
-        D=0
+        D=0             //   then color =  0
         @WHITE
         0;JMP
 (BLACK)
-        D=-1
+        D=-1            //   else color = -1
 (WHITE)
 
         @pos
