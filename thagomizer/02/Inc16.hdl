@@ -12,7 +12,11 @@ CHIP Inc16 {
     OUT out[16];
 
     PARTS:
-    Not16(in=in, out=notin);
-    Add16(a=notin, b=true, out=w1);
-    Not16(in=w1, out=out);
+    // Original solution, using the logic from the ALU table
+    // Not16(in=in, out=notin);
+    // Add16(a=notin, b=true, out=w1);
+    // Not16(in=w1, out=out);
+
+    // Second Attempt
+    Add16(a=in, b[0]=true, out=out);
 }
