@@ -13,12 +13,10 @@ CHIP HalfAdder {
         carry;  // Left bit of a + b
 
     PARTS:
-    // Xor(a=a, b=b, out=sum);
-    Nand(a=a, b=b, out=w1);
+    Nand(a=a, b=b, out=w1);  // Xor(a=a, b=b, out=sum);
     Nand(a=a, b=w1, out=w2);
     Nand(a=b, b=w1, out=w3);
     Nand(a=w2, b=w3, out=sum);
 
-    // And(a=a, b=b, out=carry);
-    Nand(a=w1, b=w1, out=carry);
+    Nand(a=w1, b=w1, out=carry); // And(a=a, b=b, out=carry);
 }
