@@ -12,9 +12,6 @@
         @last
         M=0             // last = 0
 
-        @pos
-        M=0             // pos = 0
-
         @RESET
         0;JMP
 
@@ -36,14 +33,6 @@
         M=D             // last = kbd
 
 (WORD)                  // begin
-        @i
-        MD=M-1          // i=i-1
-
-        @SCREEN
-        D=D+A           // screen + i
-        @pos
-        M=D             // pos = screen + i
-
         @last           // if last
         D=M
         @BLACK
@@ -60,17 +49,18 @@
         A=M             // *pos
         M=D             //      = color
 
-        @i
-        D=M
-
-        @WORD           // end while i > 0
-        D;JNE
+        @pos
+        MD=M+1          // pos=pos+1
+        @24575          // 24575 = 0x4000 + 0x2000 - 1 (start of screen + size)
+        D=A-D
+        @WORD           // repeat if pos < size of screen
+        D;JGE
 
 (RESET)
-        @8192           // # of 16 bit words on screen
+        @SCREEN
         D=A
-        @i
-        M=D             // i = 8192
+        @pos
+        M=D             // pos = SCREEN (address, not value)
 
         @TOP
         0;JMP           // end
