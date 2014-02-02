@@ -6,7 +6,7 @@
 /**
  * A graphic Pong bat. Has a screen location, width and height.
  * Has methods for drawing, erasing, moving left and right on
- * the screen and changing the width. 
+ * the screen and changing the width.
  */
 class Bat {
 
@@ -93,7 +93,7 @@ class Bat {
             do Screen.drawRectangle((x + width) + 1, y, (x + width) + 4, y + height);
             do Screen.setColor(true);
    	    do Screen.drawRectangle(x, y, x + 3, y + height);
-	} 
+	}
 	else {
             let x = x + 4;
 	    if ((x + width) > 511) {

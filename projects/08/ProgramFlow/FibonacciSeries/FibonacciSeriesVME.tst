@@ -6,7 +6,7 @@
 load FibonacciSeries.vm,
 output-file FibonacciSeries.out,
 compare-to FibonacciSeries.cmp,
-output-list RAM[3000]%D1.6.2 RAM[3001]%D1.6.2 RAM[3002]%D1.6.2 
+output-list RAM[3000]%D1.6.2 RAM[3001]%D1.6.2 RAM[3002]%D1.6.2
             RAM[3003]%D1.6.2 RAM[3004]%D1.6.2 RAM[3005]%D1.6.2;
 
 set sp 256,

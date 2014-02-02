@@ -16,7 +16,7 @@
    @OUTPUT_D
    0;JMP            // goto output_d
 (OUTPUT_FIRST)
-   @0             
+   @0
    D=M              // D = first number
 (OUTPUT_D)
    @2

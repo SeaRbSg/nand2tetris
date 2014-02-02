@@ -9,7 +9,7 @@ compare-to ComputerMax-external.cmp,
 output-list time%S1.4.1 reset%B2.1.2 RAM16K[0]%D1.7.1 RAM16K[1]%D1.7.1 RAM16K[2]%D1.7.1;
 
 // Load a program written in the Hack machine language.
-// The program computes the maximum of RAM[0] and RAM[1] 
+// The program computes the maximum of RAM[0] and RAM[1]
 // and writes the result in RAM[2].
 ROM32K load Max.hack,
 

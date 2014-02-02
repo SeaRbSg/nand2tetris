@@ -5,7 +5,7 @@
 
 // Puts the first argument[0] elements of the Fibonacci series
 // in the memory, starting in the address given in argument[1].
-// Argument[0] and argument[1] are initialized by the test script 
+// Argument[0] and argument[1] are initialized by the test script
 // before this code starts running.
 
 push argument 1
