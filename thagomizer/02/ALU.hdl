@@ -71,15 +71,18 @@ CHIP ALU {
     Not16(in=postfunc, out=notpostfunc);
 
     // Choose final output
-    Mux16(a=postfunc, b=notpostfunc, sel=no, out=w1);
-
     // Set ng by checking the most significant bit
-    Add16(a=w1, b=false, out=out, out[15]=ng, out[0..7]=outlo, out[8..15]=outhi);
+    Mux16(a=postfunc,
+          b=notpostfunc,
+          sel=no,
+          out=out,
+          out[15]=ng,
+          out[0..7]=outlo,
+          out[8..15]=outhi);
 
     // Set zr
     Or8Way(in=outlo, out=zr1);
     Or8Way(in=outhi, out=zr2);
     Or(a=zr1, b=zr2, out=allzeros);
     Not(in=allzeros, out=zr);
-
 }
