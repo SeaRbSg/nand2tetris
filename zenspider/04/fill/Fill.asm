@@ -20,11 +20,8 @@
         D=M
         @KBD
         D=D-M
-        @DRAW
-        D;JNE           // goto DRAW if kbd != last
-
         @TOP
-        0;JMP           // goto TOP
+        D;JEQ           // goto DRAW if kbd != last
 
 (DRAW)
         @KBD
