@@ -17,23 +17,23 @@ CHIP RAM64 {
     PARTS:
     DMux8Way(in=load,
              sel=address[3..5],
-             a=load0,
-             b=load1,
-             c=load2,
-             d=load3,
-             e=load4,
-             f=load5,
-             g=load6,
-             h=load7);
+             a=group0,
+             b=group1,
+             c=group2,
+             d=group3,
+             e=group4,
+             f=group5,
+             g=group6,
+             h=group7);
 
-    RAM8(in=in, load=load0, address=address[0..2], out=out0);
-    RAM8(in=in, load=load1, address=address[0..2], out=out1);
-    RAM8(in=in, load=load2, address=address[0..2], out=out2);
-    RAM8(in=in, load=load3, address=address[0..2], out=out3);
-    RAM8(in=in, load=load4, address=address[0..2], out=out4);
-    RAM8(in=in, load=load5, address=address[0..2], out=out5);
-    RAM8(in=in, load=load6, address=address[0..2], out=out6);
-    RAM8(in=in, load=load7, address=address[0..2], out=out7);
+    RAM8(in=in, load=group0, address=address[0..2], out=out0);
+    RAM8(in=in, load=group1, address=address[0..2], out=out1);
+    RAM8(in=in, load=group2, address=address[0..2], out=out2);
+    RAM8(in=in, load=group3, address=address[0..2], out=out3);
+    RAM8(in=in, load=group4, address=address[0..2], out=out4);
+    RAM8(in=in, load=group5, address=address[0..2], out=out5);
+    RAM8(in=in, load=group6, address=address[0..2], out=out6);
+    RAM8(in=in, load=group7, address=address[0..2], out=out7);
 
     Mux8Way16(a=out0,
               b=out1,
