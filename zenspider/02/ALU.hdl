@@ -46,14 +46,8 @@ CHIP ALU {
 
     PARTS:
 
-    Not16(in=x, out=notx);
-    Not16(in=y, out=noty);
-
-    And16(a=x, b=notx, out=zerox);
-    And16(a=y, b=noty, out=zeroy);
-
-    Mux16(a=x, b=zerox, sel=zx, out=x2);
-    Mux16(a=y, b=zeroy, sel=zy, out=y2);
+    Mux16(a=x, b=false, sel=zx, out=x2);
+    Mux16(a=y, b=false, sel=zy, out=y2);
 
     // if (zx==1) set x = 0        // 16-bit constant
     // if (zy==1) set y = 0        // 16-bit constant
