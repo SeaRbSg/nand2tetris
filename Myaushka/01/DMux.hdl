@@ -16,4 +16,7 @@ CHIP DMux {
 
     PARTS:
     // Put your code here:
+    And(a=sel, b=in, out=b);
+    Xor(a=sel, b=in, out=c);
+    And(a=c, b=in, out=a);
 }
