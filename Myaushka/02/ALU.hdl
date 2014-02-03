@@ -71,7 +71,7 @@ CHIP ALU {
 
     // Negate output
     Not16(in=out2, out=negOut);
-    Mux16(a=out2, b=negOut, sel=no, out[0..7]=left, out[8..15]=right, out[15]=msb, out=out);
+    Mux16(a=out2, b=negOut, sel=no, out[0..7]=left, out[8..15]=right, out[15]=ng, out=out);
 
     // Eq 0?
     Or8Way(in=left, out=foo0);
@@ -79,7 +79,4 @@ CHIP ALU {
 
     Or(a=foo0, b=foo1, out=isNotZero);
     Not(in=isNotZero, out=zr);
-
-    // Negative?
-    And(a=msb, b=true, out=ng);
 }
