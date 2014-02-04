@@ -17,6 +17,17 @@ CHIP DMux {
     PARTS:
     // Put your code here:
     And(a=sel, b=in, out=b);
-    Xor(a=sel, b=in, out=c);
-    And(a=c, b=in, out=a);
+    Not(in=sel, out=notSel);
+    And(a=in, b=notSel, out=a);
+
+//|  in   |  sel  |   a   |   b   | nsel | 
+//|   0   |   0   |   0   |   0   |   1  |
+//|   0   |   1   |   0   |   0   |   0  |
+//|   1   |   0   |   1   |   0   |   1  |
+//|   1   |   1   |   0   |   1   |   0  |
+
+
+    //And(a=sel, b=in, out=b);
+    //Xor(a=sel, b=in, out=c);
+    //And(a=c, b=in, out=a);
 }
