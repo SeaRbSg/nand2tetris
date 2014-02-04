@@ -17,7 +17,16 @@ class Golf
       golf.scan glob
       golfers[user] = golf
     end
-    users.reject! { |u| golfers[u].scores.any? { |_,v| v.zero? } }
+
+    # if the two agree on the gates, it must be true. or something.
+    gates = golfers["thagomizer"].gates & golfers["itscaleb"].gates
+
+    gates = %w(thagomizer itscaleb).map { |u| golfers[u].gates }.inject(&:&)
+
+    users.reject! { |u|
+      s = golfers[u].scores
+      gates.any? { |k| s[k].nil? or s[k].zero? }
+    }
 
     sorted_users = users.sort_by { |u| golfers[u].sum }
 
@@ -54,6 +63,10 @@ class Golf
     self.sum = 0
   end
 
+  def gates
+    scores.keys.sort
+  end
+
   def scan glob
     Dir["#{self.name}/#{glob}"].each do |path|
       gate = File.basename path, ".hdl"
@@ -75,7 +88,7 @@ class Golf
 
     path = self.path[gate] || "#{self.name}/01/#{gate}.hdl"
 
-    file = File.read path
+    file = File.read(path) rescue ""
     file.gsub!(/(\/\/|\*).*/, "")
 
     file.scan(/(\w+)\s*\(/).flatten.each do |sub|
