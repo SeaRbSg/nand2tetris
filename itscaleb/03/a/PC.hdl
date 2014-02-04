@@ -16,11 +16,21 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
+    // increment the output of the register
     Inc16(in = feedback, out = pc);
+
+    // "Sequential chips always consist of a layer of DFFs sandwiched
+    // between optional combinational logic layers" - Figure 3.4
+    // The next 3 lines are a combinational logic layer to figure 
+    // out what gets fed to the register. Either the program counter,
+    // the incremented pc, the input, or zeros on a reset
+
     Mux16(a = feedback, b = pc, sel = inc, out = w0);
     Mux16(a = w0, b = in, sel = load, out = w1);
     Mux16(a = w1, b = false, sel = reset, out = cout);
 
+    // the output from the register also needs to get fed back through 
+    // the combinational logic to get processed for the next clock cycle.
     Register(in = cout, load = true, out = out, out = feedback);
 }
 
