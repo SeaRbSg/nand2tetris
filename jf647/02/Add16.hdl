@@ -13,5 +13,22 @@ CHIP Add16 {
     OUT out[16];
 
     PARTS:
-   // Put you code here:
+    FullAdder(a=a[0], b=b[0], c=false, sum=out[0], carry=foo);
+    FullAdder(a=a[1], b=b[1], c=foo, sum=out[1], carry=bar);
+    FullAdder(a=a[2], b=b[2], c=bar, sum=out[2], carry=baz);
+    FullAdder(a=a[3], b=b[3], c=baz, sum=out[3], carry=gzonk);
+    FullAdder(a=a[4], b=b[4], c=gzonk, sum=out[4], carry=wibble);
+    FullAdder(a=a[5], b=b[5], c=wibble, sum=out[5], carry=wobble);
+    FullAdder(a=a[6], b=b[6], c=wobble, sum=out[6], carry=wubble);
+    FullAdder(a=a[7], b=b[7], c=wubble, sum=out[7], carry=qux);
+    FullAdder(a=a[8], b=b[8], c=qux, sum=out[8], carry=quux);
+    FullAdder(a=a[9], b=b[9], c=quux, sum=out[9], carry=fred);
+    // here is where I learned that I know only 10 metasyntactics by heart
+    FullAdder(a=a[10], b=b[10], c=fred, sum=out[10], carry=garply);
+    FullAdder(a=a[11], b=b[11], c=garply, sum=out[11], carry=thud);
+    FullAdder(a=a[12], b=b[12], c=thud, sum=out[12], carry=corge);
+    FullAdder(a=a[13], b=b[13], c=corge, sum=out[13], carry=flob);
+    FullAdder(a=a[14], b=b[14], c=flob, sum=out[14], carry=xyzzy);
+    FullAdder(a=a[15], b=b[15], c=xyzzy, sum=out[15]);
+
 }
