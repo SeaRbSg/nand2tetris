@@ -8,10 +8,46 @@
  */
 
 CHIP FullAdder {
+
     IN a, b, c;  // 1-bit inputs
     OUT sum,     // Right bit of a + b + c
         carry;   // Left bit of a + b + c
 
     PARTS:
     // Put you code here:
+  
+    //simplest
+
+    HalfAdder(a=a,b=b,sum=SumInt,carry=CarryInt1);
+    HalfAdder(a=SumInt,b=c,carry=CarryInt2,sum=sum);
+    Or(a=CarryInt1, b=CarryInt2,out=carry);
+
+    //fastest
+    // the above design incurs an 8 nand gate delay to the carry output
+    //design below incurs a delay of 6 nand gates for the sum output and 5 nands for carry output
+    //it uses the "fastest" form of XOR gate from Chapter 1, for 2 formulations below
+
+    /**
+    Not(in=a,out=NotA);
+    Not(in=b,out=NotB);
+    Not(in=c,out=NotC);
+
+    //form a xor B, and its Not
+    Nand(a=a, b=NotB,out=ANotB);
+    Nand(a=NotA,b=b, out=BNotA);
+    Nand(a=ANotB,b=BNotA,out=AxorB);
+    Not(in=AxorB,out=AxorBNot);
+    
+    //form sum out, which is (A xor B) xor C
+    Nand(a=c,b=AxorBNot, out = Cnand) ;
+    Nand(a=NotC, b=AxorB, out = NotCnand) ;  
+    Nand(a=Cnand,b=NotCnand,out=sum);
+
+    //form carry out
+    Nand(a=c,b=AxorB,out=CnandAxorB);
+    Nand(a=a,b=b,out=AandBNot);
+    Nand(a=CnandAxorB,b=AandBNot,out=carry);
+    */
 }
+   
+
