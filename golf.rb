@@ -32,7 +32,7 @@ class Golf
     best = golfers[sorted_users.first]
     gates = best.path.keys.sort_by { |g| best.gate[g] }
     gates.each do |gate|
-      data = [gate] + sorted_users.map { |user| golfers[user].gate[gate] }
+      data = [gate] + sorted_users.map { |user| golfers[user].gate[gate] || 0 }
       puts fmt.gsub("X", "d") % data
     end
   end
