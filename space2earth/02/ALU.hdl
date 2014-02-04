@@ -46,4 +46,40 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+
+   //form x input to ALU
+   Not(in=zx, out=zxNot);
+   And16(a[0]=zxNot, a[1]=zxNot, a[2]=zxNot,a[3]=zxNot,a[4]=zxNot,a[5]=zxNot,a[6]=zxNot,a[7]=zxNot,a[8]=zxNot,a[9]=zxNot,a[10]=zxNot,a[11]=zxNot, a[12]=zxNot,a[13]=zxNot,a[14]=zxNot,a[15]=zxNot, b=x, out=zxNotAndx);   
+   
+   Not16(in=zxNotAndx, out=zxOrNotx);
+   Mux16(a=zxNotAndx, b=zxOrNotx, sel=nx, out=xInALU);
+
+   //The following would be simpler than the Mux16 above , if an Xor16 part was available 
+   //Xor16(a[0]=nx .. a[15]=nx, b=zxNotAndx, out=xInALU);
+  
+   //form y input to ALU
+   Not(in=zy, out=zyNot);
+   And16(a[0]=zyNot, a[1]=zyNot, a[2]=zyNot,a[3]=zyNot,a[4]=zyNot,a[5]=zyNot,a[6]=zyNot,a[7]=zyNot,a[8]=zyNot,a[9]=zyNot,a[10]=zyNot,a[11]=zyNot, a[12]=zyNot,a[13]=zyNot,a[14]=zyNot,a[15]=zyNot, b=y, out=zyNotAndx);   
+   
+   Not16(in=zyNotAndx, out=zyOrNotx);
+   Mux16(a=zyNotAndx, b=zyOrNotx, sel=ny, out=yInALU);
+
+   //ALU
+   Add16(a=xInALU, b=yInALU, out=AddOut);
+   And16(a=xInALU, b=yInALU, out=AndOut);
+   Mux16(a=AndOut,b=AddOut,sel=f,out=ALUout);
+
+   //negate ALU out?
+   Not16(in=ALUout, out=NotALUout);
+   Mux16(a=ALUout, b=NotALUout, sel=no, out[0..7]=outlsb, out[8..15]=outmsb, out[15]=ng, out=out);
+
+   //using an Xor16 would be simpler than the Mux16 above
+   //Xor16(a=ALUout,b[0..15]=no,out=out);
+
+   //form zr
+   Or8Way(in=outlsb, out=zrInA);
+   Or8Way(in=outmsb, out=zrInB);
+   Or(a=zrInA, b=zrInB, out=zrNot);
+   Not(in=zrNot, out=zr);
+
 }
