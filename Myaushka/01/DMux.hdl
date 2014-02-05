@@ -26,8 +26,4 @@ CHIP DMux {
 //|   1   |   0   |   1   |   0   |   1  |
 //|   1   |   1   |   0   |   1   |   0  |
 
-
-    //And(a=sel, b=in, out=b);
-    //Xor(a=sel, b=in, out=c);
-    //And(a=c, b=in, out=a);
 }

@@ -13,7 +13,6 @@ CHIP Inc16 {
 
     PARTS:
     // Put you code here:
-    //Add16(in=in, b[0]=true, b[1..15]=false, out=out);
 
     HalfAdder(a=in[0], b=true, sum=out[0], carry=c1);
     HalfAdder(a=in[1], b=c1, sum=out[1], carry=c2);
