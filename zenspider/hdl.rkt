@@ -19,7 +19,7 @@
                   (case (first x)
                     [(//)
                      (hdl-fn "~n~a ~a" x)]
-                    [(and or xor)
+                    [(and or xor nand)
                      (hdl-fn "~a(a=~a, b=~a, out=~a);" x)]
                     [(and3 or3)
                      (hdl-fn "~a(a=~a, b=~a, c=~a, out=~a);" x)]
@@ -189,18 +189,75 @@
   (define g (wire 'g))
   (define w (wire 'w))
   (define c (wire 'c))
+  (define x (wire 'x))
   (define comment-add4 (wire 'add4-))
   (define comment-cla (wire 'cla))
   (define comment-pfa (wire 'pfa))
+  (define comment-and (wire 'and))
+  (define comment-or (wire 'or))
+  (define comment-xor (wire 'xor))
 
   (define (comment x)
     `(// ,x))
 
+  (define (And a b c)
+    (let ([w (w)])
+      `(,(comment (comment-and))
+        (nand ,a ,b ,w)
+        (nand ,w ,w ,c))))
+
+  (define (Xor a b c)
+    (let ([w1 (x)]
+          [w2 (x)]
+          [w3 (x)])
+      `(,(comment (comment-xor))
+        (nand ,a  ,b  ,w1)
+        (nand ,w1 ,b  ,w2)
+        (nand ,a  ,w1 ,w3)
+        (nand ,w2 ,w3 ,c))))
+
+  (define (Or a b c)
+    (let ([w1 (w)]
+          [w2 (w)])
+      `(,(comment (comment-or))
+        (nand ,a ,a ,w1)
+        (nand ,b ,b ,w2)
+        (nand ,w1 ,w2 ,c))))
+
+  (define (or3 a b c d)
+    (let ([w (w)])
+      (append
+       (Or a b w)
+       (Or w c d))))
+
+  (define (and3 a b c d)
+    (let ([w (w)])
+      (append
+       (And a b w)
+       (And w c d))))
+
+  (define (and4 a b c d e)
+    (let ([w1 (w)]
+          [w2 (w)])
+      (append
+       (And a b w1)
+       (And c d w2)
+       (And w1 w2 e))))
+
+  (define (or4 a b c d e)
+    (let ([w1 (w)]
+          [w2 (w)])
+      (append
+       (Or a b w1)
+       (Or c d w2)
+       (Or w1 w2 e))))
+
   (define (pfa a b cin p g sum)
-    `(,(comment (comment-pfa))
-      (and ,a ,b ,g)
-      (xor ,a ,b ,p)
-      (xor ,p ,cin ,sum)))
+    (append
+     (list (comment (comment-pfa)))
+     (And a b g)
+     (Xor a b p)
+     (Xor p cin sum)))
 
   (define (cla g0 g1 g2 g3
                p0 p1 p2 p3 cin
@@ -210,25 +267,26 @@
                  [(w2c1 w2c2)      (wires w 2)]
                  [(w3c2)           (w)]
                  [(w1g w2g w3g)    (wires w 3)])
-      `(,(comment (comment-cla))
-        (and ,p0 ,cin ,w1c0)
-        (or  ,g0 ,w1c0 ,c1)
+      (append
+       (list (comment (comment-cla)))
+       (And p0 cin w1c0)
+       (Or  g0 w1c0 c1)
 
-        (and  ,p1 ,g0 ,w1c1)
-        (and3 ,p1 ,p0 ,cin ,w2c1)
-        (or3  ,g1 ,w1c1 ,w2c1 ,c2)
+       (And  p1 g0 w1c1)
+       (and3 p1 p0 cin w2c1)
+       (or3  g1 w1c1 w2c1 c2)
 
-        (and  ,p2 ,g1 ,w1c2)
-        (and3 ,p2 ,p1 ,g0 ,w2c2)
-        (and4 ,p2 ,p1 ,p0 ,cin ,w3c2)
-        (or4  ,g2 ,w1c2 ,w2c2 ,w3c2 ,c3)
+       (And  p2 g1 w1c2)
+       (and3 p2 p1 g0 w2c2)
+       (and4 p2 p1 p0 cin w3c2)
+       (or4  g2 w1c2 w2c2 w3c2 c3)
 
-        (and  ,p3 ,g2 ,w1g)
-        (and3 ,p3 ,p2 ,g1 ,w2g)
-        (and4 ,p3 ,p2 ,p1 ,g0 ,w3g)
+       (And  p3 g2 w1g)
+       (and3 p3 p2 g1 w2g)
+       (and4 p3 p2 p1 g0 w3g)
 
-        (or4  ,g3 ,w1g ,w2g ,w3g ,gout)
-        (and4 ,p3 ,p2 ,p1 ,p0 ,pout))))
+       (or4  g3 w1g w2g w3g gout)
+       (and4 p3 p2 p1 p0 pout))))
 
   (define (add4 a0 a1 a2 a3
                 b0 b1 b2 b3 c0
@@ -259,9 +317,6 @@
                  [(pout) (p)]
                  [(gout) (g)])
       (append
-       (list (comment "HACK for c0=cin -> false"))
-       '((and false false c0))
-
        (add4 a0 a1 a2 a3
              b0 b1 b2 b3 c0
              s0 s1 s2 s3
@@ -283,13 +338,26 @@
             c0 c1 c2 c3
             pout gout))))
 
-  (display
-   (sexp->hdl
-    (add16 'a0 'a1 'a2 'a3 'a4 'a5 'a6 'a7 'a8 'a9 'a10 'a11 'a12 'a13 'a14 'a15
-           'b0 'b1 'b2 'b3 'b4 'b5 'b6 'b7 'b8 'b9 'b10 'b11 'b12 'b13 'b14 'b15
-           'cin
-           'out0 'out1 'out2 'out3 'out4 'out5 'out6 'out7 'out8 'out9 'out10 'out11 'out12 'out13 'out14 'out15
-           'cout)))
+  (define a16
+    (time (add16 'a0 'a1 'a2  'a3  'a4  'a5  'a6  'a7
+                 'a8 'a9 'a10 'a11 'a12 'a13 'a14 'a15
+                 'b0 'b1 'b2  'b3  'b4  'b5  'b6  'b7
+                 'b8 'b9 'b10 'b11 'b12 'b13 'b14 'b15
+                 'false
+                 'out0 'out1 'out2  'out3  'out4  'out5  'out6  'out7
+                 'out8 'out9 'out10 'out11 'out12 'out13 'out14 'out15
+                 'cout)))
+
+  (define (count-nand xs)
+    (count (lambda (x) (eq? 'nand (first x))) xs))
+
+  (printf "// unoptimized = ~a gates\n" (count-nand a16))
+
+  (define opt-a16 (time (sexp-optimize a16)))
+
+  (printf "// optimized = ~a gates\n" (count-nand opt-a16))
+
+  (display (sexp->hdl opt-a16))
   (newline)
 
   ) ; module+ main
