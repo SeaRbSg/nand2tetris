@@ -11,7 +11,7 @@
    M=0
 
 (LOOP)
-   @R1     // If R1 < 0 GOTO END
+   @R1     // If R1 <= 0 GOTO END
    D=M
    @END
    D;JLE
