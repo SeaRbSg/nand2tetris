@@ -250,12 +250,12 @@
 
   (define (add16 a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15
                  b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15
-                 cin
+                 c0
                  s0 s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15
                  cout)
     (let-values ([(p0 p1 p2 p3) (wires p 4)]
                  [(g0 g1 g2 g3) (wires g 4)]
-                 [(c0 c1 c2 c3) (wires c 4)]
+                 [(   c1 c2 c3) (wires c 3)]
                  [(pout) (p)]
                  [(gout) (g)])
       (append
