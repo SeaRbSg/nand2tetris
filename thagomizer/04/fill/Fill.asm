@@ -8,6 +8,8 @@
 // i.e. writes "black" in every pixel. When no key is pressed, the
 // program clears the screen, i.e. writes "white" in every pixel.
 
+
+(START)
     @SCREEN       // pIter = SCREEN
     D = A
     @pIter
@@ -18,21 +20,36 @@
     @Screen_End
     M = D
 
-    @Black
-    M = -1
-    
-    @White
+    @Color
     M = 0
 
-(LOOP)
-    @Screen_End   // If ScreenEnd - pIter <= 0 GOTO END
+(DECIDE)
+    @KBD
+    D = M
+    @SET_BLACK
+    D;JGT
+
+(SET_WHITE)
+    @Color
+    M = 0
+    @DRAW
+    0;JMP    
+
+(SET_BLACK)
+    @Color
+    M = -1
+    @DRAW
+    0;JMP    
+
+(DRAW)
+    @Screen_End    // If ScreenEnd - pIter <= 0 GOTO END
     D = M
     @pIter
     D = D - M
-    @END
+    @RESET_ITER
     D;JLE
 
-    @Black
+    @Color
     D = M
     @pIter         // M[pIter] = -1
     A = M
@@ -41,11 +58,17 @@
     @pIter
     M = M + 1
 
-
-    @LOOP         // GOTO LOOP
+    @DECIDE          // GOTO DECIDE
     0;JMP
 
+(RESET_ITER)
+    @SCREEN       // pIter = SCREEN
+    D = A
+    @pIter
+    M=D
+    @DECIDE
+    0;JMP
 
 (END)
-    @END
-    0;JMP
+   @END
+   0;JMP
