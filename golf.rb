@@ -9,7 +9,7 @@ class Golf
   def self.report dir
     golfers = {}
 
-    glob = "{#{dir}}/*.hdl"
+    glob = "{#{dir}}/*.{hdl,asm}"
 
     users = Dir["*"].find_all { |f| File.directory? f } - %w(projects tools)
     users.each do |user|
@@ -69,7 +69,7 @@ class Golf
 
   def scan glob
     Dir["#{self.name}/#{glob}"].each do |path|
-      gate = File.basename path, ".hdl"
+      gate = File.basename path, File.extname(path)
 
       self.path[gate] = path
     end
@@ -83,6 +83,7 @@ class Golf
 
   def process gate
     return self.gate[gate] if self.gate[gate]
+    return self.process_asm gate if path[gate] =~ /asm$/
 
     score = 0
 
@@ -104,6 +105,34 @@ class Golf
     end
 
     self.gate[gate] = score
+  end
+
+  def process_asm name
+    path = self.path[name]
+
+    score = 0
+
+    file = File.read(path) rescue ""
+    file.gsub!(/(\/\/|\*).*/, "")
+
+    file.each_line do |line|
+      case line.strip!
+      when "" then
+        # do nothing
+      when /^@\w/ then
+        score += 1
+      when /^[ADM]+=/ then
+        score += 1
+      when /^[ADM0];/ then
+        score += 1
+      when /^\(\w/ then
+        score += 1
+      else
+        raise "Unparsed: #{line.inspect}"
+      end
+    end
+
+    self.gate[name] = score
   end
 end
 
