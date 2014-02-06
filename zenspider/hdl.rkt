@@ -109,27 +109,58 @@
                   (nand w3 w3 w4s2)      ; not
                   (nand w4s1 w4s2 w4)))) ; or w0 w1
 
-(define (sexp-optimize xs)
+(define (filter-not-not xs)
+  (define (rewrite xxs a b)
+    (for/list ([xs xxs])
+      (for/list ([x xs])
+        (if (eq? x a) b x))))
+  (define (possibly-include gate xs)
+    (let ((out (last gate)))
+      (if (for/or ([x xs]) (memq out x))
+          (cons gate xs)
+          xs))
+    )
   (match xs
-    [`() '()]
-    ;; (not (not a)) -> a
+    [(list-no-order `(nand ,a1 ,a2 ,c1)
+                    `(nand ,b1 ,b2 ,c2) rest ...)
+     #:when (and (eq? a1 a2)
+                 (eq? b1 b2)
+                 (eq? c1 b1))
+     (filter-not-not (possibly-include
+                      `(nand ,a1 ,a2 ,c1)
+                      (rewrite rest c2 a1)))]
+    [else xs]))
 
-    ;; todo: table of substitutions, then register wiring in
-    ;; (not (not a)) and substitute in subsequent sexps
+(module+ test
+  (require rackunit)
+  (define x '((nand a a w0)          ; not a
+              (nand w0 b w1s1)       ; nand w0 b
+              (nand w1s1 w1s1 w1)    ; not
+              (nand b b w2)          ; not b
+              (nand a w2 w3s1)       ; nand a w1
+              (nand w3s1 w3s1 w3)    ; not
+              (nand w1 w1 w4s1)      ; not
+              (nand w3 w3 w4s2)      ; not
+              (nand w4s1 w4s2 w4)))
 
-    [(list-rest `(nand ,a ,a ,b) ; (not (not a)) -> a
-                `(nand ,b ,b ,c)
-                `(nand ,d ,c ,e)
-                rest)
-     (sexp-optimize (cons `(nand ,d ,a ,e) rest))]
-    ;; HACK: this is the dumbest way, but I'm tired
-    [(list-rest `(nand ,a ,a ,b)
-                `(nand ,b ,b ,c)
-                `(nand ,c ,d ,e)
-                rest)
-     (sexp-optimize (cons `(nand ,a ,d ,e) rest))]
-    [else (cons (first xs)
-                (sexp-optimize (rest xs)))]))
+  (check-equal? (filter-not-not x)
+                '((nand a a w0)              ; not a
+                  (nand w0 b w1s1)           ; nand w0 b
+                  (nand b b w2)              ; not b
+                  (nand a w2 w3s1)           ; nand a w1
+                  (nand w1s1 w3s1 w4)))
+
+  (check-equal? (filter-not-not '((nand a  a  w0)
+                                  (nand w0 w0 b)
+                                  (nand b  c  d)
+                                  (nand w0 e  f)))
+                '((nand a  a  w0)
+                  (nand a  c  d)
+                  (nand w0 e  f)))
+)
+
+(define (sexp-optimize xs)
+  (filter-not-not xs))
 
 (module+ test
   (check-equal? (sexp-optimize '((nand a a w0)
