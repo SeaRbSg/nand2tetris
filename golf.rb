@@ -89,7 +89,8 @@ class Golf
     path = self.path[gate] || "#{self.name}/01/#{gate}.hdl"
 
     file = File.read(path) rescue ""
-    file.gsub!(/(\/\/|\*).*/, "")
+    file.gsub!(/\/\/.*/, "")
+    file.gsub!(/\/\*.*?\*\//m, "")
 
     file.scan(/(\w+)\s*\(/).flatten.each do |sub|
       case sub
