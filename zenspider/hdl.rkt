@@ -1,7 +1,6 @@
-#lang racket/base
+#!/usr/bin/env racket
 
-(require (only-in racket first rest second third fourth fifth sixth empty string-join))
-(require (only-in racket/match match))
+#lang racket
 
 (module+ test
   (require rackunit))
@@ -41,38 +40,6 @@
 (define (wires proc n)                ; TODO: there has to be a cleaner form
   (apply values (for/list ([i (in-range n)])
                   (proc))))
-
-(define (sexp->hdl--dumb xs)
-  (define rs '())
-  (define (next-id rs)
-    (string->symbol (format "w~s" (length rs))))
-  (define (helper xs)
-    (cond [(null? xs) '()]
-          [(not (list? xs)) xs]
-          [else (let ([args (map helper xs)]
-                      [n (next-id rs)])
-                  (set! rs (cons `(,@args ,n) rs))
-                  n)]))
-  (helper xs)
-  (reverse rs))
-
-(module+ test
-  (check-equal? (sexp->hdl--dumb '(not a))
-                '((not a w0)))
-
-  (check-equal? (sexp->hdl--dumb '(and a b))
-                '((and a b w0)))
-
-  (check-equal? (sexp->hdl--dumb '(or a b))
-                '((or a b w0)))
-
-  (check-equal? (sexp->hdl--dumb '(or [and (not a) b]
-                                [and a (not b)]))
-                '((not a    w0)
-                  (and w0 b w1)
-                  (not b    w2)
-                  (and a w2 w3)
-                  (or w1 w3 w4))))
 
 (define (sexp->nand xs)
   (define rs '())
