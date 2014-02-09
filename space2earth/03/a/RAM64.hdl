@@ -16,4 +16,44 @@ CHIP RAM64 {
 
     PARTS:
     // Put your code here:
+    //Decode upper 3 address bits
+    Not(in=address[3], out=NotAdd3);
+    Not(in=address[4], out=NotAdd4);
+    Not(in=address[5], out=NotAdd5);    
+
+    //add bits 3 and 4 decode
+    And(a=NotAdd3,    b=NotAdd4,     out=add00);
+    And(a=address[3], b=NotAdd4,     out=add01);
+    And(a=NotAdd3,    b=address[4],  out=add10);
+    And(a=address[3], b=address[4],  out=add11);
+
+    //msb decode with load enable
+
+    //combine msb witih load enable
+    //gating with load enable here is fastest and saves gates
+    And(a=NotAdd5,    b=load, out=LoadNotAdd5);
+    And(a=address[5], b=load, out=LoadAdd5);
+
+    //msb=0
+    And(a=add00, b=LoadNotAdd5, out=loadA);
+    And(a=add01, b=LoadNotAdd5, out=loadB);
+    And(a=add10, b=LoadNotAdd5, out=loadC);
+    And(a=add11, b=LoadNotAdd5, out=loadD);
+
+    //msb=1 
+    And(a=add00, b=LoadAdd5,  out=loadE);
+    And(a=add01, b=LoadAdd5,  out=loadF);
+    And(a=add10, b=LoadAdd5,  out=loadG);
+    And(a=add11, b=LoadAdd5,  out=loadH);
+ 
+    RAM8(in=in, load=loadA, address=address[0..2], out=outa);
+    RAM8(in=in, load=loadB, address=address[0..2], out=outb);
+    RAM8(in=in, load=loadC, address=address[0..2], out=outc);
+    RAM8(in=in, load=loadD, address=address[0..2], out=outd);
+    RAM8(in=in, load=loadE, address=address[0..2], out=oute);
+    RAM8(in=in, load=loadF, address=address[0..2], out=outf);
+    RAM8(in=in, load=loadG, address=address[0..2], out=outg);
+    RAM8(in=in, load=loadH, address=address[0..2], out=outh);  
+
+    Mux8Way16(a=outa, b=outb, c=outc, d=outd, e=oute, f=outf, g=outg, h=outh, sel=address[3..5], out=out);          
 }

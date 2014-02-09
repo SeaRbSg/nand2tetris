@@ -1,0 +1,37 @@
+
+// File name: projects/03/a/Decoder3Bits.hdl
+
+/**
+ *address decode for 3 address bits
+ *{a,b,c,d,e,f,g,h} = address{000, 001,....111}
+*/
+
+CHIP Decoder3Bits {
+    IN address[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    // Put your code here:
+
+    Not(in=address[0], out=NotAdd0);
+    Not(in=address[1], out=NotAdd1);
+    Not(in=address[2], out=NotAdd2);
+
+    //add bits 0 and 1 decode
+    And(a=NotAdd0,    b=NotAdd1,     out=add00);
+    And(a=address[0], b=NotAdd1,     out=add01);
+    And(a=NotAdd0,    b=address[1],  out=add10);
+    And(a=address[0], b=address[1],  out=add11);
+
+    //msb decode
+    And(a=add00, b=NotAdd2, out=a);
+    And(a=add01, b=NotAdd2, out=b);
+    And(a=add10, b=NotAdd2, out=c);
+    And(a=add11, b=NotAdd2, out=d);
+
+    And(a=add00, b=address[2],  out=e);
+    And(a=add01, b=address[2],  out=f);
+    And(a=add10, b=address[2],  out=g);
+    And(a=add11, b=address[2],  out=h);
+
+}

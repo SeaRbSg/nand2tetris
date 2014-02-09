@@ -16,4 +16,22 @@ CHIP RAM8 {
 
     PARTS:
     // Put your code here:
+
+    //feedback Mux to register inputs
+    Mux16(a=RegOutToMux, b=in, sel=load, out=ToRegs);
+
+    // register decode
+    Decoder3Bits(address=address, a=reg0, b=reg1, c=reg2, d=reg3, e=reg4, f=reg5, g=reg6, h=reg7);
+
+    //bank of 8 registers 
+    Register(in=ToRegs, load=reg0, out=Reg0out);
+    Register(in=ToRegs, load=reg1, out=Reg1out);
+    Register(in=ToRegs, load=reg2, out=Reg2out);
+    Register(in=ToRegs, load=reg3, out=Reg3out);
+    Register(in=ToRegs, load=reg4, out=Reg4out);
+    Register(in=ToRegs, load=reg5, out=Reg5out);
+    Register(in=ToRegs, load=reg6, out=Reg6out);
+    Register(in=ToRegs, load=reg7, out=Reg7out);
+
+    Mux8Way16(a=Reg0out, b=Reg1out, c=Reg2out, d=Reg3out, e=Reg4out, f=Reg5out, g=Reg6out, h=Reg7out, sel=address, out=RegOutToMux, out=out);
 }
