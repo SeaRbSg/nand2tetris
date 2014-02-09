@@ -7,6 +7,41 @@
  * 1-bit register.
  * If load[t]=1 then out[t+1] = in[t]
  *              else out does not change (out[t+1]=out[t])
+
+| time | in  |load | out |
+| 0+   |  0  |  0  |  0  |
+| 1    |  0  |  0  |  0  |
+| 1+   |  0  |  1  |  0  |
+| 2    |  0  |  1  |  0  |
+| 2+   |  1  |  0  |  0  |
+| 3    |  1  |  0  |  0  |
+| 3+   |  1  |  1  |  0  |
+| 4    |  1  |  1  |  1  |
+| 4+   |  0  |  0  |  1  |
+| 5    |  0  |  0  |  1  |
+| 5+   |  1  |  0  |  1  |
+| 6    |  1  |  0  |  1  |
+| 6+   |  0  |  1  |  1  |
+| 7    |  0  |  1  |  0  |
+| 7+   |  1  |  1  |  0  |
+| 8    |  1  |  1  |  1  |
+| 8+   |  0  |  0  |  1  |
+| 9    |  0  |  0  |  1  |
+| 9+   |  0  |  0  |  1  |
+| 10   |  0  |  0  |  1  |
+| 10+  |  0  |  0  |  1  |
+| 11   |  0  |  0  |  1  |
+| 11+  |  0  |  0  |  1  |
+| 12   |  0  |  0  |  1  |
+| 12+  |  0  |  0  |  1  |
+| 13   |  0  |  0  |  1  |
+| 13+  |  0  |  0  |  1  |
+| 14   |  0  |  0  |  1  |
+| 14+  |  0  |  0  |  1  |
+
+out=1 when last in=1 and last load=1
+out=1 when last out=1 and load =0
+
  */
 
 CHIP Bit {
@@ -14,5 +49,7 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    Mux(a=prevout, b=in, sel=load, out=muxout);
+    DFF(in=muxout, out=prevout, out=out);
+
 }
