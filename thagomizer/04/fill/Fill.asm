@@ -10,18 +10,22 @@
 
 
 (START)
-    @SCREEN       // pIter = SCREEN
+    @SCREEN       // ScreenEnd = SCREEN + 8192
     D = A
-    @pIter
-    M=D
-
-    @8192         // ScreenEnd = SCREEN + 8192
+    @8192         
     D = D + A
     @Screen_End
     M = D
 
     @Color
     M = 0
+
+(RESET_ITER)
+
+    @SCREEN       // pIter = SCREEN
+    D = A
+    @pIter
+    M=D
 
 (DECIDE)
     @KBD
@@ -59,14 +63,6 @@
     M = M + 1
 
     @DECIDE          // GOTO DECIDE
-    0;JMP
-
-(RESET_ITER)
-    @SCREEN       // pIter = SCREEN
-    D = A
-    @pIter
-    M=D
-    @DECIDE
     0;JMP
 
 (END)
