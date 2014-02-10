@@ -17,6 +17,43 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+
+    //designed for minimum nand gate count
+    //construct mux input: use only one Mux16 part
+    //note, created a Nand16 part (put in 3a directory)
+
+    //design input mux to Reg
+
+    //Mux for counter or Reg (CtrMux)
+    Mux16(a=RegOut, b=counter, sel=inc, out=CtrMux);
+
+    //Mux Control logic
+    Not(in=load, out=NotLoad);
+    Not(in=reset, out=NotReset);
+    Nand(a=NotLoad, b=NotReset, out=InOrReset);
+    Not(in=InOrReset, out=CtrMuxEn);
+
+    //CtrMux has lower priority than either load or reset functions
+    //this Nand16 disables the outputs of the CtrMux if either reset or load
+    Nand16(a=CtrMux, b[0]=CtrMuxEn, b[1]=CtrMuxEn, b[2]=CtrMuxEn,b[3]=CtrMuxEn,b[4]=CtrMuxEn,b[5]=CtrMuxEn,b[6]=CtrMuxEn,b[7]=CtrMuxEn,b[8]=CtrMuxEn,b[9]=CtrMuxEn,b[10]=CtrMuxEn,b[11]=CtrMuxEn, b[12]=CtrMuxEn,b[13]=CtrMuxEn,b[14]=CtrMuxEn,b[15]=CtrMuxEn, out=CtrMuxOut);
+
+    //mux for load and reset
+    //control logic, reset has priority over load
+    Nand(a=load, b=NotReset, out=NotLoadEn);
+    Not(in=NotLoadEn, out=LoadEn);
+    
+    //this Nand16 disables the in bits if reset
+    Nand16(a=in, b[0]=LoadEn, b[1]=LoadEn, b[2]=LoadEn,b[3]=LoadEn,b[4]=LoadEn,b[5]=LoadEn,b[6]=LoadEn,b[7]=LoadEn,b[8]=LoadEn,b[9]=LoadEn,b[10]=LoadEn,b[11]=LoadEn, b[12]=LoadEn,b[13]=LoadEn,b[14]=LoadEn,b[15]=LoadEn,out=InBitsNot);
+ 
+    //if reset, all inputs to this Nand are high (=outputs are forced low)
+    Nand16(a=CtrMuxOut, b=InBitsNot, out=RegIn);
+
+    //DFF Register
+    DFF16(in=RegIn, out=RegOut, out=out);
+
+    //incrementer
+    Inc16(in=RegOut, out=counter);
+
 }
 
 
