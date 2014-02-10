@@ -1,0 +1,31 @@
+
+// File name: projects/03/a/DFF16.hdl
+
+/**
+ * 16-bit DFF register.
+ */
+
+CHIP DFF16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+    DFF(in=in[0], out=out[0]);
+    DFF(in=in[1], out=out[1]);
+    DFF(in=in[2], out=out[2]);
+    DFF(in=in[3], out=out[3]);
+    DFF(in=in[4], out=out[4]);
+    DFF(in=in[5], out=out[5]);
+    DFF(in=in[6], out=out[6]);
+    DFF(in=in[7], out=out[7]);
+    DFF(in=in[8], out=out[8]);
+    DFF(in=in[9], out=out[9]);
+    DFF(in=in[10], out=out[10]);
+    DFF(in=in[11], out=out[11]);
+    DFF(in=in[12], out=out[12]);
+    DFF(in=in[13], out=out[13]);
+    DFF(in=in[14], out=out[14]);
+    DFF(in=in[15], out=out[15]);
+
+}
