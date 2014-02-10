@@ -361,3 +361,5 @@
   (newline)
 
   ) ; module+ main
+
+;; http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Comb/lookahead.html
