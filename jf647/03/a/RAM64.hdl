@@ -1,4 +1,4 @@
-// This file is part of www.nand2tetris.org
+    // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
 // File name: projects/03/a/RAM64.hdl
@@ -16,85 +16,13 @@ CHIP RAM64 {
 
     PARTS:
     DMux8Way(in=load, sel=address[3..5], a=load0, b=load1, c=load2, d=load3, e=load4, f=load5, g=load6, h=load7);
-    DMux8Way(in=load0, sel=address[0..2], a=sel00, b=sel01, c=sel02, d=sel03, e=sel04, f=sel05, g=sel06, h=sel07);
-    DMux8Way(in=load1, sel=address[0..2], a=sel08, b=sel09, c=sel10, d=sel11, e=sel12, f=sel13, g=sel14, h=sel15);
-    DMux8Way(in=load2, sel=address[0..2], a=sel16, b=sel17, c=sel18, d=sel19, e=sel20, f=sel21, g=sel22, h=sel23);
-    DMux8Way(in=load3, sel=address[0..2], a=sel24, b=sel25, c=sel26, d=sel27, e=sel28, f=sel29, g=sel30, h=sel31);
-    DMux8Way(in=load4, sel=address[0..2], a=sel32, b=sel33, c=sel34, d=sel35, e=sel36, f=sel37, g=sel38, h=sel39);
-    DMux8Way(in=load5, sel=address[0..2], a=sel40, b=sel41, c=sel42, d=sel43, e=sel44, f=sel45, g=sel46, h=sel47);
-    DMux8Way(in=load6, sel=address[0..2], a=sel48, b=sel49, c=sel50, d=sel51, e=sel52, f=sel53, g=sel54, h=sel55);
-    DMux8Way(in=load7, sel=address[0..2], a=sel56, b=sel57, c=sel58, d=sel59, e=sel60, f=sel61, g=sel62, h=sel63);
-    RAM8(in=in, load=sel00, out=ram00);
-    RAM8(in=in, load=sel01, out=ram01);
-    RAM8(in=in, load=sel02, out=ram02);
-    RAM8(in=in, load=sel03, out=ram03);
-    RAM8(in=in, load=sel04, out=ram04);
-    RAM8(in=in, load=sel05, out=ram05);
-    RAM8(in=in, load=sel06, out=ram06);
-    RAM8(in=in, load=sel07, out=ram07);
-    RAM8(in=in, load=sel08, out=ram08);
-    RAM8(in=in, load=sel09, out=ram09);
-    RAM8(in=in, load=sel10, out=ram10);
-    RAM8(in=in, load=sel11, out=ram11);
-    RAM8(in=in, load=sel12, out=ram12);
-    RAM8(in=in, load=sel13, out=ram13);
-    RAM8(in=in, load=sel14, out=ram14);
-    RAM8(in=in, load=sel15, out=ram15);
-    RAM8(in=in, load=sel16, out=ram16);
-    RAM8(in=in, load=sel17, out=ram17);
-    RAM8(in=in, load=sel18, out=ram18);
-    RAM8(in=in, load=sel19, out=ram19);
-    RAM8(in=in, load=sel20, out=ram20);
-    RAM8(in=in, load=sel21, out=ram21);
-    RAM8(in=in, load=sel22, out=ram22);
-    RAM8(in=in, load=sel23, out=ram23);
-    RAM8(in=in, load=sel24, out=ram24);
-    RAM8(in=in, load=sel25, out=ram25);
-    RAM8(in=in, load=sel26, out=ram26);
-    RAM8(in=in, load=sel27, out=ram27);
-    RAM8(in=in, load=sel28, out=ram28);
-    RAM8(in=in, load=sel29, out=ram29);
-    RAM8(in=in, load=sel30, out=ram30);
-    RAM8(in=in, load=sel31, out=ram31);
-    RAM8(in=in, load=sel32, out=ram32);
-    RAM8(in=in, load=sel33, out=ram33);
-    RAM8(in=in, load=sel34, out=ram34);
-    RAM8(in=in, load=sel35, out=ram35);
-    RAM8(in=in, load=sel36, out=ram36);
-    RAM8(in=in, load=sel37, out=ram37);
-    RAM8(in=in, load=sel38, out=ram38);
-    RAM8(in=in, load=sel39, out=ram39);
-    RAM8(in=in, load=sel40, out=ram40);
-    RAM8(in=in, load=sel41, out=ram41);
-    RAM8(in=in, load=sel42, out=ram42);
-    RAM8(in=in, load=sel43, out=ram43);
-    RAM8(in=in, load=sel44, out=ram44);
-    RAM8(in=in, load=sel45, out=ram45);
-    RAM8(in=in, load=sel46, out=ram46);
-    RAM8(in=in, load=sel47, out=ram47);
-    RAM8(in=in, load=sel48, out=ram48);
-    RAM8(in=in, load=sel49, out=ram49);
-    RAM8(in=in, load=sel50, out=ram50);
-    RAM8(in=in, load=sel51, out=ram51);
-    RAM8(in=in, load=sel52, out=ram52);
-    RAM8(in=in, load=sel53, out=ram53);
-    RAM8(in=in, load=sel54, out=ram54);
-    RAM8(in=in, load=sel55, out=ram55);
-    RAM8(in=in, load=sel56, out=ram56);
-    RAM8(in=in, load=sel57, out=ram57);
-    RAM8(in=in, load=sel58, out=ram58);
-    RAM8(in=in, load=sel59, out=ram59);
-    RAM8(in=in, load=sel60, out=ram60);
-    RAM8(in=in, load=sel61, out=ram61);
-    RAM8(in=in, load=sel62, out=ram62);
-    RAM8(in=in, load=sel63, out=ram63);
-    Mux8Way16(a=ram00, b=ram01, c=ram02, d=ram03, e=ram04, f=ram05, g=ram06, h=ram07, sel=address[0..2], out=out0);
-    Mux8Way16(a=ram08, b=ram09, c=ram10, d=ram11, e=ram12, f=ram13, g=ram14, h=ram15, sel=address[0..2], out=out1);
-    Mux8Way16(a=ram16, b=ram17, c=ram18, d=ram19, e=ram20, f=ram21, g=ram22, h=ram23, sel=address[0..2], out=out2);
-    Mux8Way16(a=ram24, b=ram25, c=ram26, d=ram27, e=ram28, f=ram29, g=ram30, h=ram31, sel=address[0..2], out=out3);
-    Mux8Way16(a=ram32, b=ram33, c=ram34, d=ram35, e=ram36, f=ram37, g=ram38, h=ram39, sel=address[0..2], out=out4);
-    Mux8Way16(a=ram40, b=ram41, c=ram42, d=ram43, e=ram44, f=ram45, g=ram46, h=ram47, sel=address[0..2], out=out5);
-    Mux8Way16(a=ram48, b=ram49, c=ram50, d=ram51, e=ram52, f=ram53, g=ram54, h=ram55, sel=address[0..2], out=out6);
-    Mux8Way16(a=ram56, b=ram57, c=ram58, d=ram59, e=ram60, f=ram61, g=ram62, h=ram63, sel=address[0..2], out=out7);
-    Mux8Way16(a=out0, b=out1, c=out2, d=out3, e=out4, f=out5, g=out6, h=out7, sel=address[3..5], out=out);
+    RAM8(in=in, load=load0, address=address[0..2], out=ram0);
+    RAM8(in=in, load=load1, address=address[0..2], out=ram1);
+    RAM8(in=in, load=load2, address=address[0..2], out=ram2);
+    RAM8(in=in, load=load3, address=address[0..2], out=ram3);
+    RAM8(in=in, load=load4, address=address[0..2], out=ram4);
+    RAM8(in=in, load=load5, address=address[0..2], out=ram5);
+    RAM8(in=in, load=load6, address=address[0..2], out=ram6);
+    RAM8(in=in, load=load7, address=address[0..2], out=ram7);
+    Mux8Way16(a=ram0, b=ram1, c=ram2, d=ram3, e=ram4, f=ram5, g=ram6, h=ram7, sel=address[3..5], out=out);
 }
