@@ -16,21 +16,22 @@ CHIP HalfAdder {
     // Put you code here:
     //
     //simplest = elegant  
+/**
     Xor(a=a,b=b,out=sum);
     And(a=a,b=b,out=carry);
-
+*/
 
     //least gates, where #gates = #nand gates
     //for instance, Not gate has 1 nand gate
     //and, And gate contains 2 nand gates
     //THANKS AND KUDOS TO Tatiana FOR THE XOR SOLUTION IN CHAPTER 1
-    /**
+
     Nand(a=a, b=b, out=NotAnd);   
     Or(a=a, b=b, out=OrIn);
     
     And(a=OrIn, b=NotAnd, out=sum);
     Not(in=NotAnd, out=carry);
-    */
+
 
     //fastest,  best design is where
     //the slowest route from in to out

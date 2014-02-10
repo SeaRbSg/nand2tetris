@@ -13,6 +13,32 @@ CHIP Inc16 {
 
     PARTS:
    // Put you code here:
-   Add16(a=in, b[0]=true, b[1..15]=false, out=out);
+   //simplest
+   //Add16(a=in, b[0]=true, b[1..15]=false, out=out);
 
+   //least nand gates
+
+   //bit 0
+   Not(in=in[0], out=out[0]);
+
+   //bit 1
+   //note carry into bit 1 is the same as the bit 0 input
+   HalfAdder(a=in[1], b=in[0], sum=out[1], carry=cry1);
+
+   //bits 2..15
+   HalfAdder(a=in[2], b=cry1, sum=out[2], carry=cry2);
+   HalfAdder(a=in[3], b=cry2, sum=out[3], carry=cry3);
+   HalfAdder(a=in[4], b=cry3, sum=out[4], carry=cry4);
+   HalfAdder(a=in[5], b=cry4, sum=out[5], carry=cry5);
+   HalfAdder(a=in[6], b=cry5, sum=out[6], carry=cry6);
+   HalfAdder(a=in[7], b=cry6, sum=out[7], carry=cry7);
+   HalfAdder(a=in[8], b=cry7, sum=out[8], carry=cry8);
+   HalfAdder(a=in[9], b=cry8, sum=out[9], carry=cry9);
+   HalfAdder(a=in[10], b=cry9, sum=out[10], carry=cry10);
+   HalfAdder(a=in[11], b=cry10, sum=out[11], carry=cry11);
+   HalfAdder(a=in[12], b=cry11, sum=out[12], carry=cry12);
+   HalfAdder(a=in[13], b=cry12, sum=out[13], carry=cry13);
+   HalfAdder(a=in[14], b=cry13, sum=out[14], carry=cry14);
+   HalfAdder(a=in[15], b=cry14, sum=out[15], carry=cry15);
+   
 }
