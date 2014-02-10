@@ -1,0 +1,10 @@
+CHIP PFA {
+    IN a, b, c;
+    OUT s, g, p;
+
+    PARTS:
+
+    And(a=a, b=b, out=g);        // carry generate
+    Xor(a=a, b=b, out=p, out=x); // carry propagate
+    Xor(a=x, b=c, out=s);        // sum
+}

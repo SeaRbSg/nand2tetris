@@ -1,0 +1,73 @@
+/*
+ * Adds two 16-bit values with CLA.
+ */
+
+CHIP Add16CLA {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+
+    // http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Comb/lookahead.html
+
+    And(out=c0); // HACK
+
+    // c1 = g0 + p0c0
+
+    Nand(a=g0,    b=g0,    out=ng0);
+    Nand(a=p0,    b=c0,    out=np0c0);
+    Nand(a=np0c0, b=ng0,   out=c1);
+
+    // c2 = g1 + p1g0 + p1p0c0
+
+    Nand(a=g1,      b=g1,      out=ng1);
+    Nand(a=p1,      b=g0,      out=np1g0);
+    Nand(a=p1,      b=p0,      out=np1p0);
+    Nand(a=ng1,     b=np1g0,   out=g1p1g0);
+    Nand(a=g1p1g0,  b=g1p1g0,  out=ng1p1g0);
+    Nand(a=np1p0,   b=np1p0,   out=p1p0);
+    Nand(a=p1p0,    b=c0,      out=np1p0c0);
+    Nand(a=ng1p1g0, b=np1p0c0, out=c2);
+
+    // c3 = g2 + p2g1 + p2p1g0 + p2p1p0c0
+
+    Nand(a=g2,      b=g2,        out=ng2);
+    Nand(a=p2,      b=g1,        out=np2g1);
+    Nand(a=ng2,     b=np2g1,     out=c3w1);
+    Nand(a=c3w1,    b=c3w1,      out=c3w2);
+    Nand(a=p2,      b=p1,        out=np2p1);
+    Nand(a=np2p1,   b=np2p1,     out=p2p1);
+    Nand(a=np0c0,   b=np0c0,     out=p0c0);
+    Nand(a=p2p1,    b=g0,        out=np2p1g0);
+    Nand(a=p2p1,    b=p0c0,      out=np2p1p0c0);
+    Nand(a=np2p1g0, b=np2p1p0c0, out=c3w3);
+    Nand(a=c3w3,    b=c3w3,      out=nc3w3);
+    Nand(a=c3w2,    b=nc3w3,     out=c3);
+
+    // c4 = g3 + p3g2 + p3p2g1 + p3p2p1g0 + p3p2p1p0c0
+
+    Nand(a=g3,        b=g3,          out=ng3);
+    Nand(a=p3,        b=g2,          out=np3g2);
+    Nand(a=p3,        b=p2,          out=np3p2);
+    Nand(a=np3p2,     b=np3p2,       out=p3p2);
+    Nand(a=np1g0,     b=np1g0,       out=p1g0);
+    Nand(a=p3p2,      b=p1,          out=np3p2p1);
+    Nand(a=np3p2p1,   b=np3p2p1,     out=p3p2p1);
+    Nand(a=p3p2,      b=g1,          out=np3p2g1);
+    Nand(a=p3p2,      b=p1g0,        out=np3p2p1g0);
+    Nand(a=p3p2p1,    b=p0c0,        out=np3p2p1p0c0);
+    Nand(a=ng3,       b=np3g2,       out=c4w1);
+    Nand(a=c4w1,      b=c4w1,        out=nc4w1);
+    Nand(a=nc4w1,     b=np3p2g1,     out=c4w2);
+    Nand(a=c4w2,      b=c4w2,        out=nc4w2);
+    Nand(a=np3p2p1g0, b=np3p2p1p0c0, out=c4w3);
+    Nand(a=c4w3,      b=c4w3,        out=nc4w3);
+    Nand(a=nc4w2,     b=nc4w3,       out=c4);
+
+    // 4 bit adders
+
+    Add4(a=a[0..3],   b=b[0..3],          out=out[0..3],   p=p0, g=g0);
+    Add4(a=a[4..7],   b=b[4..7],   c0=c1, out=out[4..7],   p=p1, g=g1);
+    Add4(a=a[8..11],  b=b[8..11],  c0=c2, out=out[8..11],  p=p2, g=g2);
+    Add4(a=a[12..15], b=b[12..15], c0=c3, out=out[12..15], p=p3, g=g3);
+}
