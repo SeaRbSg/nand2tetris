@@ -6,7 +6,17 @@ class Golf
     report args.join ","
   end
 
-  def self.report dir
+  def self.report dir_or_file
+    if File.file? dir_or_file then
+      report_file dir_or_file
+    else
+      Dir.chdir ".." until File.file? "Rakefile"
+
+      report_dir dir_or_file
+    end
+  end
+
+  def self.report_dir dir
     golfers = {}
 
     glob = "{#{dir}}/*.{hdl,asm}"
@@ -14,7 +24,8 @@ class Golf
     users = Dir["*"].find_all { |f| File.directory? f } - %w(projects tools)
     users.each do |user|
       golf = Golf.new user
-      golf.scan glob
+      golf.find_files glob
+      golf.scan
       golfers[user] = golf
     end
 
@@ -55,6 +66,24 @@ class Golf
     end
   end
 
+  def self.report_file path
+    until File.file? "Rakefile"
+      path = "#{File.basename Dir.pwd}/#{path}"
+      Dir.chdir ".."
+    end
+
+    gate = File.basename path, File.extname(path)
+
+    user = path.split("/").first
+
+    glob = "{*,*/*}/*.{hdl,asm}"
+
+    golf = Golf.new user
+    golf.find_files glob
+
+    p golf.process(gate, :verbose)
+  end
+
   attr_accessor :gate
   attr_accessor :name
   attr_accessor :path
@@ -73,13 +102,15 @@ class Golf
     scores.keys.sort
   end
 
-  def scan glob
+  def find_files glob
     Dir["#{self.name}/#{glob}"].each do |path|
       gate = File.basename path, File.extname(path)
 
       self.path[gate] = path
     end
+  end
 
+  def scan
     self.path.keys.each do |gate|
       score = process(gate)
       self.scores[gate] = score
