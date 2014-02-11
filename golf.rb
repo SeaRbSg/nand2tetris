@@ -81,7 +81,15 @@ class Golf
     golf = Golf.new user
     golf.find_files glob
 
-    p golf.process(gate, :verbose)
+    golf.process gate
+
+    max1 = golf.count.values.map { |n| Math.log10(n).ceil }.max
+    max2 = golf.count.keys.map { |n| Math.log10(golf.gate[n]).ceil }.max
+
+    golf.count.sort_by { |g,c| c * golf.gate[g] }.each do |g, c|
+      n = golf.gate[g]
+      puts "%-15s = %#{max1}d * %#{max2}d = %#{max2}d" % [g, c, n, c * n]
+    end
   end
 
   attr_accessor :gate
@@ -89,12 +97,14 @@ class Golf
   attr_accessor :path
   attr_accessor :scores
   attr_accessor :sum
+  attr_accessor :count
 
   def initialize name = ""
     self.name = name
     self.path = {}
     self.gate = {}
     self.scores = {}
+    self.count = Hash.new 0
     self.sum = 0
   end
 
@@ -117,8 +127,8 @@ class Golf
     end
   end
 
-  def process gate, verbose = false
-    warn "%-15s = %d" % [gate, self.gate[gate]] if verbose and self.gate[gate]
+  def process gate
+    self.count[gate] += 1
     return self.gate[gate] if self.gate[gate]
     return self.process_asm gate if path[gate] =~ /asm$/
 
@@ -137,11 +147,9 @@ class Golf
       when "DFF" then
         score += 1
       else
-        score += process(sub, verbose)
+        score += process sub
       end
     end
-
-    warn "%-15s = %d" % [gate, score] if verbose
 
     self.gate[gate] = score
   end
