@@ -86,7 +86,8 @@ class Golf
     end
   end
 
-  def process gate
+  def process gate, verbose = false
+    warn "%-15s = %d" % [gate, self.gate[gate]] if verbose and self.gate[gate]
     return self.gate[gate] if self.gate[gate]
     return self.process_asm gate if path[gate] =~ /asm$/
 
@@ -105,9 +106,11 @@ class Golf
       when "DFF" then
         score += 1
       else
-        score += process(sub)
+        score += process(sub, verbose)
       end
     end
+
+    warn "%-15s = %d" % [gate, score] if verbose
 
     self.gate[gate] = score
   end
