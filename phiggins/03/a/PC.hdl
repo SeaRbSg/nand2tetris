@@ -16,7 +16,7 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    Add16(a=outprev, b[0]=true, b[1..15]=false, out=add1);
+    Inc16(in=outprev, out=add1);
     Mux16(a=outprev, b=add1, sel=inc, out=incremented);
 
     Mux16(a=incremented, b=in, sel=load, out=loadin);
