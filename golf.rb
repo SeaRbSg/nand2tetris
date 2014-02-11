@@ -30,7 +30,7 @@ class Golf
 
     sorted_users = users.sort_by { |u| golfers[u].sum }
 
-    fmt = "%%-10s: %s" % sorted_users.map { |u| "%#{u.size}X" }.join(" | ")
+    fmt = "%%-10s: %s" % sorted_users.map { |u| "%#{[u.size, 8].max}X" }.join(" | ")
 
     data = ["gate\\user", *sorted_users]
     puts fmt.gsub("X", "s") % data
