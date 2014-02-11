@@ -16,7 +16,19 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // build up whether to load a value
+    // values must be loaded if any of the control pins are set
+    Or(a=reset, b=load, out=rorl);
+    Or(a=inc, b=rorl, out=loader);
+
+    // increment register
+    Inc16(in=incv, out=inc16);
+
+    // select content to load into register
+    Mux8Way16(b=inc16, c=in, d=in, e=false, f=false, g=false, h=false,
+      sel[0]=inc, sel[1]=load, sel[2]=reset, out=mout);
+
+    Register(in=mout, load=loader, out=incv, out=out);
 }
 
 
