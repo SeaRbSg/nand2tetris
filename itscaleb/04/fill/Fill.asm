@@ -14,7 +14,7 @@
 	@SCREEN
 	D=A
 
-	@curr_pixel
+	@screen_ptr
 	M=D
 
 	@8192
@@ -26,41 +26,36 @@
 	@KBD
 	D=M
 
-	@KEY_NOT_PRESSED
+	@WHITE
 	D;JEQ
 
-(KEY_PRESSED)
-	@curr_pixel
-	D=M
-	@SCREEN_END
-	D=D-M
-	@INIT
-	D;JEQ
-
-	@curr_pixel
-	A=M
+	@color
 	M=-1
 
-	@curr_pixel
-	M=M+1
-
-	@KEY_PRESSED
+	@DRAW
 	0;JMP
 
-(KEY_NOT_PRESSED)
-	@curr_pixel
+(WHITE)
+	@color
+	M=0
+
+(DRAW)
+	@screen_ptr
 	D=M
 	@SCREEN_END
 	D=D-M
 	@INIT
 	D;JEQ
 
-	@curr_pixel
-	A=M
-	M=0
+	@color
+	D=M
 
-	@curr_pixel
+	@screen_ptr
+	A=M
+	M=D
+
+	@screen_ptr
 	M=M+1
 
-	@KEY_NOT_PRESSED
+	@DRAW
 	0;JMP
