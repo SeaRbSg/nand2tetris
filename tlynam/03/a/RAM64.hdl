@@ -8,12 +8,69 @@
  * stored at the memory location specified by address. If load=1, then 
  * the in value is loaded into the memory location specified by address 
  * (the loaded value will be emitted to out after the next time step.)
- */
+
+ | time |   in   |load |address|  out   |
+| 0+   |      0 |  0  |    0  |      0 |
+| 1    |      0 |  0  |    0  |      0 |
+| 1+   |      0 |  1  |    0  |      0 |
+| 2    |      0 |  1  |    0  |      0 |
+| 2+   |   1313 |  0  |    0  |      0 |
+| 3    |   1313 |  0  |    0  |      0 |
+| 3+   |   1313 |  1  |   13  |      0 |
+| 4    |   1313 |  1  |   13  |   1313 |
+| 4+   |   1313 |  0  |    0  |      0 |
+| 5    |   1313 |  0  |    0  |      0 |
+| 5+   |   4747 |  0  |   47  |      0 |
+| 6    |   4747 |  0  |   47  |      0 |
+| 6+   |   4747 |  1  |   47  |      0 |
+| 7    |   4747 |  1  |   47  |   4747 |
+| 7+   |   4747 |  0  |   47  |   4747 |
+| 8    |   4747 |  0  |   47  |   4747 |
+| 8    |   4747 |  0  |   13  |   1313 |
+| 8+   |   6363 |  0  |   13  |   1313 |
+| 9    |   6363 |  0  |   13  |   1313 |
+| 9+   |   6363 |  1  |   63  |      0 |
+| 10   |   6363 |  1  |   63  |   6363 |
+| 10+  |   6363 |  0  |   63  |   6363 |
+| 11   |   6363 |  0  |   63  |   6363 |
+| 11   |   6363 |  0  |   47  |   4747 |
+| 11   |   6363 |  0  |   63  |   6363 |
+| 11+  |   6363 |  0  |   40  |      0 |
+| 12   |   6363 |  0  |   40  |      0 |
+| 12   |   6363 |  0  |   41  |      0 |
+| 12   |   6363 |  0  |   42  |      0 |
+| 12   |   6363 |  0  |   43  |      0 |
+| 12   |   6363 |  0  |   44  |      0 |
+| 12   |   6363 |  0  |   45  |      0 |
+| 12   |   6363 |  0  |   46  |      0 |
+| 12   |   6363 |  0  |   47  |   4747 |
+| 12+  |  21845 |  1  |   40  |      0 |
+| 13   |  21845 |  1  |   40  |  21845 |
+| 13+  |  21845 |  1  |   41  |      0 |
+
+ CHIP RAM8 {
+    IN in[16], load, address[3];
+    OUT out[16];
+
+**/
 
 CHIP RAM64 {
     IN in[16], load, address[6];
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+
+    DMux8Way(in=load, sel=address[0..2], a=rams0, b=rams1, c=rams2, d=rams3, e=rams4, f=rams5, g=rams6, h=rams7);
+
+    RAM8(in=in, load=rams0, address=address[3..5], out=ram0);
+    RAM8(in=in, load=rams1, address=address[3..5], out=ram1);
+    RAM8(in=in, load=rams2, address=address[3..5], out=ram2);
+    RAM8(in=in, load=rams3, address=address[3..5], out=ram3);
+    RAM8(in=in, load=rams4, address=address[3..5], out=ram4);
+    RAM8(in=in, load=rams5, address=address[3..5], out=ram5);
+    RAM8(in=in, load=rams6, address=address[3..5], out=ram6);
+    RAM8(in=in, load=rams7, address=address[3..5], out=ram7);
+
+    Mux8Way16(a=ram0, b=ram1, c=ram2, d=ram3, e=ram4, f=ram5, g=ram6, h=ram7, sel=address[0..2], out=out);
+    
 }
