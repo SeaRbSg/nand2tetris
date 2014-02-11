@@ -16,6 +16,14 @@ CHIP RAM4K {
 
     PARTS:
     // Put your code here:
+    //NOTE: not using Dmuxes here to form RAM load lines because
+    // 1) in reality, "load" path to RAMs will be a critical path.
+    //  so must gate it in as late as possible to minimize its gate delays
+    // if use Mux, then it is gated in from the beginning and
+    //goes through the path of muxes before it reaches the RAMs
+    //  
+    // 2) RAMS are highly used parts.  This decode saves 4 gates, compared to using Dmuxes.
+
      //Decode upper 3 address bits
     Not(in=address[9], out=NotAddLow);
     Not(in=address[10], out=NotAddMid);
