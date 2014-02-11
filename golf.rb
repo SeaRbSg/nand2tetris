@@ -23,6 +23,12 @@ class Golf
 
     gates = %w(thagomizer itscaleb).map { |u| golfers[u].gates }.inject(&:&)
 
+    golfers.each do |_,user|
+      gates.each do |gate|
+        user.sum += user.scores[gate]
+      end
+    end
+
     users.reject! { |u|
       s = golfers[u].scores
       gates.any? { |k| s[k].nil? or s[k].zero? }
@@ -77,7 +83,6 @@ class Golf
     self.path.keys.each do |gate|
       score = process(gate)
       self.scores[gate] = score
-      self.sum += score
     end
   end
 
