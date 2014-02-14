@@ -8,48 +8,37 @@
 // R0 and R1 mult values and R2 sum
 // Put your code here.
 
-// Init R2 Sum and i Incrementer
+// Init R2 sum and R3 incrementer
 @R2
 M=0
 
 @R3
 M=0
 
-@R0
-D=M
-
-// R4 = R0
-@R4
-M=D
-
-@R1
-D=M
-
-// R5 = R1
-@R5
-M=D
-
 (LOOP)
+
+// Condition for break
+// D = R0 - R3
 
 @R3
 D=M
 
-// D = R0 - incremental variable R3
-@R4
+@R0
 D=M-D
 
-// Break when interated through R0 times
+// Break when interated R0 times
 @END
 D;JLE
 
 // D=R1
-@R5
+@R1
 D=M
 
 // Sum R2 = R2 + R1
 @R2
 M=D+M
 
+// Increment R3
 @R3
 M=M+1
 
