@@ -9,6 +9,30 @@
  * else if (load[t]==1)  out[t+1] = in[t]
  * else if (inc[t]==1)   out[t+1] = out[t] + 1  (integer addition)
  * else                  out[t+1] = out[t]
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute  out = x + y (if 1) or out = x & y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out==0), 0 otherwise
+        ng; // 1 if (out<0),  0 otherwise
+
+CHIP Inc16 {
+    IN in[16];
+    OUT out[16];
+
+CHIP Register {
+    IN in[16], load;
+    OUT out[16];
+
  */
 
 CHIP PC {
