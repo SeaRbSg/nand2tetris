@@ -168,7 +168,7 @@ class Golf
         # do nothing
       when /^@\w/ then
         score += 1
-      when /^[ADM]+=/ then
+      when /^[ADM]+\s*=/ then
         score += 1
       when /^[ADM0];/ then
         score += 1
