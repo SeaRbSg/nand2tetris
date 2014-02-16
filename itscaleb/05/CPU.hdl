@@ -40,6 +40,7 @@ CHIP CPU {
 
     PARTS:
     Not(in = instruction[15], out = loadA);
+    And(a = instruction[3], b = instruction[15], out = writeM);
 
     // A Register instruction / ALU out mux
     Mux16(a = instruction, b = aluOut, sel = instruction[15], out = aRegisterInput);
