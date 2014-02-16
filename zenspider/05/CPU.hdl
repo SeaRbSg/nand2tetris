@@ -39,5 +39,68 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    // Decoder:
+
+    Wire(in=instruction[15], out=cInst);
+    // 13-14 not used
+    Wire(in=instruction[12], out=a1);
+    Wire(in=instruction[11], out=c1, out=zx);
+    Wire(in=instruction[10], out=c2, out=nx);
+    Wire(in=instruction[9],  out=c3, out=zy);
+    Wire(in=instruction[8],  out=c4, out=ny);
+    Wire(in=instruction[7],  out=c5, out=f);
+    Wire(in=instruction[6],  out=c6, out=no);
+    Wire(in=instruction[5],  out=d1, out=storeA);
+    Wire(in=instruction[4],  out=d2, out=storeD);
+    Wire(in=instruction[3],  out=d3, out=storeM);
+    Wire(in=instruction[2],  out=j1, out=jLT); // jump  <       <=    != jj
+    Wire(in=instruction[1],  out=j2, out=jEQ); // jump     =    <= >=    jj
+    Wire(in=instruction[0],  out=j3, out=jGT); // jump        >    >= != jj
+
+    Not(in=cInst, out=aInst);
+
+    // writeM
+
+    And(a=storeD, b=cInst, out=writeD);
+    And(a=storeM, b=cInst, out=writeM);
+
+    // ARegister:
+
+    Mux16(a=alu, b=instruction, sel=aInst, out=w1);
+    Or(a=aInst, b=storeA, out=loadA);
+    ARegister(in=w1, load=loadA, out=areg, out[0..14]=addressM);
+
+    // DRegister:
+
+    DRegister(in=alu, load=writeD, out=dreg);
+
+    // ALU:
+
+    Mux16(a=areg, b=inM, sel=a1, out=am);
+    ALU(x=dreg, y=am,
+        zx=zx, nx=nx,
+        zy=zy, ny=ny,
+        f=f,
+        no=no,
+        out=outM, out=alu,
+        zr=zr,
+        ng=ng);
+
+    // PC:
+
+    Not(in=zr, out=non0);
+    Not(in=ng, out=nonneg);
+    And(a=non0, b=nonneg, out=pos);
+
+    And(a=jLT, b=ng, out=jump1);
+    And(a=jEQ, b=zr, out=jump2);
+    And(a=jGT, b=pos, out=jump3);
+
+    Or(a=jump1, b=jump2, out=jump4);
+    Or(a=jump3, b=jump4, out=jump5);
+
+    And(a=cInst, b=jump5, out=jump);
+
+    PC(in=areg, load=jump, inc=true, reset=reset, out[0..14]=pc);
 }

@@ -1,0 +1,9 @@
+CHIP Wire {
+    IN in;
+    OUT out;
+
+    PARTS:
+
+    Nand(a=in, b=in, out=w1);
+    Nand(a=w1, b=w1, out=out);
+}
