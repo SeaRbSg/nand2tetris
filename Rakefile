@@ -5,11 +5,20 @@ user ||= "zenspider" if ENV["USER"] == "ryan"
 user = "nanoxd" if ENV["USER"] == "nano"
 user = "thagomizer" if ENV["USER"] == "aja"
 
+skip = {
+        "05" => %w[Memory.tst],
+       }
+skip.default = []
+
 if user then
-  %w(01 02 03/a 03/b).reverse.each do |n|
+  %w(01 02 03/a 03/b 04/fill 04/mult 05).reverse.each do |n|
     desc "Test chapter #{n}."
     task "ch#{n}" do
       Dir["#{user}/#{n}/*.tst"].each do |f|
+        if skip[n].include? File.basename(f) then
+          warn "Skipping #{f}. Please run by hand."
+          next
+        end
         f = File.expand_path f
         sh "./tools/HardwareSimulator.sh #{f}"
       end
