@@ -1,0 +1,31 @@
+proj = "Mult"
+
+asm = proj + ".asm"
+hack = proj + ".hack"
+tst = proj + ".tst"
+
+assembler = File.expand_path File.join "..", "..", "..", "tools", "Assembler.sh"
+emulator = File.expand_path File.join "..", "..", "..", "tools", "CPUEmulator.sh"
+
+def tool t, f=nil
+  file = f ? File.expand_path(File.join(File.dirname(__FILE__), f)) : ""
+  sh t + " " + file
+end
+
+task hack => asm do
+  tool assembler, asm
+end
+
+task :test => hack do
+  tool emulator, tst
+end
+
+task :gui => hack do
+  tool emulator
+end
+
+task :clean do
+  rm hack
+end
+
+task :default => :test
