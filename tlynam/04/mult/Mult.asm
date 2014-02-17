@@ -26,7 +26,7 @@ D=M
 @R0
 D=M-D
 
-// Break when interated R0 times
+// Break when iterated R0 times
 @END
 D;JLE
 
