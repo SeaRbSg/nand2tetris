@@ -39,16 +39,18 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    Not(in = instruction[15], out = loadA);
+    Not(in = instruction[15], out = aInst);
+    Or(a = aInst, b = instruction[5], out = loadA);
+    And(a = instruction[15], b = instruction[4], out = loadD);
     And(a = instruction[3], b = instruction[15], out = writeM);
 
     // A Register instruction / ALU out mux
     Mux16(a = instruction, b = aluOut, sel = instruction[15], out = aRegisterInput);
     ARegister(in = aRegisterInput, load = loadA, out = aRegisterOut, out[0..14] = addressM);
+    DRegister(in = aluOut, load = loadD, out = dOut);
     // A Register or M mux
     Mux16(a = aRegisterOut, b = inM, sel = instruction[12], out = amMuxOut);
 
-    PC(in = aRegisterOut, load = false, inc = true, reset = reset, out[0..14] = pc);
     ALU(x = dOut, y = amMuxOut,
     	zx = instruction[11],
 	nx = instruction[10],
@@ -60,5 +62,9 @@ CHIP CPU {
 	zr = zr,
 	ng = ng);
 
-    DRegister(in = aluOut, load = instruction[4], out = dOut);
+    And(a = instruction[2], b = ng, out = jump0);
+    And(a = instruction[1], b = zr, out = jump1);
+    Or(a = jump0, b = jump1, out = jump);
+
+    PC(in = aRegisterOut, load = jump, inc = true, reset = reset, out[0..14] = pc);
 }
