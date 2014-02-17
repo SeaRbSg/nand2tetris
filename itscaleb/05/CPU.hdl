@@ -62,9 +62,16 @@ CHIP CPU {
 	zr = zr,
 	ng = ng);
 
+    Not(in = ng, out = gt0);
+    Not(in = zr, out = not0);
+    And(a = gt0, b = not0, out = pos);
     And(a = instruction[2], b = ng, out = jump0);
     And(a = instruction[1], b = zr, out = jump1);
-    Or(a = jump0, b = jump1, out = jump);
+    And(a = instruction[0], b = pos, out = jump2);
+    Or(a = jump0, b = jump1, out = jTemp);
+    Or(a = jTemp, b = jump2, out = ugh);
+    And(a = instruction[15], b = ugh, out = jump);
+
 
     PC(in = aRegisterOut, load = jump, inc = true, reset = reset, out[0..14] = pc);
 }
