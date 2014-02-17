@@ -23,9 +23,9 @@
   @R2
   M=M+D
 
-  // (R1 -1)
+  // (R1 - 1)
   @R1
-  M=M+1
+  M=M-1
 
   // Loopit
   @LOOP
