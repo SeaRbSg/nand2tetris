@@ -46,7 +46,7 @@ CHIP CPU {
     Mux16(a = instruction, b = aluOut, sel = instruction[15], out = aRegisterInput);
     ARegister(in = aRegisterInput, load = loadA, out = aRegisterOut, out[0..14] = addressM);
     // A Register or M mux
-    Mux16(a = aRegisterOut, b = inM, sel = false, out = amMuxOut);
+    Mux16(a = aRegisterOut, b = inM, sel = instruction[12], out = amMuxOut);
 
     PC(in = aRegisterOut, load = false, inc = true, reset = reset, out[0..14] = pc);
     ALU(x = dOut, y = amMuxOut,
