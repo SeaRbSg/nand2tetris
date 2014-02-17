@@ -52,9 +52,9 @@ CHIP CPU {
          out[5]      = sa,
          out[4]      = sd,
          out[3]      = sm,
-         out[2]      = jn,
-         out[1]      = jz,
-         out[0]      = jp);
+         out[2]      = jumpneg,
+         out[1]      = jumpzero,
+         out[0]      = jumppos);
 
     Not(in = cinstruction, out = ainstruction);
 
@@ -86,9 +86,6 @@ CHIP CPU {
     And(a = cinstruction, b = sa, out = storea);
     And(a = cinstruction, b = sd, out = stored);
     And(a = cinstruction, b = sm, out = storem);
-    And(a = cinstruction, b = jn, out = jumpneg);
-    And(a = cinstruction, b = jz, out = jumpzero);
-    And(a = cinstruction, b = jp, out = jumppos);
 
     //
     // STORING ALU OUTPUT - D control bits
@@ -114,7 +111,8 @@ CHIP CPU {
     And(a = alupos, b = jumppos, out = shouldjumppos);
 
     Or(a = shouldjumplt, b = shouldjumpzero, out = shouldjumpparta);
-    Or(a = shouldjumpparta, b = shouldjumppos, out = shouldjump);
+    Or(a = shouldjumpparta, b = shouldjumppos, out = jump);    
+    And(a = jump, b = cinstruction, out = shouldjump);
 
     PC(in = areg, 
        load = shouldjump,
