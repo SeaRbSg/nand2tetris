@@ -8,4 +8,49 @@
 // i.e. writes "black" in every pixel. When no key is pressed, the
 // program clears the screen, i.e. writes "white" in every pixel.
 
-// Put your code here.
+(LOOP)
+// reset the loop counter
+@8192 // 32 words * 256 rows
+D=A
+@i
+M=D
+
+(DRAW)
+// If KBD == 0, start clearing the screen.
+@KBD
+D=M
+@CLEAR
+D;JEQ
+
+// Set the current word.
+@SCREEN
+D=A
+@i
+D=D+M
+
+A=D
+M=-1
+
+@END
+0;JMP
+
+(CLEAR)
+// Clear the current word.
+@SCREEN
+D=A
+@i
+D=D+M
+
+A=D
+M=0
+
+(END)
+// When we've gone through the whole screen, jump to the top and repeat.
+@i
+M=M-1
+@i
+D=M
+@LOOP
+D;JLT
+@DRAW
+0;JMP
