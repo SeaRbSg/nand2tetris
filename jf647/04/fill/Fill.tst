@@ -6,6 +6,8 @@
 load Fill.hack;
 echo "First, make sure that 'No Animation' is selected. Then, select the Keyboard, click on any key, and check the screen.";
 
+// make the VRAM "dirty" in order to test the clear-on-startup code
+set RAM[20000] 12345,
 repeat {
   ticktock;
 }
