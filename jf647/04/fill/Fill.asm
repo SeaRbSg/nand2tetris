@@ -8,14 +8,11 @@
     M=D
 
 (LOOP)
-    // set D to 65535 (all bits of a VRAM block filled)
-    @32767
-    D=A
     // set A to the value of R0 (the current VRAM block)
     @R0
     A=M
-    // set the current VRAM block to all bits filled
-    M=D
+    // setting a VRAM block to -1 will fill all the pixels of that block
+    M=-1
 
     // are we pointing at the last VRAM block?
     // i.e. is R0 == 24575?
