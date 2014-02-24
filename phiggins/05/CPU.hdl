@@ -39,5 +39,49 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    // instruction
+    // 15     (i) 0=A, 1=C instruction
+    // 13..14 (x) unused
+    // 12     (a) comp, A or M as input to ALU
+    // 6..11  (c) comp, what function ALU computes
+    // 3..5   (d) 3=M, 4=D, 5=A as destination
+    // 0..2   (j) jump condition
+
+    Not(in=instruction[15], out=instructiona);
+    Or(a=instructiona, b=instruction[5], out=loada);
+
+    Mux16(a[0..14]=instruction[0..14], b=outalu, sel=instruction[15], out=outmux);
+
+    ARegister(in=outmux, load=loada, out[0..14]=addressM, out=outa);
+
+    And(a=instruction[15], b=instruction[4], out=loadd);
+    DRegister(in=outalu, load=loadd, out=outd);
+
+    Mux(a=true,   b=instruction[11], sel=instruction[15], out=zx);
+    Mux(a=true,   b=instruction[10], sel=instruction[15], out=nx);
+    Mux(a=false,  b=instruction[9],  sel=instruction[15], out=zy);
+    Mux(a=false,  b=instruction[8],  sel=instruction[15], out=ny);
+    Mux(a=false,  b=instruction[7],  sel=instruction[15], out=f);
+    Mux(a=false,  b=instruction[6],  sel=instruction[15], out=no);
+
+    And(a=instruction[12], b=instruction[15], out=chooseaorm);
+    Mux16(a=outa, b=inM, sel=chooseaorm, out=aorm);
+    ALU(x=outd, y=aorm, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no,
+      out=outalu, out=outM, zr=zr, ng=ng);
+
+    And(a=instruction[2], b=ng, out=jumpneg);
+    And(a=instruction[1], b=zr, out=jumpzero);
+    Not(in=ng, out=ngp);
+    Not(in=zr, out=zrp);
+    And(a=ngp, b=zrp, out=pos);
+    And(a=pos, b=instruction[0], out=jumppos);
+
+    Or(a=jumpneg, b=jumpzero, out=jumpa);
+    Or(a=jumpa, b=jumppos, out=alujump);
+    And(a=alujump, b=instruction[15], out=jump);
+
+    PC(in=outa, reset=reset, inc=true, load=jump, out[0..14]=pc, out[15]=false);
+
+    And(a=instruction[15], b=instruction[3], out=writeM);
 }
