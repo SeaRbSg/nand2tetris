@@ -8,25 +8,29 @@
 
 // Put your code here.
 
-  @R2
-  M=0
+// clear out output register
+@R2
+M=0
+
 (LOOP)
+  @R1
+  D=M
+  @END
+  D;JEQ
+
   // add R0 into Data
   @R0
-  A=M
+  D=M
 
   @R2
-  MD=D+A
-  
-  // decrement R1
-  @R1
-  M=M-1
-  
-  // if r1 == 0 JMP to END
-  @END
-  M;JEQ
+  M=M+D
 
-  // else start the loop over
+  @R1
+  MD=M-1
+
+  @END
+  D;JEQ
+
   @LOOP
   0;JMP
 (END)
