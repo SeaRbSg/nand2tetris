@@ -45,18 +45,18 @@ CHIP CPU {
     Wire(in=instruction[15], out=cInst);
     // 13-14 not used
     Wire(in=instruction[12], out=a1);
-    Wire(in=instruction[11], out=c1, out=zx);
-    Wire(in=instruction[10], out=c2, out=nx);
-    Wire(in=instruction[9],  out=c3, out=zy);
-    Wire(in=instruction[8],  out=c4, out=ny);
-    Wire(in=instruction[7],  out=c5, out=f);
-    Wire(in=instruction[6],  out=c6, out=no);
-    Wire(in=instruction[5],  out=d1, out=storeA);
-    Wire(in=instruction[4],  out=d2, out=storeD);
-    Wire(in=instruction[3],  out=d3, out=storeM);
-    Wire(in=instruction[2],  out=j1, out=jLT); // jump  <       <=    != jj
-    Wire(in=instruction[1],  out=j2, out=jEQ); // jump     =    <= >=    jj
-    Wire(in=instruction[0],  out=j3, out=jGT); // jump        >    >= != jj
+    Wire(in=instruction[11], out=zx);     // c1
+    Wire(in=instruction[10], out=nx);     // c2
+    Wire(in=instruction[9],  out=zy);     // c3
+    Wire(in=instruction[8],  out=ny);     // c4
+    Wire(in=instruction[7],  out=f);      // c5
+    Wire(in=instruction[6],  out=no);     // c6
+    Wire(in=instruction[5],  out=storeA); // d1
+    Wire(in=instruction[4],  out=storeD); // d2
+    Wire(in=instruction[3],  out=storeM); // d3
+    Wire(in=instruction[2],  out=jLT);    // j1
+    Wire(in=instruction[1],  out=jEQ);    // j2
+    Wire(in=instruction[0],  out=jGT);    // j3
 
     Not(in=cInst, out=aInst);
 
@@ -89,9 +89,8 @@ CHIP CPU {
 
     // PC:
 
-    Not(in=zr, out=non0);
-    Not(in=ng, out=nonneg);
-    And(a=non0, b=nonneg, out=pos);
+    Or(a=zr, b=ng, out=nonpos);
+    Not(in=nonpos, out=pos);
 
     And(a=jLT, b=ng, out=jump1);
     And(a=jEQ, b=zr, out=jump2);
