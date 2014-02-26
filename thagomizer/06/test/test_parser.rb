@@ -78,10 +78,10 @@ class TestParser < Minitest::Test
   end
 
   def test_symbol_a_command_symbol
-    source = "@foo"
+    source = "@foo._$:43"
     parser = Parser.new(StringIO.new(source))
 
-    assert_equal "foo", parser.symbol
+    assert_equal "foo._$:43", parser.symbol
   end
 
   def test_symbol_l_command

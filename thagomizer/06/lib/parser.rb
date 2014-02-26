@@ -22,15 +22,15 @@ class Parser
     case @current_command
     when /@/
       :a_command
-    when /[=;]/
-      :c_command
     when /\(.*\)/
       :l_command
+    else
+      :c_command
     end
   end
 
   def symbol
-    @current_command =~ /[@\(](\w+)\)?/
+    @current_command =~ /([\w_\.$:][\w_\.$:]*)/
     $1
   end
 
