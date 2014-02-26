@@ -1,6 +1,10 @@
 require 'stringio'
 
 class Parser
+  C_COMMAND_REGEX = /(?:(\w+)=)?([\w+-]+)(?:;(\w+))?/
+  A_COMMAND_REGEX = /@/
+  L_COMMAND_REGEX = /\(.*\)/
+
   attr_accessor :current_command
 
   def initialize(source)
@@ -10,7 +14,7 @@ class Parser
 
   def advance
     if has_more_commands?
-      @current_command = @source.gets.strip
+      @current_command = @source.gets.gsub(/\s+/,'')
     end
   end
 
@@ -20,11 +24,11 @@ class Parser
 
   def command_type
     case @current_command
-    when /@/
+    when A_COMMAND_REGEX
       :a_command
-    when /\(.*\)/
+    when L_COMMAND_REGEX
       :l_command
-    else
+    when C_COMMAND_REGEX
       :c_command
     end
   end
@@ -35,7 +39,17 @@ class Parser
   end
 
   def dest
-    @current_command =~ /(\w*)=/
+    @current_command =~ C_COMMAND_REGEX
     $1
+  end
+
+  def comp
+    @current_command =~ C_COMMAND_REGEX
+    $2
+  end
+
+  def jump
+    @current_command =~ C_COMMAND_REGEX
+    $3
   end
 end

@@ -21,7 +21,7 @@ class TestParser < Minitest::Test
   end
 
   def test_advance
-    source = "@3\nD=M"
+    source = "@3\nD = M"
     parser = Parser.new(StringIO.new(source))
 
     assert_equal "@3", parser.current_command
@@ -92,7 +92,7 @@ class TestParser < Minitest::Test
   end
 
   def test_dest
-    source = "D=M\nAMD=3;JMP\nD;JEQ"
+    source = "D=M\nAMD=M+1;JMP\nD;JEQ"
     parser = Parser.new(StringIO.new(source))
 
     assert_equal "D", parser.dest
@@ -105,4 +105,35 @@ class TestParser < Minitest::Test
 
     assert_equal nil, parser.dest
   end
+
+  def test_comp
+    source = "D=M\nAMD=M+1;JMP\nD;JEQ"
+    parser = Parser.new(StringIO.new(source))
+
+    assert_equal "M", parser.comp
+
+    parser.advance
+
+    assert_equal "M+1", parser.comp
+
+    parser.advance
+
+    assert_equal "D", parser.comp
+  end
+
+  def test_jump
+    source = "D=M\nAMD=M+1;JMP\nD;JEQ"
+    parser = Parser.new(StringIO.new(source))
+
+    assert_equal nil, parser.jump
+
+    parser.advance
+
+    assert_equal "JMP", parser.jump
+
+    parser.advance
+
+    assert_equal "JEQ", parser.jump
+  end
+
 end
