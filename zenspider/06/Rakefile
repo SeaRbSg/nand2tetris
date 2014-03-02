@@ -1,0 +1,41 @@
+task :default => [:reference, :assemble, :diff]
+
+rule ".hack" => ".asm" do |t|
+  sh "cd ..; rake asm F='zenspider/06/#{t.source}'"
+end
+
+Dir["*/*.asm"].each do |path|
+  hack = path.sub(/asm$/, "hack")
+  file hack => path
+  task :reference => hack
+end
+
+task :assemble do
+  Dir["*/*.asm"].sort_by { |f| File.readlines(f).size }.each do |path|
+    name = File.basename path, ".asm"
+    {
+     "asm_bad.rb"   => "bad",
+     "asm_good.rb"  => "rb",
+     "asm_good.rkt" => "rkt",
+    }.each do |cmd, suf|
+      new = "#{name}.#{suf}.hack"
+      next if File.file? new
+      sh "./#{cmd} #{path} > #{new}"
+    end
+  end
+end
+
+task :diff do
+  Dir["*/*.asm"].sort_by { |f| File.readlines(f).size }.each do |path|
+    hack = path.sub(/asm$/, "hack")
+    name = File.basename path, ".asm"
+    {
+     "asm_bad.rb"   => "bad",
+     "asm_good.rb"  => "rb",
+     "asm_good.rkt" => "rkt",
+    }.each do |cmd, suf|
+      new = "#{name}.#{suf}.hack"
+      sh "diff -u #{hack} #{new}"
+    end
+  end
+end
