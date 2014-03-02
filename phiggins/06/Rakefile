@@ -1,0 +1,35 @@
+assembler = File.expand_path File.join "..", "..", "tools", "Assembler.sh"
+my_assembler = "ruby parser.rb"
+
+def tool t, f=nil
+  file = f ? File.expand_path(File.join(File.dirname(__FILE__), f)) : ""
+  sh t + " " + file
+end
+
+def hack(f) f + ".hack" end
+def asm(f) f + ".asm" end
+
+no_symbol_tests = %w[max/MaxL rect/RectL pong/PongL]
+
+no_symbol_tests.each do |t|
+  task t => hack(t) do
+    out = hack("/tmp/#{File.basename(t)}")
+    sh "#{my_assembler} #{asm(t)} > #{out}"
+    sh "diff -q #{hack(t)} #{out}"
+  end
+
+  file hack(t) do
+    tool assembler, asm(t)
+  end
+end
+
+task :test_no_symbols => no_symbol_tests
+
+task :default => :test
+
+task :test => :test_no_symbols
+
+task :clean do
+  Dir["/tmp/*.hack"].each {|t| rm(t) }
+  no_symbol_tests.each {|t| rm hack(t) }
+end
