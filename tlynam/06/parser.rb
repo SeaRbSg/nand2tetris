@@ -68,7 +68,7 @@ class Parser
 =end
   def dest(line)
     if line[/[=]/]
-      return line[/^\w/].to_s
+      return line[/^\w+/].to_s
     elsif line[/;/]
       return ""
     end
@@ -86,9 +86,9 @@ class Parser
     str = ""
     
     if line[/[=]/]
-      str = line.gsub(/^\w/,'')
+      str = line.gsub(/^\w+/,'')
       str = str[/^=\S+/]
-      return str[1..3]
+      return str[1..5]
     elsif line[/;/]
       return line[/^\w/]
     end
