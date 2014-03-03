@@ -11,9 +11,18 @@ class Parser
 =end
   attr_accessor :symbol_table
   def initialize 
-    @symbol_table = {}
+    @symbol_table = { "SP" => 0, "LCL" => 1, "ARG" => 2, "THIS" => 3, "THAT" => 4, "R0" => 0, "R1" => 1, "R2" => 2, "R3" => 3, "R4" => 4, "R5" => 5, "R6" => 6, "R7" => 7, "R8" => 8, "R9" => 9, "R10" => 10, "R11" => 11, "R12" => 12, "R13" => 13, "R14" => 14, "R15" => 15, "SCREEN" => 16384, "KBD" => 24576 }
+    @var = 16
   end
 
+  def createaddress(int)
+    word = int.to_s(2)
+    zeros = 16 - word.length
+    zeros.times do
+      word.insert(0, "0") 
+    end
+    return word
+  end
 =begin
   Method: hasMoreCommands
   Args: nil
@@ -41,7 +50,7 @@ class Parser
     case line
     when /^@/
       return "A_COMMAND"
-    when /^*=/
+    when /^\w*=/
       return "C_COMMAND"
     when /^*;/
       return "C_COMMAND"
@@ -57,7 +66,18 @@ class Parser
   Function: Returns the symbol or decimal Xxx of the current command @Xxx or (Xxx).  Should be called only when commandType() is A_COMMAND or L_COMMAND
 =end
   def symbol(line)
-    return line[/^*\d+/].to_i
+    if line[/^@[0-9]/] then
+      return line[/^*\d+/].to_i
+    elsif line[/^*[a-z_$A-Z0-9:.]+/] then
+      symbol = line[/^*[a-z_$A-Z0-9:.]+/]
+      if @symbol_table.has_key?(symbol) then
+        return @symbol_table[symbol].to_i
+      else
+        @symbol_table[symbol] = @var
+        @var += 1
+        return @var - 1
+      end
+    end
   end
 
 =begin
