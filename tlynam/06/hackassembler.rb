@@ -1,9 +1,7 @@
 require './parser'
 
-puts ARGV[0]
-
-filename = "max/MaxL.asm"
-output = "MaxL.hack"
+filename = ARGV[0]
+output = ARGV[0].gsub("asm","hack")
 
 parse = Parser.new
 
