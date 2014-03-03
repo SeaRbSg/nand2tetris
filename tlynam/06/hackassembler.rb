@@ -1,5 +1,7 @@
 require './parser'
 
+puts ARGV[0]
+
 filename = "max/MaxL.asm"
 output = "MaxL.hack"
 
