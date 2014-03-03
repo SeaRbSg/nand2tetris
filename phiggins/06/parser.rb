@@ -1,26 +1,121 @@
-module Parser
-  def self.parse lines=[]
-    lines.map do |line|
-      line.strip!
+class Assembler
+  def self.assemble lines=[]
+    lines = lines.map {|line| line.strip.sub(%r{\s+//.*$}, '') }
 
-      case line
-      when /^@/
-        A.new(line)
-      when %r{//}, /^$/
-        Garbage.new(line)
-      else
-        C.new(line)
+    new(lines).assemble
+  end
+
+  def initialize lines=[]
+    @lines = lines
+    @line_count = 0
+  end
+
+  def symbol_table
+    @__symbol_table ||= begin
+      symbol_table = {
+        "SP"      => 0,
+        "LCL"     => 1,
+        "ARG"     => 2,
+        "THIS"    => 3,
+        "THAT"    => 4,
+        "R0"      => 0,
+        "R1"      => 1,
+        "R2"      => 2,
+        "R3"      => 3,
+        "R4"      => 4,
+        "R5"      => 5,
+        "R6"      => 6,
+        "R7"      => 7,
+        "R8"      => 8,
+        "R9"      => 9,
+        "R10"     => 10,
+        "R11"     => 11,
+        "R12"     => 12,
+        "R13"     => 13,
+        "R14"     => 14,
+        "R15"     => 15,
+        "SCREEN"  => 16384,
+        "KBD"     => 24576,
+      }
+
+      symbol_count = 15
+      symbol_table.default_proc = lambda do |hash, symbol|
+        if symbol =~ /^\d+$/
+          symbol
+        else
+          symbol_count += 1
+          hash[symbol] = symbol_count
+        end
       end
-    end.map(&:to_binary).compact
+
+      symbol_table
+    end
+  end
+
+  def assemble
+    Parser.parse @lines do |p|
+      p.on_a { @line_count += 1 }
+      p.on_c { @line_count += 1 }
+      p.on_label {|line| symbol_table[line[1..-2]] = @line_count }
+    end
+
+    assembled = []
+    Parser.parse @lines do |p|
+      p.on_c {|line| assembled << C.new(line) }
+      p.on_garbage {|line| assembled << Garbage.new(line) }
+
+      p.on_a do |line|
+        value = symbol_table[line[1..-1]]
+
+        assembled << A.new(value)
+      end
+    end
+    assembled.map(&:to_binary).compact
+  end
+
+  class Parser
+    def self.parse lines=[], &block
+      new(lines, &block).parse
+    end
+
+    def initialize lines=[]
+      @lines = lines
+      @on_a = []
+      @on_c = []
+      @on_garbage = []
+      @on_label = []
+      @on_line = []
+      yield(self) if block_given?
+    end
+
+    def on_a &block       ; @on_a << block ; end
+    def on_c &block       ; @on_c << block ; end
+    def on_garbage &block ; @on_garbage << block ; end
+    def on_label &block   ; @on_label << block ; end
+    def on_line &block    ; @on_line << block ; end
+
+    def parse
+      @lines.each do |line|
+        @on_line.each {|b| b.call(line) }
+
+        case line
+        when /^\(.*\)$/   then  @on_label.each {|b| b.call(line) }
+        when /^@/         then  @on_a.each {|b| b.call(line) }
+        when %r{//}, /^$/ then  @on_garbage.each {|b| b.call(line) }
+        else
+          @on_c.each {|b| b.call(line) }
+        end
+      end
+    end
   end
 
   class A
-    def initialize(line)
-      @line = line
+    def initialize(value)
+      @value = value
     end
 
     def to_binary
-      @line[1..-1].to_i.to_s(2).rjust(16, "0")
+      @value.to_i.to_s(2).rjust(16, "0")
     end
   end
 
@@ -108,6 +203,6 @@ if $0 == __FILE__
 
   abort "Usage: #{$0} asm_file" unless input_file
 
-  out = Parser.parse File.readlines(input_file)
+  out = Assembler.assemble File.readlines(input_file)
   puts out
 end

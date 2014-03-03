@@ -10,12 +10,15 @@ def hack(f) f + ".hack" end
 def asm(f) f + ".asm" end
 
 no_symbol_tests = %w[max/MaxL rect/RectL pong/PongL]
+symbol_tests = %w[max/Max add/Add rect/Rect pong/Pong]
 
-no_symbol_tests.each do |t|
+tests = no_symbol_tests + symbol_tests
+
+tests.each do |t|
   task t => hack(t) do
     out = hack("/tmp/#{File.basename(t)}")
     sh "#{my_assembler} #{asm(t)} > #{out}"
-    sh "diff -q #{hack(t)} #{out}"
+    sh "diff #{hack(t)} #{out}"
   end
 
   file hack(t) do
@@ -24,12 +27,13 @@ no_symbol_tests.each do |t|
 end
 
 task :test_no_symbols => no_symbol_tests
+task :test_symbols => symbol_tests
 
 task :default => :test
 
-task :test => :test_no_symbols
+task :test => [:test_no_symbols, :test_symbols]
 
 task :clean do
   Dir["/tmp/*.hack"].each {|t| rm(t) }
-  no_symbol_tests.each {|t| rm hack(t) }
+  tests.each {|t| rm hack(t) rescue nil }
 end
