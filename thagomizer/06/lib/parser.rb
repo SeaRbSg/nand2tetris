@@ -1,5 +1,3 @@
-require 'stringio'
-
 class Parser
   C_COMMAND_REGEX = /(?:(\w+)=)?([!&|\w+-]+)(?:;(\w+))?/
   A_COMMAND_REGEX = /@/
@@ -7,33 +5,25 @@ class Parser
 
   attr_accessor :current_command, :eof, :dest, :comp, :jump
 
-  def initialize(source)
+  def initialize source
     @source = source
-    @eof = @source.eof?
     @current_command = ''
   end
 
   def advance
     begin
-      x = @source.gets
-      @current_command = x.gsub(/\/\/.*/, '').gsub(/\s+/,'')
-
-      if @source.eof
-        @eof = true
-        break
-      end
+      @current_command = @source.gets.gsub(/(\/\/.*$)/, '').gsub(/\s+/,'')
     end while @current_command.empty?
 
     command_type
   end
 
   def has_more_commands?
-    !self.eof
+    !@source.eof
   end
 
   def reset
     @source.rewind
-    @eof = @source.eof
   end
 
   def command_type

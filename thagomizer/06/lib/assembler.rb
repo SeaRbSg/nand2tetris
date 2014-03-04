@@ -3,22 +3,21 @@
 require_relative 'parser'
 require_relative 'code'
 require_relative 'symbol_table'
-require 'stringio'
 
 class Assembler
   attr_accessor :parser, :out_path, :machine_cmds
 
-  def initialize(path)
+  def initialize path
     File.open(path, "r") do |f|
-      @parser = Parser.new(StringIO.new(f.read))
+      @parser = Parser.new f
+      @symbol_table = SymbolTable.new
+
+      @out_path = path.gsub(/\..*/, '.hack')
+      @machine_cmds = []
+
+      self.process_labels
+      self.assemble
     end
-    @symbol_table = SymbolTable.new
-
-    @out_path = path.gsub(/\..*/, '.hack')
-    @machine_cmds = []
-
-    self.process_labels
-    self.assemble
   end
 
   def process_labels
@@ -70,7 +69,7 @@ class Assembler
 
   def write
     File.open(self.out_path, "w") do |f|
-      f.puts(@machine_cmds.join("\n"))
+      f.write @machine_cmds.join("\n")
     end
   end
 end
