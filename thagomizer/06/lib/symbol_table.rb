@@ -25,7 +25,7 @@ class SymbolTable
   end
 
   def contains symbol
-    @table.keys.include? symbol
+    @table.has_key? symbol
   end
 
   def get_address symbol
