@@ -50,3 +50,8 @@ desc "Run the CPU emulator; Opt: use F=<username/.../f.tst> to run a test."
 task :cpu do
   run "CPUEmulator"
 end
+
+desc "Run the VM emulator; Opt: use F=<username/.../f.tst> to run a test."
+task :vm do
+  run "VMEmulator"
+end
