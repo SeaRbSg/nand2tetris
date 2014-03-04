@@ -1,10 +1,9 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby -w
 
 require_relative 'parser'
 require_relative 'code'
 require_relative 'symbol_table'
 require 'stringio'
-require 'pp'
 
 class Assembler
   attr_accessor :parser, :out_path, :machine_cmds
