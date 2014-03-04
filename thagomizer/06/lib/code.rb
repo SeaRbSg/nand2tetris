@@ -101,4 +101,17 @@ class Code
       "1010101"
     end
   end
+
+  def self.c_command(dest, comp, jump)
+    inst = "111"
+
+    inst << Code.comp(comp)
+    inst << Code.dest(dest)
+    inst << Code.jump(jump)
+  end
+
+  def self.a_command(literal)
+    inst = "0"
+    inst << literal.to_i.to_s(2).rjust(15, "0")
+  end
 end

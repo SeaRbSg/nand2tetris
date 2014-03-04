@@ -38,15 +38,7 @@ class Assembler
   end
 
   def handle_a_command
-    inst = "0"
-
-    sym = @parser.symbol
-
-    if sym =~ /^\d+$/
-      inst << @parser.symbol.to_i.to_s(2).rjust(15, "0")
-    end
-
-    machine_cmds << inst
+    machine_cmds << Code.a_command(@parser.symbol)
   end
 
   # def handle_l_command
@@ -54,13 +46,7 @@ class Assembler
   # end
 
   def handle_c_command
-    inst = "111"
-
-    inst << Code.comp(@parser.comp)
-    inst << Code.dest(@parser.dest)
-    inst << Code.jump(@parser.jump)
-
-    machine_cmds << inst
+    machine_cmds << Code.c_command(@parser.dest, @parser.comp, @parser.jump)
   end
 
   def write

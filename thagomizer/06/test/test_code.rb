@@ -57,5 +57,24 @@ class TestCode < Minitest::Test
     assert_equal "111", Code.jump("JMP")
   end
 
+  def test_c_command
+    assert_equal "1111110000010000", Code.c_command("D",  "M",   nil)
+    assert_equal "1111010011010000", Code.c_command("D",  "D-M", nil)
+    assert_equal "1110001100000001", Code.c_command(nil,  "D",   "JGT")
+    assert_equal "1111110000010000", Code.c_command("D",  "M",   nil)
+    assert_equal "1110101010000111", Code.c_command(nil,  "0",   "JMP")
+    assert_equal "1110110000010000", Code.c_command("D",  "A",   nil)
+    assert_equal "1110000010010000", Code.c_command("D",  "D+A", nil)
+    assert_equal "1111110010011000", Code.c_command("MD", "M-1", nil)
+    assert_equal "1111110001001000", Code.c_command("M",  "!M",  nil)
+
+  end
+
+  def test_a_literal
+    assert_equal "0000000000000010", Code.a_command("2")
+    assert_equal "0000000000000011", Code.a_command("3")
+    assert_equal "0000000000001010", Code.a_command("10")
+    assert_equal "0000000000001100", Code.a_command("12")
+  end
 
 end
