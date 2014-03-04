@@ -29,6 +29,14 @@ class TestSymbolTable < Minitest::Test
     assert_equal 1234, @sym_table.get_address("NEWSYM")
   end
 
+  def test_add_var
+    @sym_table.add_var "VAR1"
+    assert_equal 1024, @sym_table.get_address("VAR1")
+
+    @sym_table.add_var "VAR2"
+    assert_equal 1025, @sym_table.get_address("VAR2")
+  end
+
   def test_contains
     assert @sym_table.contains("SP")
     refute @sym_table.contains("FOO")
@@ -38,4 +46,5 @@ class TestSymbolTable < Minitest::Test
     assert_equal "0", @sym_table.get_address("SP")
     assert_equal nil, @sym_table.get_address("FOO")
   end
+
 end
