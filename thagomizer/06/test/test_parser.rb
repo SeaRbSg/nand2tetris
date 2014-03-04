@@ -31,6 +31,17 @@ class TestParser < Minitest::Test
     assert_equal "D=M", parser.current_command
   end
 
+  def test_advance_comments
+    source = "@3 // My comment\n//My full line comment\nD = M"
+    parser = Parser.new(StringIO.new(source))
+
+    assert_equal "@3", parser.current_command
+
+    parser.advance
+
+    assert_equal "D=M", parser.current_command
+  end
+
   # command_type
 
   def test_command_type_a_command_symbol

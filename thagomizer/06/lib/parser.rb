@@ -14,7 +14,9 @@ class Parser
 
   def advance
     if has_more_commands?
-      @current_command = @source.gets.gsub(/\s+/,'')
+      begin
+        @current_command = @source.gets.gsub(/\/\/.*/, '').gsub(/\s+/,'')
+      end while @current_command.empty?
     end
   end
 
