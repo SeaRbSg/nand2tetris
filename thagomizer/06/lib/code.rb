@@ -46,11 +46,11 @@ class Code
            "D|A" => "0010101",
            "D|M" => "1010101"}
 
-  def self.c_command(dest, comp, jump)
+  def self.c_command dest, comp, jump
     "111#{COMP[comp]}#{DEST[dest]}#{JUMP[jump]}"
   end
 
-  def self.a_command(literal)
+  def self.a_command literal
     literal.to_i.to_s(2).rjust(16, "0")
   end
 end

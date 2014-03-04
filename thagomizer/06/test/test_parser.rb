@@ -8,21 +8,21 @@ class TestParser < Minitest::Test
 
   def test_has_more_commands_when_more_commands
     source = "Test One\nTest Two"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     assert parser.has_more_commands?
   end
 
   def test_has_more_commands_when_no_more_commands
     source = ""
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     refute parser.has_more_commands?
   end
 
   def test_advance
     source = "@3\nD = M"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance
 
@@ -35,7 +35,7 @@ class TestParser < Minitest::Test
 
   def test_advance_comments
     source = "@3 // My comment\n//My full line comment\nD = M"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance
 
@@ -50,7 +50,7 @@ class TestParser < Minitest::Test
 
   def test_command_type_a_command_symbol
     source = "@foo"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal :a_command, parser.command_type
@@ -58,7 +58,7 @@ class TestParser < Minitest::Test
 
   def test_command_type_a_command_number
     source = "@42"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal :a_command, parser.command_type
@@ -66,7 +66,7 @@ class TestParser < Minitest::Test
 
   def test_command_type_c_command_calculation
     source = "AM=M-1"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal :c_command, parser.command_type
@@ -74,7 +74,7 @@ class TestParser < Minitest::Test
 
   def test_command_type_c_command_jump
     source = "D;JNE"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal :c_command, parser.command_type
@@ -82,7 +82,7 @@ class TestParser < Minitest::Test
 
   def test_command_type_l_command
     source = "(LOOP)"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal :l_command, parser.command_type
@@ -92,7 +92,7 @@ class TestParser < Minitest::Test
 
   def test_symbol_a_command_number
     source = "@42"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal "42", parser.symbol
@@ -100,7 +100,7 @@ class TestParser < Minitest::Test
 
   def test_symbol_a_command_symbol
     source = "@foo._$:43"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal "foo._$:43", parser.symbol
@@ -108,7 +108,7 @@ class TestParser < Minitest::Test
 
   def test_symbol_l_command
     source = "(LOOP)"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
     parser.advance
 
     assert_equal "LOOP", parser.symbol
@@ -116,7 +116,7 @@ class TestParser < Minitest::Test
 
   def test_dest
     source = "D=M\nAMD=M+1;JMP\nD;JEQ"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance
 
@@ -133,7 +133,7 @@ class TestParser < Minitest::Test
 
   def test_comp
     source = "D=M\nAMD=M+1;JMP\nD;JEQ"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance
 
@@ -150,7 +150,7 @@ class TestParser < Minitest::Test
 
   def test_jump
     source = "D=M\nAMD=M+1;JMP\nD;JEQ"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance
 
@@ -167,7 +167,7 @@ class TestParser < Minitest::Test
 
   def test_pong_problems
     source = "M=!M\nM=D&M\nM=D|M"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance   # M=!M
 
@@ -190,7 +190,7 @@ class TestParser < Minitest::Test
 
   def test_reset
     source = "@3\nD = M"
-    parser = Parser.new(StringIO.new(source))
+    parser = Parser.new StringIO.new(source)
 
     parser.advance
 

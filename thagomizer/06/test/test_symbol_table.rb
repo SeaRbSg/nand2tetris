@@ -24,7 +24,7 @@ class TestSymbolTable < Minitest::Test
   end
 
   def test_add_entry
-    @sym_table.add_entry("NEWSYM", 1234)
+    @sym_table.add_entry "NEWSYM", 1234
 
     assert_equal 1234, @sym_table.get_address("NEWSYM")
   end
@@ -34,7 +34,7 @@ class TestSymbolTable < Minitest::Test
 
     assert_equal 1234, @sym_table.get_address("NEWSYM")
 
-    result = @sym_table.add_entry("NEWSYM", 1236)
+    result = @sym_table.add_entry "NEWSYM", 1236
 
     assert_equal 1234, result
   end
@@ -59,5 +59,4 @@ class TestSymbolTable < Minitest::Test
     assert_equal "0", @sym_table.get_address("SP")
     assert_equal nil, @sym_table.get_address("FOO")
   end
-
 end

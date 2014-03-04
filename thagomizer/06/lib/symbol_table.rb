@@ -8,7 +8,7 @@ class SymbolTable
   end
 
   def add_entry symbol, address
-    if @table.has_key?(symbol)
+    if @table.has_key? symbol
       @table[symbol]
     else
       @table[symbol] = address
@@ -16,7 +16,7 @@ class SymbolTable
   end
 
   def add_var symbol
-    if @table.has_key?(symbol)
+    if @table.has_key? symbol
       @table[symbol]
     else
       @next_var = @next_var.succ
