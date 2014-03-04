@@ -1,5 +1,4 @@
 require 'stringio'
-require 'pry'
 
 class Parser
   C_COMMAND_REGEX = /(?:(\w+)=)?([!&|\w+-]+)(?:;(\w+))?/
