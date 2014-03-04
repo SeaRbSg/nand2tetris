@@ -23,6 +23,8 @@ class Parser
         break
       end
     end while @current_command.empty?
+
+    command_type
   end
 
   def has_more_commands?
@@ -41,6 +43,7 @@ class Parser
     when L_COMMAND_REGEX
       :l_command
     when C_COMMAND_REGEX
+      @dest, @comp, @jump = $~.captures
       :c_command
     end
   end
@@ -51,17 +54,14 @@ class Parser
   end
 
   def dest
-    @current_command =~ C_COMMAND_REGEX
-    $1
+    @dest
   end
 
   def comp
-    @current_command =~ C_COMMAND_REGEX
-    $2
+    @comp
   end
 
   def jump
-    @current_command =~ C_COMMAND_REGEX
-    $3
+    @jump
   end
 end
