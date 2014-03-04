@@ -55,11 +55,6 @@ class TestSymbolTable < Minitest::Test
     assert_equal ["VAR1"], @sym_table.table.keys.find_all { |k| k == "VAR1"}
   end
 
-  def test_contains
-    assert @sym_table.contains("SP")
-    refute @sym_table.contains("FOO")
-  end
-
   def test_get_address
     assert_equal "0", @sym_table.get_address("SP")
     assert_equal nil, @sym_table.get_address("FOO")

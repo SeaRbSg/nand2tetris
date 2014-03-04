@@ -2,36 +2,31 @@ class SymbolTable
   attr_accessor :table
 
   def initialize
-    @next_var = "16"
+    @next_var = "15"
     @table = {}
     init_table
   end
 
   def add_entry symbol, address
-    if self.contains(symbol)
-      return @table[symbol]
+    if @table.has_key?(symbol)
+      @table[symbol]
     else
       @table[symbol] = address
     end
   end
 
   def add_var symbol
-    unless self.contains(symbol)
-      @table[symbol] = @next_var
+    if @table.has_key?(symbol)
+      @table[symbol]
+    else
       @next_var = @next_var.succ
+      @table[symbol] = @next_var
     end
-
-    @table[symbol]
-  end
-
-  def contains symbol
-    @table.has_key? symbol
   end
 
   def get_address symbol
     @table[symbol]
   end
-
 
   def init_table
     @table["SP"]     = "0"
