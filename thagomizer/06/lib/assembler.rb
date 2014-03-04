@@ -3,21 +3,25 @@
 require_relative 'parser'
 require_relative 'code'
 require_relative 'symbol_table'
+require 'stringio'
 
 class Assembler
   attr_accessor :parser, :out_path, :machine_cmds
 
-  def initialize path
-    File.open(path, "r") do |f|
-      @parser = Parser.new f
-      @symbol_table = SymbolTable.new
+  def initialize source
+    @parser = Parser.new(source)
+    @symbol_table = SymbolTable.new
+    @machine_cmds = []
+  end
 
-      @out_path = path.gsub(/\..*/, '.hack')
-      @machine_cmds = []
+  def self.run path
+    sio = StringIO.new File.read path
 
-      self.process_labels
-      self.assemble
-    end
+    ass = Assembler.new(sio)
+
+    ass.process_labels
+    ass.assemble
+    ass.write(path.gsub(/\..*/, '.hack'))
   end
 
   def process_labels
@@ -50,8 +54,6 @@ class Assembler
         # no-op
       end
     end
-
-    write
   end
 
   def convert_a_command
@@ -67,11 +69,11 @@ class Assembler
     @machine_cmds << Code.c_command(@parser.dest, @parser.comp, @parser.jump)
   end
 
-  def write
-    File.open(self.out_path, "w") do |f|
+  def write path
+    File.open(path, "w") do |f|
       f.write @machine_cmds.join("\n")
     end
   end
 end
 
-Assembler.new ARGV[0]
+Assembler.run ARGV[0]
