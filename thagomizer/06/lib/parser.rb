@@ -36,7 +36,7 @@ class Parser
   end
 
   def symbol
-    @current_command =~ /([\w_\.$:]+)/
+    @current_command =~ /([\w\.$:]+)/
     $1
   end
 
