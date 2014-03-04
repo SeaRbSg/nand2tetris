@@ -39,5 +39,42 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    
+    //decode
+    // i xx a cccccc ddd jjj
+
+    // switch between D and A
+    Mux16(a=instruction, b=ALUOut, sel=instruction[15], out=Adata);
+
+    // control bit for ARegister
+    Not(in=instruction[15],out=Ainst);
+    Or(a=Ainst, b=instruction[5], out=loadA);
+    ARegister(in=Adata, load=loadA, out[0..14]=addressM, out=AReg);
+
+    // when to store in D
+    And(a=instruction[4], b=instruction[15], out=loadD);
+    DRegister(in=ALUOut, load=loadD, out=datareg);
+
+    Mux16(a=AReg, b=inM, sel=instruction[12], out=AMswitch);
+
+    ALU(x=datareg, y=AMswitch, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUOut, zr=zero, ng=lessthan);
+
+    //when to write out to memory
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // calculate positive attribute from ALU output
+    Or(a=zero, b=lessthan, out=lte);
+    Not(in=lte, out=positive);
+
+    // comparing jump bits to ALU output
+    And(a=instruction[2], b=lessthan, out=jlt);
+    And(a=instruction[1], b=zero, out=jeq);
+    And(a=instruction[0], b=positive, out=jgt);
+
+    // reduce jump logic to single value (to jump or not to jump. that is the question)
+    Or(a=jlt, b=jeq, out=tempj);
+    Or(a=tempj, b=jgt, out=jumpor);
+    And(a=instruction[15], b=jumpor, out=jump);
+
+    PC(in=AReg, load=jump, inc=true, reset=reset, out[0..14]=pc, out[15]=abc);
 }
