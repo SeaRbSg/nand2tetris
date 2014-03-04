@@ -5,7 +5,7 @@ class Parser
   A_COMMAND_REGEX = /@/
   L_COMMAND_REGEX = /\(.*\)/
 
-  attr_accessor :current_command, :eof
+  attr_accessor :current_command, :eof, :dest, :comp, :jump
 
   def initialize(source)
     @source = source
@@ -51,17 +51,5 @@ class Parser
   def symbol
     @current_command =~ /([\w\.$:]+)/
     $1
-  end
-
-  def dest
-    @dest
-  end
-
-  def comp
-    @comp
-  end
-
-  def jump
-    @jump
   end
 end
