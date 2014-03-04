@@ -2,7 +2,7 @@ require 'stringio'
 require 'pry'
 
 class Parser
-  C_COMMAND_REGEX = /(?:(\w+)=)?([\w+-]+)(?:;(\w+))?/
+  C_COMMAND_REGEX = /(?:(\w+)=)?([!&|\w+-]+)(?:;(\w+))?/
   A_COMMAND_REGEX = /@/
   L_COMMAND_REGEX = /\(.*\)/
 

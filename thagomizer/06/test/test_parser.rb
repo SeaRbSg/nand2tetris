@@ -165,4 +165,27 @@ class TestParser < Minitest::Test
     assert_equal "JEQ", parser.jump
   end
 
+  def test_pong_problems
+    source = "M=!M\nM=D&M\nM=D|M"
+    parser = Parser.new(StringIO.new(source))
+
+    parser.advance   # M=!M
+
+    assert_equal "M", parser.dest
+    assert_equal "!M", parser.comp
+    assert_equal nil, parser.jump
+
+    parser.advance   # M=D&M
+
+    assert_equal "M", parser.dest
+    assert_equal "D&M", parser.comp
+    assert_equal nil, parser.jump
+
+    parser.advance   # M=D|M
+
+    assert_equal "M", parser.dest
+    assert_equal "D|M", parser.comp
+    assert_equal nil, parser.jump
+  end
+
 end
