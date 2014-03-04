@@ -29,6 +29,10 @@ class Parser
     !self.eof
   end
 
+  def reset
+    @source.rewind
+  end
+
   def command_type
     case @current_command
     when A_COMMAND_REGEX

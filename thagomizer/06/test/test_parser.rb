@@ -188,4 +188,28 @@ class TestParser < Minitest::Test
     assert_equal nil, parser.jump
   end
 
+  def test_reset
+    source = "@3\nD = M"
+    parser = Parser.new(StringIO.new(source))
+
+    parser.advance
+
+    assert_equal "@3", parser.current_command
+
+    parser.advance
+
+    assert_equal "D=M", parser.current_command
+
+    parser.reset
+
+    parser.advance
+
+    assert_equal "@3", parser.current_command
+
+    parser.advance
+
+    assert_equal "D=M", parser.current_command
+
+  end
+
 end
