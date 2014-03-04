@@ -31,6 +31,7 @@ class Parser
 
   def reset
     @source.rewind
+    @eof = @source.eof
   end
 
   def command_type

@@ -200,7 +200,11 @@ class TestParser < Minitest::Test
 
     assert_equal "D=M", parser.current_command
 
+    refute parser.has_more_commands?
+
     parser.reset
+
+    assert parser.has_more_commands?
 
     parser.advance
 
