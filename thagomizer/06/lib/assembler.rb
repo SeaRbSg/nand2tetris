@@ -3,8 +3,6 @@
 require_relative 'parser'
 require_relative 'code'
 require 'stringio'
-require 'pry'
-require 'pp'
 
 class Assembler
   attr_accessor :parser, :out_path, :machine_cmds
