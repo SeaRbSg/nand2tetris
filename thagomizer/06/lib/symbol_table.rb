@@ -2,10 +2,22 @@ class SymbolTable
   attr_accessor :table
 
   def initialize
-    @next_var = 1024
     @table = {}
     init_table
   end
+
+  def add_entry symbol, address
+    @table[symbol] = address
+  end
+
+  def contains symbol
+    @table.keys.include? symbol
+  end
+
+  def get_address symbol
+    @table[symbol]
+  end
+
 
   def init_table
     @table["SP"]     = "0"
