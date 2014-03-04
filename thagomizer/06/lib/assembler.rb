@@ -58,12 +58,6 @@ class Assembler
   def handle_c_command
     inst = "111"
 
-    if @parser.comp =~ /M/
-      inst << "1"
-    else
-      inst << "0"
-    end
-
     inst << Code.comp(@parser.comp)
     inst << Code.dest(@parser.dest)
     inst << Code.jump(@parser.jump)
