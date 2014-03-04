@@ -24,8 +24,6 @@ class Assembler
     while @parser.has_more_commands?
       @parser.advance
 
-      pp @parser.current_command
-
       case @parser.command_type
       when :a_command
         handle_a_command
