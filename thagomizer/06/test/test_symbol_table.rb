@@ -41,17 +41,17 @@ class TestSymbolTable < Minitest::Test
 
   def test_add_var
     @sym_table.add_var "VAR1"
-    assert_equal "1024", @sym_table.get_address("VAR1")
+    assert_equal "16", @sym_table.get_address("VAR1")
 
     @sym_table.add_var "VAR2"
-    assert_equal "1025", @sym_table.get_address("VAR2")
+    assert_equal "17", @sym_table.get_address("VAR2")
   end
 
   def test_add_var_duplicate
     @sym_table.add_var "VAR1"
     @sym_table.add_var "VAR1"
 
-    assert_equal "1024", @sym_table.get_address("VAR1")
+    assert_equal "16", @sym_table.get_address("VAR1")
     assert_equal ["VAR1"], @sym_table.table.keys.find_all { |k| k == "VAR1"}
 
   end

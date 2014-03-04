@@ -2,7 +2,7 @@ class SymbolTable
   attr_accessor :table
 
   def initialize
-    @next_var = "1024"
+    @next_var = "16"
     @table = {}
     init_table
   end
