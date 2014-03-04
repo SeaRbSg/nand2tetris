@@ -8,12 +8,18 @@ class SymbolTable
   end
 
   def add_entry symbol, address
-    @table[symbol] = address
+    if self.contains(symbol)
+      return @table[symbol]
+    else
+      @table[symbol] = address
+    end
   end
 
   def add_var symbol
-    @table[symbol] = @next_var
-    @next_var += 1
+    unless self.contains(symbol)
+      @table[symbol] = @next_var
+      @next_var += 1
+    end
 
     @table[symbol]
   end
