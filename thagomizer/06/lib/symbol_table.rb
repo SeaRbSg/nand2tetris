@@ -2,7 +2,7 @@ class SymbolTable
   attr_accessor :table
 
   def initialize
-    @next_var = 1024
+    @next_var = "1024"
     @table = {}
     init_table
   end
@@ -18,7 +18,7 @@ class SymbolTable
   def add_var symbol
     unless self.contains(symbol)
       @table[symbol] = @next_var
-      @next_var += 1
+      @next_var = @next_var.succ
     end
 
     @table[symbol]
