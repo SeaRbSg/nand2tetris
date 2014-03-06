@@ -120,23 +120,23 @@ class Compiler
       case offset
       when 0 then
         [
-         "@#{name} // ptr", # "D=M",
-         "A=M // deref",
+         "@#{name}",
+         "A=M",
         ]
       when 1 then
         [
-         "@#{name}", # "D=M+1",
+         "@#{name}",
          "A=M+1",
         ]
       else
         [
-         "@#{name} // ptr", # "D=M", # "@#{offset}", # "D=A+D",
-         "D=M // deref",
+         "@#{name}",
+         "D=M",
          "@#{offset}",
-         "A=A+D // + offset",
+         "A=A+D",
         ]
       end
-      a << (deref2 ? "D=M // deref again" : "D=A")
+      a << (deref2 ? "D=M" : "D=A")
       a
     end
 
@@ -161,11 +161,21 @@ class Compiler
     end
 
     def temp deref = false
-      [ "@R#{offset + 5}", "D=#{deref ? "M" : "A"}" ]
+      a_m  = deref ? "M" : "A"
+      off = offset + 5
+      [ "@R#{off}", "D=#{a_m}" ]
     end
 
-    def pointer _ = false
-      [ "@THIS", "D=A#{offset == 0 ? "" : "+1"}" ]
+    def static deref = false
+      a_m = deref ? "M" : "A"
+      off = offset ? [ "@#{offset}", "A=A+D" ] : nil
+      [ "@16", "D=A", off, "D=#{a_m}" ].compact.flatten
+    end
+
+    def pointer deref = false
+      a_m  = deref ? "M" : "A"
+      off = offset == 0 ? nil : "A=A+1"
+      [ "@THIS", off, "D=#{a_m}" ].compact
     end
 
     def comment

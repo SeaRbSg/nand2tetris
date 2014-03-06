@@ -19,3 +19,5 @@ end
 wire "StackArithmetic/SimpleAdd/SimpleAdd"
 wire "StackArithmetic/StackTest/StackTest"
 wire "MemoryAccess/BasicTest/BasicTest"
+wire "MemoryAccess/PointerTest/PointerTest"
+wire "MemoryAccess/StaticTest/StaticTest"
