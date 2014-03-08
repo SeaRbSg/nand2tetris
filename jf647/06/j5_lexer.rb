@@ -30,6 +30,8 @@ module JohnnyFive
         rule(/JMP/)             { :JMP }
         
         # numeric constants
+        rule(/0/)               { |_| [ :ZERO, 0 ] }
+        rule(/1/)               { |_| [ :ONE, 1 ] }
         rule(/\d+/)             { |t| [ :NUMBER, t.to_i ] }
         # symbol names
         rule(/[a-zA-Z_\.\$\:][\w\.\$\:]*/)  { |t| [ :SYMBOL, t.to_sym ] }
