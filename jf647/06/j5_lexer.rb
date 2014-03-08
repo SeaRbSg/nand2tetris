@@ -1,47 +1,51 @@
 require 'rltk'
 
-class JohnnyFiveLexer < RLTK::Lexer
+module JohnnyFive
 
-    match_first
+    class Lexer < RLTK::Lexer
 
-    # whitespace
-    rule(/\n/)              { :NL }
-    rule(/\s/)
+        match_first
 
-    # ignore comments to end of line
-    rule(/\/\//)            { push_state :comment }
-    rule(/./, :comment)
-    rule(/\n/, :comment)    { pop_state }
-    
-    # assignment destinations
-    rule(/D/)               { :DREG }
-    rule(/A/)               { :AREG }
-    rule(/M/)               { :MREG }
-    
-    # jump conditions
-    rule(/JGT/)             { :JGT }
-    rule(/JEQ/)             { :JEQ }
-    rule(/JGE/)             { :JGE }
-    rule(/JLT/)             { :JLT }
-    rule(/JNE/)             { :JNE }
-    rule(/JLE/)             { :JLE }
-    rule(/JMP/)             { :JMP }
-    
-    # numeric constants
-    rule(/\d+/)             { |t| [ :NUMBER, t.to_i ] }
-    # symbol names
-    rule(/[a-zA-Z_\.\$\:][\w\.\$\:]*/)  { |t| [ :SYMBOL, t.to_sym ] }
+        # whitespace
+        rule(/\n/)              { :NL }
+        rule(/\s/)
 
-    # sigils and other punctuation
-    rule(/\(/)              { :LPAREN }
-    rule(/\)/)              { :RPAREN }
-    rule(/\@/)              { :AT }
-    rule(/=/)               { :ASSIGN }
-    rule(/\+/)              { :PLUS }
-    rule(/-/)               { :MINUS }
-    rule(/!/)               { :NOT }
-    rule(/&/)               { :AND }
-    rule(/\|/)              { :OR }
-    rule(/;/)               { :SEMI }
+        # ignore comments to end of line
+        rule(/\/\//)            { push_state :comment }
+        rule(/./, :comment)
+        rule(/\n/, :comment)    { pop_state }
+        
+        # assignment destinations
+        rule(/D/)               { :DREG }
+        rule(/A/)               { :AREG }
+        rule(/M/)               { :MREG }
+        
+        # jump conditions
+        rule(/JGT/)             { :JGT }
+        rule(/JEQ/)             { :JEQ }
+        rule(/JGE/)             { :JGE }
+        rule(/JLT/)             { :JLT }
+        rule(/JNE/)             { :JNE }
+        rule(/JLE/)             { :JLE }
+        rule(/JMP/)             { :JMP }
+        
+        # numeric constants
+        rule(/\d+/)             { |t| [ :NUMBER, t.to_i ] }
+        # symbol names
+        rule(/[a-zA-Z_\.\$\:][\w\.\$\:]*/)  { |t| [ :SYMBOL, t.to_sym ] }
+
+        # sigils and other punctuation
+        rule(/\(/)              { :LPAREN }
+        rule(/\)/)              { :RPAREN }
+        rule(/\@/)              { :AT }
+        rule(/=/)               { :ASSIGN }
+        rule(/\+/)              { :PLUS }
+        rule(/-/)               { :MINUS }
+        rule(/!/)               { :NOT }
+        rule(/&/)               { :AND }
+        rule(/\|/)              { :OR }
+        rule(/;/)               { :SEMI }
+        
+    end
     
 end

@@ -12,4 +12,9 @@ require 'j5_assembler'
 infname = Pathname.new ARGV[0]
 outfname = infname.parent + "#{infname.basename(infname.extname)}.hack"
 
-puts JohnnyFive.new.assemble(infname, outfname)
+ast = JohnnyFive::Assembler.new.assemble(infname, outfname)
+File.open(outfname, 'w') do |f|
+    ast.statements.each do |statement|
+        f.puts statement.to_bin
+    end
+end
