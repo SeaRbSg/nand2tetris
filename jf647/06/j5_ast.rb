@@ -5,6 +5,12 @@ module JohnnyFive
     class Statement < RLTK::ASTNode
     end
     
+    class Comment < RLTK::ASTNode
+    end
+
+    class Blank < RLTK::ASTNode
+    end
+    
     class Command < Statement
     end
     
@@ -41,10 +47,6 @@ module JohnnyFive
                 @jump
             )
         end
-    end
-    
-    class Program < RLTK::ASTNode
-        child :statements, [ Statement ]
     end
 
 end

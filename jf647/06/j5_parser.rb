@@ -4,25 +4,22 @@ module JohnnyFive
     
     class Parser < RLTK::Parser
 
-        p(:program) do
-            c('statement+')             { |s| Program.new(s) }
+        p(:node) do
+            c('COMMENT')                    { |_| Comment.new }
+            c('command')                    { |c| c }
+            c('NL')                         { |_| Blank.new }
         end
-        
-        p(:statement) do
+
+        p(:command) do
             c('a_command NL')               { |a,_| a }
             c('c_command NL')               { |c,_| c }
-            c('NL')                         { |_| }
         end
         
         p(:a_command) do
+            c('AT ZERO')            { |_,_| ACommand.new(0) }
+            c('AT ONE')             { |_,_| ACommand.new(1) }
             # @12345
-            c('AT numeric')            { |_,n| ACommand.new(n) }
-        end
-        
-        p(:numeric) do
-            c('ZERO')                 { |_| 0 }
-            c('ONE')                  { |_| 1 }
-            c('NUMBER')               { |n| n }
+            c('AT NUMBER')          { |_,n| ACommand.new(n) }
         end
         
         p(:c_command) do
@@ -106,7 +103,6 @@ module JohnnyFive
             # D|M
             c('DREG OR MREG')   { |_,_,_| Comp.new(0b1010101) }
         end
-        
         
         p(:jump) do
             c('JGT')            { |_| Jump.new(0b001) }

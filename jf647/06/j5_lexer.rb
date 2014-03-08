@@ -13,7 +13,7 @@ module JohnnyFive
         # ignore comments to end of line
         rule(/\/\//)            { push_state :comment }
         rule(/./, :comment)
-        rule(/\n/, :comment)    { pop_state }
+        rule(/\n/, :comment)    { pop_state; :COMMENT }
         
         # assignment destinations
         rule(/D/)               { :DREG }
@@ -30,8 +30,8 @@ module JohnnyFive
         rule(/JMP/)             { :JMP }
         
         # numeric constants
-        rule(/0/)               { |_| [ :ZERO, 0 ] }
-        rule(/1/)               { |_| [ :ONE, 1 ] }
+        rule(/0/)               { :ZERO }
+        rule(/1/)               { :ONE }
         rule(/\d+/)             { |t| [ :NUMBER, t.to_i ] }
         # symbol names
         rule(/[a-zA-Z_\.\$\:][\w\.\$\:]*/)  { |t| [ :SYMBOL, t.to_sym ] }
