@@ -6,28 +6,31 @@ module JohnnyFive
             @syms = symtable
         end
 
-        def parse(origline)
-            # remove newline and leading/trailing whitespace
-            line = origline.strip
+        def parse(origline, nextinstr)
             # trim comments to end of line
-            line.gsub!(/\/\/.*$/, '')
+            line = origline.gsub(/\/\/.*$/, '')
+            # remove whitespace
+            line.strip!
             # skip empty lines
             return nil if line.match(/^\s*$/)
 
-            # A commands
+            # parse commands
             if m = line.match(/^@(\d+)$/)
-                return ACommand.new(m[1])
-            end
-            if m = line.match(/^@([a-zA-Z_\.\$\:][\w\.\$\:]*)$/)
-                return ACommand.new(m[1].to_sym)
-            end
-            
-            # C commands
-            if m = line.match(/^(?:([AMD]+)=)?([-+\!\&\|AMD01]+)(?:;(J[A-Z]{2}))?$/)
+                # A command constant
+                return ACommand.new(m[1], @syms)
+            elsif m = line.match(/^@([a-zA-Z_\.\$\:][\w\.\$\:]*)$/)
+                # A command symbol
+                return ACommand.new(m[1].to_sym, @syms)
+            elsif m = line.match(/^(?:([AMD]+)=)?([-+\!\&\|AMD01]+)(?:;(J[A-Z]{2}))?$/)
+                # C command
                 dest = @@dest_bits[m[1]] if m[1]
                 comp = @@comp_bits[m[2]] if m[2]
                 jump = @@jump_bits[m[3]] if m[3]
                 return CCommand.new(dest, comp, jump)
+            elsif m = line.match(/^\(([a-zA-Z_\.\$\:][\w\.\$\:]*)\)$/)
+                # set symbol addr
+                @syms.set m[1].to_sym, nextinstr
+                return nil
             end
 
             # anything else is an error

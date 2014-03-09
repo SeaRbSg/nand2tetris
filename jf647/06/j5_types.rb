@@ -8,11 +8,10 @@ module JohnnyFive
     class ACommand < Command
         attr_reader :unresolved
         def initialize(v, st=nil)
-            case v.class
-                when Symbol
-                    @v = promise { st.get(v, true) }
-                else
-                    @v = v.to_i
+            if Symbol == v.class
+                @v = promise { st.get(v) }
+            else
+                @v = v.to_i
             end
         end
         def to_bin

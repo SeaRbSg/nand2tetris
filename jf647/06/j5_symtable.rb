@@ -13,16 +13,25 @@ module JohnnyFive
                 :KBD => 24576,
             }
             0.upto(15).each{|i| @table["R#{i}".to_sym] = i}
-            @ptr = 0x0010
+            @next = 0x0010
         end
 
-        def get(k, final=false)
-            if ! @table.key?(k)
-                raise "symbol #{k} is not defined" if final
-                @table[k] = @ptr
-                @ptr += 1
+        def get(s)
+            # if the symbol isn't in the table, assign it the
+            # next available memory slot
+            # return the (possibly new) addr for the symbol
+            if ! @table.key?(s)
+                @table[s] = @next
+                @next += 1
             end
-            @table[k]
+            @table[s]
+        end
+        
+        def set(s, v)
+            if @table.key(s)
+                raise "symbol #{s} is already defined"
+            end
+            @table[s] = v.to_i
         end
     
     end
