@@ -6,8 +6,8 @@ class Push
 
   def to_asm
     asm = []
-    asm << "D=A"
     asm << "@#@index"
+    asm << "D=A"
     Push.push_d asm
   end
 
