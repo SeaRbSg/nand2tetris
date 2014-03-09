@@ -7,17 +7,15 @@ module JohnnyFive
         p(:node) do
             c('COMMENT')                    { |_| Comment.new }
             c('command')                    { |c| c }
-            c('NL')                         { |_| Blank.new }
+            c('')                           { Blank.new }
         end
 
         p(:command) do
-            c('a_command NL')               { |a,_| a }
-            c('c_command NL')               { |c,_| c }
+            c('a_command')               { |a| a }
+            c('c_command')               { |c| c }
         end
         
         p(:a_command) do
-            c('AT ZERO')            { |_,_| ACommand.new(0) }
-            c('AT ONE')             { |_,_| ACommand.new(1) }
             # @12345
             c('AT NUMBER')          { |_,n| ACommand.new(n) }
         end
@@ -28,7 +26,7 @@ module JohnnyFive
             # dest=comp
             c('dest ASSIGN comp')           { |d,_,c| CCommand.new(d.bits, c.bits, 0b0) }
             # comp;jump
-            c('comp SEMI jump')             { |c,_,j| CCommand.new(c.bits, 0b0, j.bits) }
+            c('comp SEMI jump')             { |c,_,j| CCommand.new(0b0, c.bits, j.bits) }
             # dest=comp;jump
             c('dest ASSIGN comp SEMI jump') { |d,_,c,_,j| CCommand.new(d.bits, c.bits, j.bits) }
         end
@@ -47,11 +45,18 @@ module JohnnyFive
         # refactor using enviroments to reduce the number of clauses
         p(:comp) do
             # 0
-            c('ZERO')           { |_| Comp.new(0b0101010) }
-            # 1
-            c('ONE')            { |_| Comp.new(0b0111111) }
+            c('NUMBER') do |n|
+                case n
+                    when 0
+                        Comp.new(0b0101010)
+                    when 1
+                        Comp.new(0b0111111)
+                    else
+                        nil
+                end
+            end
             # -1
-            c('MINUS ONE')      { |_,_| Comp.new(0b0111010) }
+            c('MINUS NUMBER')      { |_,_| Comp.new(0b0111010) }
             # D
             c('DREG')           { |_| Comp.new(0b0001100) }
             # A
@@ -65,13 +70,13 @@ module JohnnyFive
             # -A
             c('MINUS AREG')     { |_,_| Comp.new(0b0110011) }
             # D+1
-            c('DREG PLUS ONE')  { |_,_,_| Comp.new(0b0011111) }
+            c('DREG PLUS NUMBER')  { |_,_,_| Comp.new(0b0011111) }
             # A+1
-            c('AREG PLUS ONE')  { |_,_,_| Comp.new(0b0110111) }
+            c('AREG PLUS NUMBER')  { |_,_,_| Comp.new(0b0110111) }
             # D-1
-            c('DREG MINUS ONE') { |_,_,_| Comp.new(0b0001110) }
+            c('DREG MINUS NUMBER') { |_,_,_| Comp.new(0b0001110) }
             # A-1
-            c('AREG MINUS ONE') { |_,_,_| Comp.new(0b0110010) }
+            c('AREG MINUS NUMBER') { |_,_,_| Comp.new(0b0110010) }
             # D+A
             c('DREG PLUS AREG') { |_,_,_| Comp.new(0b0000010) }
             # D-A
@@ -89,9 +94,9 @@ module JohnnyFive
             # -M
             c('MINUS MREG')     { |_,_| Comp.new(0b1110011) }
             # M+1
-            c('MREG PLUS ONE')  { |_,_,_| Comp.new(0b1110111) }
+            c('MREG PLUS NUMBER')  { |_,_,_| Comp.new(0b1110111) }
             # M-1
-            c('MREG MINUS ONE') { |_,_,_| Comp.new(0b1110010) }
+            c('MREG MINUS NUMBER') { |_,_,_| Comp.new(0b1110010) }
             # D+M
             c('DREG PLUS MREG')  { |_,_,_| Comp.new(0b1000010) }
             # D-M

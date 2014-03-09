@@ -7,13 +7,10 @@ module JohnnyFive
         match_first
 
         # whitespace
-        rule(/\n/)              { :NL }
         rule(/\s/)
 
         # ignore comments to end of line
-        rule(/\/\//)            { push_state :comment }
-        rule(/./, :comment)
-        rule(/\n/, :comment)    { pop_state; :COMMENT }
+        rule(/\/\/.*/)            { :COMMENT }
         
         # assignment destinations
         rule(/D/)               { :DREG }
@@ -30,8 +27,6 @@ module JohnnyFive
         rule(/JMP/)             { :JMP }
         
         # numeric constants
-        rule(/0/)               { :ZERO }
-        rule(/1/)               { :ONE }
         rule(/\d+/)             { |t| [ :NUMBER, t.to_i ] }
         # symbol names
         rule(/[a-zA-Z_\.\$\:][\w\.\$\:]*/)  { |t| [ :SYMBOL, t.to_sym ] }
