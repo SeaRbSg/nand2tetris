@@ -137,15 +137,15 @@ class TestParser < Minitest::Test
     parser = Parser.new StringIO.new(source)
 
     parser.advance
-    assert_equal "0", parser.arg2
+    assert_equal 0, parser.arg2
 
     parser.advance
-    assert_equal "0", parser.arg2
+    assert_equal 0, parser.arg2
 
     parser.advance
-    assert_equal "6", parser.arg2
+    assert_equal 6, parser.arg2
 
     parser.advance
-    assert_equal "1", parser.arg2
+    assert_equal 1, parser.arg2
   end
 end

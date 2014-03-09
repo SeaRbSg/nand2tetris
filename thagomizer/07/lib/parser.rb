@@ -51,6 +51,7 @@ class Parser
              end
 
     @arg1, @arg2 = $~.captures
+    @arg2 = @arg2.to_i
 
     c_type
   end
