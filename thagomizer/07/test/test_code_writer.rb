@@ -5,6 +5,7 @@ require_relative '../lib/code_writer'
 class TestCodeWriter < Minitest::Test
   def setup
     @cw = CodeWriter.new
+    @cw.file_name = "test"
   end
 
   def test_write_push_constant
@@ -122,13 +123,29 @@ class TestCodeWriter < Minitest::Test
     asm = @cw.asm
     assert_equal 8, asm.length
     assert_equal "// push pointer 1",  asm[0]
-    assert_equal "@4",                asm[1]
+    assert_equal "@4",                 asm[1]
     assert_equal "D=M",                asm[2]
     assert_equal "@SP",                asm[3]
     assert_equal "A=M",                asm[4]
     assert_equal "M=D",                asm[5]
     assert_equal "@SP",                asm[6]
     assert_equal "M=M+1",              asm[7]
+  end
+
+  def test_write_push_static
+    # push static 3
+    @cw.write_push_pop(:c_push, "static", 3)
+
+    asm = @cw.asm
+    assert_equal 8, asm.length
+    assert_equal "// push static 3",  asm[0]
+    assert_equal "@test.3",           asm[1]
+    assert_equal "D=M",               asm[2]
+    assert_equal "@SP",               asm[3]
+    assert_equal "A=M",               asm[4]
+    assert_equal "M=D",               asm[5]
+    assert_equal "@SP",               asm[6]
+    assert_equal "M=M+1",             asm[7]
   end
 
   def test_write_pop_local
@@ -239,7 +256,21 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@SP",               asm[1]
     assert_equal "AM=M-1",            asm[2]
     assert_equal "D=M",               asm[3]
-    assert_equal "@3",               asm[4]
+    assert_equal "@3",                asm[4]
+    assert_equal "M=D",               asm[5]
+  end
+
+  def test_write_pop_static_4
+    # pop pointer 4
+    @cw.write_push_pop(:c_pop, "static", 4)
+
+    asm = @cw.asm
+    assert_equal 6, asm.length
+    assert_equal "// pop static 4",   asm[0]
+    assert_equal "@SP",               asm[1]
+    assert_equal "AM=M-1",            asm[2]
+    assert_equal "D=M",               asm[3]
+    assert_equal "@test.4",           asm[4]
     assert_equal "M=D",               asm[5]
   end
 

@@ -6,6 +6,7 @@ require_relative 'code_writer'
 require 'stringio'
 
 class VMTranslator
+  attr_accessor :code_writer
 
   def initialize source
     @parser = Parser.new(source)
@@ -16,6 +17,9 @@ class VMTranslator
     sio = StringIO.new File.read path
 
     vmt = VMTranslator.new(sio)
+
+    path =~ /\/(\w*)\.vm$/
+    vmt.code_writer.file_name = $1
 
     vmt.translate
     vmt.write(path.gsub(/\..*/, '.asm'))

@@ -5,7 +5,7 @@ class CodeWriter
               "that"     => "@THAT",
              }
 
-  attr_accessor :asm
+  attr_accessor :asm, :file_name
 
   def initialize
     @asm = []
@@ -39,6 +39,9 @@ class CodeWriter
     when "constant"
       @asm << "@#{index}"
       @asm << "D=A"
+    when "static"
+      @asm << "@#{self.file_name}.#{index}"
+      @asm << "D=M"
     when "local", "argument", "this", "that"
       @asm << "@#{index}"
       @asm << "D=A"
@@ -63,6 +66,11 @@ class CodeWriter
       @asm << "AM=M-1"
       @asm << "D=M"
       @asm << "@#{3+index}"
+    when "static"
+      @asm << "@SP"
+      @asm << "AM=M-1"
+      @asm << "D=M"
+      @asm << "@#{self.file_name}.#{index}"
     else
       @asm << "@#{index}"
       @asm << "D=A"
