@@ -107,7 +107,23 @@ class TestCodeWriter < Minitest::Test
     assert_equal 8, asm.length
     assert_equal "// push temp 2",     asm[0]
     assert_equal "@R7",                asm[1]
-    assert_equal "D=A",                asm[2]
+    assert_equal "D=M",                asm[2]
+    assert_equal "@SP",                asm[3]
+    assert_equal "A=M",                asm[4]
+    assert_equal "M=D",                asm[5]
+    assert_equal "@SP",                asm[6]
+    assert_equal "M=M+1",              asm[7]
+  end
+
+  def test_write_push_pointer
+    # push pointer 1
+    @cw.write_push_pop(:c_push, "pointer", 1)
+
+    asm = @cw.asm
+    assert_equal 8, asm.length
+    assert_equal "// push pointer 1",  asm[0]
+    assert_equal "@4",                asm[1]
+    assert_equal "D=M",                asm[2]
     assert_equal "@SP",                asm[3]
     assert_equal "A=M",                asm[4]
     assert_equal "M=D",                asm[5]
@@ -210,6 +226,20 @@ class TestCodeWriter < Minitest::Test
     assert_equal "AM=M-1",            asm[2]
     assert_equal "D=M",               asm[3]
     assert_equal "@R12",              asm[4]
+    assert_equal "M=D",               asm[5]
+  end
+
+  def test_write_pop_pointer_0
+    # pop pointer 0
+    @cw.write_push_pop(:c_pop, "pointer", 0)
+
+    asm = @cw.asm
+    assert_equal 6, asm.length
+    assert_equal "// pop pointer 0",  asm[0]
+    assert_equal "@SP",               asm[1]
+    assert_equal "AM=M-1",            asm[2]
+    assert_equal "D=M",               asm[3]
+    assert_equal "@3",               asm[4]
     assert_equal "M=D",               asm[5]
   end
 

@@ -32,7 +32,10 @@ class CodeWriter
     case segment
     when "temp"
       @asm << "@R#{5+index}"
-      @asm << "D=A"
+      @asm << "D=M"
+    when "pointer"
+      @asm << "@#{3+index}"
+      @asm << "D=M"
     when "constant"
       @asm << "@#{index}"
       @asm << "D=A"
@@ -55,6 +58,11 @@ class CodeWriter
       @asm << "AM=M-1"
       @asm << "D=M"
       @asm << "@R#{5+index}"
+    when "pointer"
+      @asm << "@SP"
+      @asm << "AM=M-1"
+      @asm << "D=M"
+      @asm << "@#{3+index}"
     else
       @asm << "@#{index}"
       @asm << "D=A"
