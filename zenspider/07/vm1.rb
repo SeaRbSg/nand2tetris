@@ -95,10 +95,7 @@ class Compiler
              "0;JMP",
              "(#{addr})",
              "D=-1",
-             "(#{addr}.done)",
-             "@SP",
-             "A=M",
-             "M=D")
+             "(#{addr}.done)")
     end
 
     def neg; unary "M=-M";      end
