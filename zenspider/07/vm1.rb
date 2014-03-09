@@ -58,25 +58,31 @@ class Compiler
       "#{name}.#{n}"
     end
 
-    def pop dest
-      [ "@SP", "AM=M-1", "#{dest}=M" ]
-    end
-
-    def push_d
-      # write to stack       increment sp
-      [ "@SP", "A=M", "M=D", "@SP", "M=M+1" ]
+    def push_d deref = "AM=M+1"
+      # deref_sp      dec_ptr  write
+      [ "@SP", deref, "A=A-1", "M=D" ]
     end
 
     def peek
       [ "@SP", "AM=M-1", "D=M" ]
     end
+  end
+
+  module Operable
+    def pop dest
+      [ "@SP", "AM=M-1", "#{dest}=M" ]
+    end
+
+    def peek dest
+      [ "A=A-1", "#{dest}=M"]
+    end
 
     def binary *instructions
-      [ pop(:D), pop(:A), *instructions]
+      [ pop(:D), peek(:A), *instructions ]
     end
 
     def unary *instructions
-      [ pop(:D), *instructions]
+      [ "@SP", "A=M-1", *instructions ]
     end
 
     def binary_test test
@@ -95,8 +101,8 @@ class Compiler
              "M=D")
     end
 
-    def neg; unary "D=-D";      end
-    def not; unary "D=!D";      end
+    def neg; unary "M=-M";      end
+    def not; unary "M=!M";      end
 
     def add; binary "D=A+D";    end
     def and; binary "D=A&D";    end
@@ -108,9 +114,7 @@ class Compiler
     def lt;  binary_test "JLT"; end
   end
 
-  class StackThingy < Struct.new :segment, :offset
-    include Stackable
-
+  module Segmentable
     def name
       self.class.name.split(/::/).last.downcase
     end
@@ -177,6 +181,11 @@ class Compiler
       off = offset == 0 ? nil : "A=A+1"
       [ "@THIS", off, "D=#{a_m}" ].compact
     end
+  end
+
+  class StackThingy < Struct.new :segment, :offset
+    include Stackable
+    include Segmentable
 
     def comment
       "// #{name} #{segment} #{offset}"
@@ -218,9 +227,14 @@ class Compiler
 
   class Op < Struct.new :msg
     include Stackable
+    include Operable
 
     def comment
       "// #{msg}"
+    end
+
+    def push_d
+      super("A=M") unless %w[not neg].include? msg
     end
 
     def to_s
