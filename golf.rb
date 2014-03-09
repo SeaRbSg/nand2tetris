@@ -19,7 +19,7 @@ class Golf
   def self.report_dir dir
     golfers = {}
 
-    glob = "{#{dir}}/*.{hdl,asm}"
+    glob = "{#{dir}}/**/*.{hdl,asm}"
 
     users = Dir["*"].find_all { |f| File.directory? f } - %w(projects tools)
     users.each do |user|
@@ -76,7 +76,7 @@ class Golf
 
     user = path.split("/").first
 
-    glob = "{*,*/*}/*.{hdl,asm}"
+    glob = "**/*.{hdl,asm}"
 
     golf = Golf.new user
     golf.find_files glob
