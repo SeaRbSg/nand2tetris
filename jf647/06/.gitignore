@@ -2,3 +2,6 @@ vendor
 .bundle
 *.tbl
 *.hack*
+*.explain.txt
+*.out.dot
+*.out.txt

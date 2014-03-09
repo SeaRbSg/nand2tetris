@@ -3,110 +3,105 @@ require 'rltk'
 module JohnnyFive
     
     class Parser < RLTK::Parser
-
+    
         p(:node) do
+            c('a_command')                    { |a| a }
+            c('c_command')                    { |c| c }
             c('COMMENT')                    { |_| Comment.new }
-            c('command')                    { |c| c }
             c('')                           { Blank.new }
-        end
-
-        p(:command) do
-            c('a_command')               { |a| a }
-            c('c_command')               { |c| c }
         end
         
         p(:a_command) do
             # @12345
-            c('AT NUMBER')          { |_,n| ACommand.new(n) }
+            c('ACONSTANT')          { |n| ACommand.new(n) }
+            c('ASYMBOL')            { |n| DeferredACommand.new(n) }
+        end
+        
+        p(:numeric) do
+            c('NUMBER')             { |n| n }
+            c('ZERO')               { |_| 0 }
+            c('ONE')                { |_| 1 }
         end
         
         p(:c_command) do
             # comp
             c('comp')                       { |c| CCommand.new(0b0, c.bits, 0b0) }
             # dest=comp
-            c('dest ASSIGN comp')           { |d,_,c| CCommand.new(d.bits, c.bits, 0b0) }
+            c('dest comp')           { |d,c| CCommand.new(d.bits, c.bits, 0b0) }
             # comp;jump
             c('comp SEMI jump')             { |c,_,j| CCommand.new(0b0, c.bits, j.bits) }
             # dest=comp;jump
-            c('dest ASSIGN comp SEMI jump') { |d,_,c,_,j| CCommand.new(d.bits, c.bits, j.bits) }
+            c('dest comp SEMI jump') { |d,c,_,j| CCommand.new(d.bits, c.bits, j.bits) }
         end
 
         # refactor using enviroments to reduce the number of clauses
         p(:dest) do
-            c('MREG')           { |_| Dest.new(0b001) }
-            c('DREG')           { |_| Dest.new(0b010) }
-            c('MREG DREG')      { |_,_| Dest.new(0b011) }
-            c('AREG')           { |_| Dest.new(0b100) }
-            c('AREG MREG')      { |_,_| Dest.new(0b101) }
-            c('AREG DREG')      { |_,_| Dest.new(0b110) }
-            c('AREG MREG DREG') { |_,_,_| Dest.new(0b111) }
+            c('REG_M')           { |_| Dest.new(0b001) }
+            c('REG_D')           { |_| Dest.new(0b010) }
+            c('REG_MD')      { |_| Dest.new(0b011) }
+            c('REG_A')           { |_| Dest.new(0b100) }
+            c('REG_AM')      { |_| Dest.new(0b101) }
+            c('REG_AD')      { |_| Dest.new(0b110) }
+            c('REG_AMD') { |_| Dest.new(0b111) }
         end
-
+        
         # refactor using enviroments to reduce the number of clauses
         p(:comp) do
-            # 0
-            c('NUMBER') do |n|
-                case n
-                    when 0
-                        Comp.new(0b0101010)
-                    when 1
-                        Comp.new(0b0111111)
-                    else
-                        nil
-                end
-            end
+            # 0 or 1
+            c('ONE')            { |_| Comp.new(0b0111111) }
+            c('ZERO')           { |_| Comp.new(0b0101010) }
             # -1
-            c('MINUS NUMBER')      { |_,_| Comp.new(0b0111010) }
+            c('MINUS ONE')      { |_,_| Comp.new(0b0111010) }
             # D
-            c('DREG')           { |_| Comp.new(0b0001100) }
+            c('REG_D')           { |_| Comp.new(0b0001100) }
             # A
-            c('AREG')           { |_| Comp.new(0b0110000) }
+            c('REG_A')           { |_| Comp.new(0b0110000) }
             # !D
-            c('NOT DREG')       { |_,_| Comp.new(0b0001101) }
+            c('NOT REG_D')       { |_,_| Comp.new(0b0001101) }
             # !A
-            c('NOT AREG')       { |_,_| Comp.new(0b0110001) }
+            c('NOT REG_A')       { |_,_| Comp.new(0b0110001) }
             # -D
-            c('MINUS DREG')     { |_,_| Comp.new(0b0001111) }
+            c('MINUS REG_D')     { |_,_| Comp.new(0b0001111) }
             # -A
-            c('MINUS AREG')     { |_,_| Comp.new(0b0110011) }
+            c('MINUS REG_A')     { |_,_| Comp.new(0b0110011) }
             # D+1
-            c('DREG PLUS NUMBER')  { |_,_,_| Comp.new(0b0011111) }
+            c('REG_D PLUS ONE')  { |_,_,_| Comp.new(0b0011111) }
             # A+1
-            c('AREG PLUS NUMBER')  { |_,_,_| Comp.new(0b0110111) }
+            c('REG_A PLUS ONE')  { |_,_,_| Comp.new(0b0110111) }
             # D-1
-            c('DREG MINUS NUMBER') { |_,_,_| Comp.new(0b0001110) }
+            c('REG_D MINUS ONE') { |_,_,_| Comp.new(0b0001110) }
             # A-1
-            c('AREG MINUS NUMBER') { |_,_,_| Comp.new(0b0110010) }
+            c('REG_A MINUS ONE') { |_,_,_| Comp.new(0b0110010) }
             # D+A
-            c('DREG PLUS AREG') { |_,_,_| Comp.new(0b0000010) }
+            c('REG_D PLUS REG_A') { |_,_,_| Comp.new(0b0000010) }
             # D-A
-            c('DREG MINUS AREG') { |_,_,_| Comp.new(0b0010011) }
+            c('REG_D MINUS REG_A') { |_,_,_| Comp.new(0b0010011) }
             # A-D
-            c('AREG MINUS DREG') { |_,_,_| Comp.new(0b0000111) }
+            c('REG_A MINUS REG_D') { |_,_,_| Comp.new(0b0000111) }
             # D&A
-            c('DREG AND AREG')  { |_,_,_| Comp.new(0b0000000) }
+            c('REG_D AND REG_A')  { |_,_,_| Comp.new(0b0000000) }
             # D|A
-            c('DREG OR AREG')   { |_,_,_| Comp.new(0b0010101) }
+            c('REG_D OR REG_A')   { |_,_,_| Comp.new(0b0010101) }
             # M
-            c('MREG')           { |_| Comp.new(0b1110000) }
+            c('REG_M')           { |_| Comp.new(0b1110000) }
             # !M
-            c('NOT MREG')       { |_,_| Comp.new(0b1110001) }
+            c('NOT REG_M')       { |_,_| Comp.new(0b1110001) }
             # -M
-            c('MINUS MREG')     { |_,_| Comp.new(0b1110011) }
+            c('MINUS REG_M')     { |_,_| Comp.new(0b1110011) }
             # M+1
-            c('MREG PLUS NUMBER')  { |_,_,_| Comp.new(0b1110111) }
+            c('REG_M PLUS ONE')  { |_,_,_| Comp.new(0b1110111) }
             # M-1
-            c('MREG MINUS NUMBER') { |_,_,_| Comp.new(0b1110010) }
+            c('REG_M MINUS ONE') { |_,_,_| Comp.new(0b1110010) }
             # D+M
-            c('DREG PLUS MREG')  { |_,_,_| Comp.new(0b1000010) }
+            c('REG_D PLUS REG_M')  { |_,_,_| Comp.new(0b1000010) }
             # D-M
-            c('DREG MINUS MREG') { |_,_,_| Comp.new(0b1010011) }
+            c('REG_D MINUS REG_M') { |_,_,_| Comp.new(0b1010011) }
             # M-D
-            c('MREG MINUS DREG') { |_,_,_| Comp.new(0b1000111) }
+            c('REG_M MINUS REG_D') { |_,_,_| Comp.new(0b1000111) }
             # D&M
-            c('DREG AND MREG')  { |_,_,_| Comp.new(0b1000000) }
+            c('REG_D AND REG_M')  { |_,_,_| Comp.new(0b1000000) }
             # D|M
-            c('DREG OR MREG')   { |_,_,_| Comp.new(0b1010101) }
+            c('REG_D OR REG_M')   { |_,_,_| Comp.new(0b1010101) }
         end
         
         p(:jump) do

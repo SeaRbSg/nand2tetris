@@ -14,6 +14,6 @@ outfname = infname.parent + "#{infname.basename(infname.extname)}.hack"
 
 File.open(outfname, 'w') do |f|
     ast = JohnnyFive::Assembler.new.assemble(infname) do |statement|
-        f.puts statement.to_bin
+        f.puts statement.to_bin if statement.respond_to?(:to_bin)
     end
 end

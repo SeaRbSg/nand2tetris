@@ -2,16 +2,16 @@ require 'rltk/ast'
 
 module JohnnyFive
 
-    class Statement < RLTK::ASTNode
+    class HackLine < RLTK::ASTNode
     end
     
-    class Comment < RLTK::ASTNode
+    class Comment < HackLine
     end
 
-    class Blank < RLTK::ASTNode
+    class Blank < HackLine
     end
     
-    class Command < Statement
+    class Command < HackLine
     end
     
     class PartialC < RLTK::ASTNode
@@ -32,6 +32,10 @@ module JohnnyFive
         def to_bin
             sprintf('%0.16b', @v)
         end
+    end
+    
+    class DeferredACommand < Command
+        value :sym, Symbol
     end
 
     class CCommand < Command
