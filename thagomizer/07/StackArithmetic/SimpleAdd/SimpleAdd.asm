@@ -21,7 +21,7 @@ D=M
 @SP
 AM=M-1
 A=M
-D=D+A
+D=A+D
 @SP
 A=M
 M=D

@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby -w
-require 'pp'
 
 require_relative 'parser'
 require_relative 'code_writer'
