@@ -27,9 +27,6 @@ class Compiler
     result.flatten.compact.join("\n").gsub(/^(?!\/)/, '   ').number_instructions
   end
 
-  def initialize
-  end
-
   SEGMENTS = %w(argument local static constant this that pointer temp).join "|"
   OPS      = %w(add sub neg eq gt lt and or not).join "|"
 
@@ -50,6 +47,16 @@ class Compiler
     }
   end
 
+  module Asmable
+    def asm *instructions
+      instructions
+    end
+
+    def assemble(*instructions)
+      instructions.flatten.compact.join "\n"
+    end
+  end
+
   module Stackable
     @@next_num = Hash.new 0
 
@@ -60,29 +67,25 @@ class Compiler
 
     def push_d deref = "AM=M+1"
       # deref_sp      dec_ptr  write
-      [ "@SP", deref, "A=A-1", "M=D" ]
+      asm "@SP", deref, "A=A-1", "M=D"
     end
 
     def peek
-      [ "@SP", "AM=M-1", "D=M" ]
+      asm "@SP", "AM=M-1", "D=M"
     end
   end
 
   module Operable
     def pop dest
-      [ "@SP", "AM=M-1", "#{dest}=M" ]
-    end
-
-    def peek dest
-      [ "A=A-1", "#{dest}=M"]
+      asm "@SP", "AM=M-1", "#{dest}=M"
     end
 
     def binary *instructions
-      [ pop(:D), peek(:A), *instructions ]
+      asm pop(:D), "A=A-1", "A=M", instructions
     end
 
     def unary *instructions
-      [ "@SP", "A=M-1", *instructions ]
+      asm "@SP", "A=M-1", *instructions
     end
 
     def binary_test test
@@ -120,29 +123,18 @@ class Compiler
       a =
       case offset
       when 0 then
-        [
-         "@#{name}",
-         "A=M",
-        ]
+        asm "@#{name}", "A=M"
       when 1 then
-        [
-         "@#{name}",
-         "A=M+1",
-        ]
+        asm "@#{name}", "A=M+1"
       else
-        [
-         "@#{name}",
-         "D=M",
-         "@#{offset}",
-         "A=A+D",
-        ]
+        asm "@#{name}", "D=M", "@#{offset}", "A=A+D"
       end
-      a << (deref2 ? "D=M" : "D=A")
+      a << asm(deref2 ? "D=M" : "D=A") # TODO: consider pushing down, way down
       a
     end
 
     def constant _ = false
-      [ "@#{offset}", "D=A" ]
+      asm "@#{offset}", "D=A"
     end
 
     def local deref = false
@@ -164,70 +156,62 @@ class Compiler
     def temp deref = false
       a_m  = deref ? "M" : "A"
       off = offset + 5
-      [ "@R#{off}", "D=#{a_m}" ]
+      asm "@R#{off}", "D=#{a_m}"
     end
 
     def static deref = false
       a_m = deref ? "M" : "A"
       off = offset ? [ "@#{offset}", "A=A+D" ] : nil
-      [ "@16", "D=A", off, "D=#{a_m}" ].compact.flatten
+      asm "@16", "D=A", off, "D=#{a_m}"
     end
 
     def pointer deref = false
       a_m  = deref ? "M" : "A"
       off = offset == 0 ? nil : "A=A+1"
-      [ "@THIS", off, "D=#{a_m}" ].compact
+      asm "@THIS", off, "D=#{a_m}"
     end
   end
 
   class StackThingy < Struct.new :segment, :offset
+    include Asmable
     include Stackable
     include Segmentable
 
     def comment
-      "// #{name} #{segment} #{offset}"
+      asm "// #{name} #{segment} #{offset}"
     end
   end
 
   class Push < StackThingy
     def to_s
-      [
-       comment,
-       send(segment, :double),
-       push_d,
-       ].join "\n"
+      assemble(comment,
+               send(segment, :double),
+               push_d)
     end
   end
 
   class Pop < StackThingy
     def temp_store reg
-      [
-       reg,
-       "M=D",
-       yield,
-       reg,
-       "A=M",
-      ]
+      asm reg, "M=D", yield, reg, "A=M"
     end
 
     def to_s
-      [
-       comment,
-       send(segment),
-       temp_store("@R15") do
-         peek
-       end,
-       "M=D",
-      ].join "\n"
+      assemble(comment,
+               send(segment),
+               temp_store("@R15") do
+                 peek
+               end,
+               asm("M=D"))
     end
   end
 
   class Op < Struct.new :msg
+    include Asmable
     include Stackable
     include Operable
 
     def comment
-      "// #{msg}"
+      asm "// #{msg}"
     end
 
     def push_d
@@ -235,11 +219,9 @@ class Compiler
     end
 
     def to_s
-      [
-       comment,
-       send(self.msg),  # perform whatever operation, put into D
-       push_d,
-       ].join "\n"
+      assemble(comment,
+               send(msg), # perform whatever operation, put into D
+               push_d)
     end
   end
 end
