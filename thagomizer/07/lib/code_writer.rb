@@ -1,4 +1,10 @@
 class CodeWriter
+  SEGMENTS = {"local"    => "@LCL",
+              "argument" => "@ARG",
+              "this"     => "@THIS",
+              "that"     => "@THAT",
+             }
+
   attr_accessor :asm
 
   def initialize
@@ -23,30 +29,46 @@ class CodeWriter
   def write_push(segment, index)
     @asm << "// push #{segment} #{index}"
 
-    if segment == "constant"
+    case segment
+    when "temp"
+      @asm << "@R#{5+index}"
+      @asm << "D=A"
+    when "constant"
       @asm << "@#{index}"
       @asm << "D=A"
-    else
-      # Use the proper segment
+    when "local", "argument", "this", "that"
+      @asm << "@#{index}"
+      @asm << "D=A"
+      @asm << SEGMENTS[segment]
+      @asm << "A=M+D"
+      @asm << "D=M"
     end
     pushd
   end
 
   def write_pop(segment, index)
-    # Use segment properly
-
     @asm << "// pop #{segment} #{index}"
-    @asm << "@#{index}"
-    @asm << "D=A"
-    @asm << "@LCL"  # TODO SEGMENT
-    @asm << "D=A+D"
-    @asm << "@R13"
-    @asm << "M=D"
-    @asm << "@SP"
-    @asm << "AM=M-1"
-    @asm << "D=M"
-    @asm << "@R13"
-    @asm << "A=M"
+
+    case segment
+    when "temp"
+      @asm << "@SP"
+      @asm << "AM=M-1"
+      @asm << "D=M"
+      @asm << "@R#{5+index}"
+    else
+      @asm << "@#{index}"
+      @asm << "D=A"
+      @asm << SEGMENTS[segment]
+      @asm << "D=M+D"
+      @asm << "@R13"
+      @asm << "M=D"
+      @asm << "@SP"
+      @asm << "AM=M-1"
+      @asm << "D=M"
+      @asm << "@R13"
+      @asm << "A=M"
+    end
+
     @asm << "M=D"
   end
 

@@ -23,6 +23,98 @@ class TestCodeWriter < Minitest::Test
     assert_equal "M=M+1",              asm[7]
   end
 
+  def test_write_push_local
+    # push local 7
+    @cw.write_push_pop(:c_push, "local", 7)
+
+    asm = @cw.asm
+    assert_equal 11, asm.length
+    assert_equal "// push local 7",    asm[0]
+    assert_equal "@7",                 asm[1]
+    assert_equal "D=A",                asm[2]
+    assert_equal "@LCL",               asm[3]
+    assert_equal "A=M+D",              asm[4]
+    assert_equal "D=M",                asm[5]
+    assert_equal "@SP",                asm[6]
+    assert_equal "A=M",                asm[7]
+    assert_equal "M=D",                asm[8]
+    assert_equal "@SP",                asm[9]
+    assert_equal "M=M+1",              asm[10]
+  end
+
+  def test_write_push_argument
+    # push argument 8
+    @cw.write_push_pop(:c_push, "argument", 8)
+
+    asm = @cw.asm
+    assert_equal 11, asm.length
+    assert_equal "// push argument 8", asm[0]
+    assert_equal "@8",                 asm[1]
+    assert_equal "D=A",                asm[2]
+    assert_equal "@ARG",               asm[3]
+    assert_equal "A=M+D",              asm[4]
+    assert_equal "D=M",                asm[5]
+    assert_equal "@SP",                asm[6]
+    assert_equal "A=M",                asm[7]
+    assert_equal "M=D",                asm[8]
+    assert_equal "@SP",                asm[9]
+    assert_equal "M=M+1",              asm[10]
+  end
+
+  def test_write_push_this
+    # push argument 5
+    @cw.write_push_pop(:c_push, "this", 5)
+
+    asm = @cw.asm
+    assert_equal 11, asm.length
+    assert_equal "// push this 5",     asm[0]
+    assert_equal "@5",                 asm[1]
+    assert_equal "D=A",                asm[2]
+    assert_equal "@THIS",              asm[3]
+    assert_equal "A=M+D",              asm[4]
+    assert_equal "D=M",                asm[5]
+    assert_equal "@SP",                asm[6]
+    assert_equal "A=M",                asm[7]
+    assert_equal "M=D",                asm[8]
+    assert_equal "@SP",                asm[9]
+    assert_equal "M=M+1",              asm[10]
+  end
+
+  def test_write_push_that
+    # push argument 6
+    @cw.write_push_pop(:c_push, "that", 6)
+
+    asm = @cw.asm
+    assert_equal 11, asm.length
+    assert_equal "// push that 6",     asm[0]
+    assert_equal "@6",                 asm[1]
+    assert_equal "D=A",                asm[2]
+    assert_equal "@THAT",              asm[3]
+    assert_equal "A=M+D",              asm[4]
+    assert_equal "D=M",                asm[5]
+    assert_equal "@SP",                asm[6]
+    assert_equal "A=M",                asm[7]
+    assert_equal "M=D",                asm[8]
+    assert_equal "@SP",                asm[9]
+    assert_equal "M=M+1",              asm[10]
+  end
+
+  def test_write_push_temp
+    # push temp 2
+    @cw.write_push_pop(:c_push, "temp", 2)
+
+    asm = @cw.asm
+    assert_equal 8, asm.length
+    assert_equal "// push temp 2",     asm[0]
+    assert_equal "@R7",                asm[1]
+    assert_equal "D=A",                asm[2]
+    assert_equal "@SP",                asm[3]
+    assert_equal "A=M",                asm[4]
+    assert_equal "M=D",                asm[5]
+    assert_equal "@SP",                asm[6]
+    assert_equal "M=M+1",              asm[7]
+  end
+
   def test_write_pop_local
     # pop local 4
     @cw.write_push_pop(:c_pop, "local", 4)
@@ -33,7 +125,7 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@4",             asm[1]
     assert_equal "D=A",            asm[2]
     assert_equal "@LCL",           asm[3]
-    assert_equal "D=A+D",          asm[4]
+    assert_equal "D=M+D",          asm[4]
     assert_equal "@R13",           asm[5]
     assert_equal "M=D",            asm[6]
     assert_equal "@SP",            asm[7]
@@ -42,6 +134,83 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@R13",           asm[10]
     assert_equal "A=M",            asm[11]
     assert_equal "M=D",            asm[12]
+  end
+
+  def test_write_pop_argument
+    # pop argument 1
+    @cw.write_push_pop(:c_pop, "argument", 1)
+
+    asm = @cw.asm
+    assert_equal 13, asm.length
+    assert_equal "// pop argument 1", asm[0]
+    assert_equal "@1",                asm[1]
+    assert_equal "D=A",               asm[2]
+    assert_equal "@ARG",              asm[3]
+    assert_equal "D=M+D",             asm[4]
+    assert_equal "@R13",              asm[5]
+    assert_equal "M=D",               asm[6]
+    assert_equal "@SP",               asm[7]
+    assert_equal "AM=M-1",            asm[8]
+    assert_equal "D=M",               asm[9]
+    assert_equal "@R13",              asm[10]
+    assert_equal "A=M",               asm[11]
+    assert_equal "M=D",               asm[12]
+  end
+
+  def test_write_pop_this
+    # pop this 2
+    @cw.write_push_pop(:c_pop, "this", 2)
+
+    asm = @cw.asm
+    assert_equal 13, asm.length
+    assert_equal "// pop this 2",     asm[0]
+    assert_equal "@2",                asm[1]
+    assert_equal "D=A",               asm[2]
+    assert_equal "@THIS",             asm[3]
+    assert_equal "D=M+D",             asm[4]
+    assert_equal "@R13",              asm[5]
+    assert_equal "M=D",               asm[6]
+    assert_equal "@SP",               asm[7]
+    assert_equal "AM=M-1",            asm[8]
+    assert_equal "D=M",               asm[9]
+    assert_equal "@R13",              asm[10]
+    assert_equal "A=M",               asm[11]
+    assert_equal "M=D",               asm[12]
+  end
+
+  def test_write_pop_that
+    # pop that 3
+    @cw.write_push_pop(:c_pop, "that", 3)
+
+    asm = @cw.asm
+    assert_equal 13, asm.length
+    assert_equal "// pop that 3",     asm[0]
+    assert_equal "@3",                asm[1]
+    assert_equal "D=A",               asm[2]
+    assert_equal "@THAT",             asm[3]
+    assert_equal "D=M+D",             asm[4]
+    assert_equal "@R13",              asm[5]
+    assert_equal "M=D",               asm[6]
+    assert_equal "@SP",               asm[7]
+    assert_equal "AM=M-1",            asm[8]
+    assert_equal "D=M",               asm[9]
+    assert_equal "@R13",              asm[10]
+    assert_equal "A=M",               asm[11]
+    assert_equal "M=D",               asm[12]
+  end
+
+  def test_write_pop_temp
+    # pop temp 7
+    @cw.write_push_pop(:c_pop, "temp", 7)
+
+    asm = @cw.asm
+    assert_equal 6, asm.length
+    assert_equal "// pop temp 7",     asm[0]
+    assert_equal "@SP",               asm[1]
+    assert_equal "AM=M-1",            asm[2]
+    assert_equal "D=M",               asm[3]
+    assert_equal "@R12",              asm[4]
+    assert_equal "M=D",               asm[5]
   end
 
   def test_write_arithmetic_add
@@ -247,5 +416,4 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@SP",    asm[11]
     assert_equal "M=M+1",    asm[12]
   end
-
 end
