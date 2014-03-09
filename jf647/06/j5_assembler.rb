@@ -1,29 +1,31 @@
-require 'j5_lexer'
-require 'j5_ast'
+require 'j5_types'
 require 'j5_parser'
+require 'j5_symtable'
 
 module JohnnyFive
 
     class Assembler
 
         def assemble(infname)
+            statements = []
+            parser = Parser.new(SymTable.new)
             File.open(infname).each_line.each_with_index do |line, num|
-                line.chomp!
                 begin
-                    node = JohnnyFive::Parser::parse(JohnnyFive::Lexer::lex(line), :verbose => ENV.key?('VERBOSE'))
+                    line.chomp!
+                    statement = parser.parse(line)
                     case
-                        when node.is_a?(Command)
-                            puts "saw a #{node.class}: #{node.inspect}"
-                            yield node if block_given?
-                        when (node.is_a?(Comment) or node.is_a?(Blank))
-                            # no-op
-                    else
-                        raise "unexpected parse result '#{node.class}'"
+                        when statement.is_a?(Command)
+                            statements << statement
+                        when statement.nil?
+                            # comment or blank line
+                        else
+                            raise "unexpected parse result '#{statement.class}'"
                     end
                 rescue => ex
                     raise "failed to parse line #{num+1} '#{line}': #{ex}"
                 end
             end
+            statements.each { |s| yield s } if block_given?
         end
         
     end

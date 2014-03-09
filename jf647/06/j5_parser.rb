@@ -1,126 +1,96 @@
-require 'rltk'
-
 module JohnnyFive
     
-    class Parser < RLTK::Parser
+    class Parser
 
-        p(:node) do
-            c('COMMENT')                    { |_| Comment.new }
-            c('command')                    { |c| c }
-            c('')                           { Blank.new }
+        def initialize(symtable)
+            @syms = symtable
         end
 
-        p(:command) do
-            c('a_command')               { |a| a }
-            c('c_command')               { |c| c }
-        end
-        
-        p(:a_command) do
-            # @12345
-            c('AT NUMBER')          { |_,n| ACommand.new(n) }
-        end
-        
-        p(:c_command) do
-            # comp
-            c('comp')                       { |c| CCommand.new(0b0, c.bits, 0b0) }
-            # dest=comp
-            c('dest ASSIGN comp')           { |d,_,c| CCommand.new(d.bits, c.bits, 0b0) }
-            # comp;jump
-            c('comp SEMI jump')             { |c,_,j| CCommand.new(0b0, c.bits, j.bits) }
-            # dest=comp;jump
-            c('dest ASSIGN comp SEMI jump') { |d,_,c,_,j| CCommand.new(d.bits, c.bits, j.bits) }
-        end
+        def parse(origline)
+            # remove newline and leading/trailing whitespace
+            line = origline.strip
+            # trim comments to end of line
+            line.gsub!(/\/\/.*$/, '')
+            # skip empty lines
+            return nil if line.match(/^\s*$/)
 
-        # refactor using enviroments to reduce the number of clauses
-        p(:dest) do
-            c('MREG')           { |_| Dest.new(0b001) }
-            c('DREG')           { |_| Dest.new(0b010) }
-            c('MREG DREG')      { |_,_| Dest.new(0b011) }
-            c('AREG')           { |_| Dest.new(0b100) }
-            c('AREG MREG')      { |_,_| Dest.new(0b101) }
-            c('AREG DREG')      { |_,_| Dest.new(0b110) }
-            c('AREG MREG DREG') { |_,_,_| Dest.new(0b111) }
-        end
-
-        # refactor using enviroments to reduce the number of clauses
-        p(:comp) do
-            # 0
-            c('NUMBER') do |n|
-                case n
-                    when 0
-                        Comp.new(0b0101010)
-                    when 1
-                        Comp.new(0b0111111)
-                    else
-                        nil
-                end
+            # A commands
+            if m = line.match(/^@(\d+)$/)
+                return ACommand.new(m[1])
             end
-            # -1
-            c('MINUS NUMBER')      { |_,_| Comp.new(0b0111010) }
-            # D
-            c('DREG')           { |_| Comp.new(0b0001100) }
-            # A
-            c('AREG')           { |_| Comp.new(0b0110000) }
-            # !D
-            c('NOT DREG')       { |_,_| Comp.new(0b0001101) }
-            # !A
-            c('NOT AREG')       { |_,_| Comp.new(0b0110001) }
-            # -D
-            c('MINUS DREG')     { |_,_| Comp.new(0b0001111) }
-            # -A
-            c('MINUS AREG')     { |_,_| Comp.new(0b0110011) }
-            # D+1
-            c('DREG PLUS NUMBER')  { |_,_,_| Comp.new(0b0011111) }
-            # A+1
-            c('AREG PLUS NUMBER')  { |_,_,_| Comp.new(0b0110111) }
-            # D-1
-            c('DREG MINUS NUMBER') { |_,_,_| Comp.new(0b0001110) }
-            # A-1
-            c('AREG MINUS NUMBER') { |_,_,_| Comp.new(0b0110010) }
-            # D+A
-            c('DREG PLUS AREG') { |_,_,_| Comp.new(0b0000010) }
-            # D-A
-            c('DREG MINUS AREG') { |_,_,_| Comp.new(0b0010011) }
-            # A-D
-            c('AREG MINUS DREG') { |_,_,_| Comp.new(0b0000111) }
-            # D&A
-            c('DREG AND AREG')  { |_,_,_| Comp.new(0b0000000) }
-            # D|A
-            c('DREG OR AREG')   { |_,_,_| Comp.new(0b0010101) }
-            # M
-            c('MREG')           { |_| Comp.new(0b1110000) }
-            # !M
-            c('NOT MREG')       { |_,_| Comp.new(0b1110001) }
-            # -M
-            c('MINUS MREG')     { |_,_| Comp.new(0b1110011) }
-            # M+1
-            c('MREG PLUS NUMBER')  { |_,_,_| Comp.new(0b1110111) }
-            # M-1
-            c('MREG MINUS NUMBER') { |_,_,_| Comp.new(0b1110010) }
-            # D+M
-            c('DREG PLUS MREG')  { |_,_,_| Comp.new(0b1000010) }
-            # D-M
-            c('DREG MINUS MREG') { |_,_,_| Comp.new(0b1010011) }
-            # M-D
-            c('MREG MINUS DREG') { |_,_,_| Comp.new(0b1000111) }
-            # D&M
-            c('DREG AND MREG')  { |_,_,_| Comp.new(0b1000000) }
-            # D|M
-            c('DREG OR MREG')   { |_,_,_| Comp.new(0b1010101) }
+            if m = line.match(/^@([a-zA-Z_\.\$\:][\w\.\$\:]*)$/)
+                return ACommand.new(m[1].to_sym)
+            end
+            
+            # C commands
+            if m = line.match(/^(?:([AMD]+)=)?([-+\!\&\|AMD01]+)(?:;(J[A-Z]{2}))?$/)
+                dest = @@dest_bits[m[1]] if m[1]
+                comp = @@comp_bits[m[2]] if m[2]
+                jump = @@jump_bits[m[3]] if m[3]
+                return CCommand.new(dest, comp, jump)
+            end
+
+            # anything else is an error
+            raise "unparseable line '#{origline}'"
         end
         
-        p(:jump) do
-            c('JGT')            { |_| Jump.new(0b001) }
-            c('JEQ')            { |_| Jump.new(0b010) }
-            c('JGE')            { |_| Jump.new(0b011) }
-            c('JLT')            { |_| Jump.new(0b100) }
-            c('JNE')            { |_| Jump.new(0b101) }
-            c('JLE')            { |_| Jump.new(0b110) }
-            c('JMP')            { |_| Jump.new(0b111) }
-        end
+        # given the time I wasted trying to develop a CFG for Hack,
+        # I've made no attempt to optimize the C-part parsers
         
-        finalize :explain => ENV.key?('EXPLAIN')
+        # turn dest specifications into bits
+        @@dest_bits = Hash.new{ |h,k| raise "invalid dest specification '#{k}'" }.merge!({
+            'M'   => 0b001,
+            'D'   => 0b010,
+            'MD'  => 0b011,
+            'A'   => 0b100,
+            'AM'  => 0b101,
+            'AD'  => 0b110,
+            'AMD' => 0b111,
+        })
         
+        # turn comp specifications into bits
+        @@comp_bits = Hash.new{ |h,k| raise "invalid comp specification '#{k}'" }.merge!({
+            '0'   => 0b0101010,
+            '1'   => 0b0111111,
+            '-1'  => 0b0111010,
+            'D'   => 0b0001100,
+            'A'   => 0b0110000,
+            '!D'  => 0b0001101,
+            '!A'  => 0b0110001,
+            '-D'  => 0b0001111,
+            '-A'  => 0b0110011,
+            'D+1' => 0b0011111,
+            'A+1' => 0b0110111,
+            'D-1' => 0b0001110,
+            'A-1' => 0b0110010,
+            'D+A' => 0b0000010,
+            'D-A' => 0b0010011,
+            'A-D' => 0b0000111,
+            'D&A' => 0b0000000,
+            'D|A' => 0b0010101,
+            'M'   => 0b1110000,
+            '!M'  => 0b1110001,
+            '-M'  => 0b1110011,
+            'M+1' => 0b1110111,
+            'M-1' => 0b1110010,
+            'D+M' => 0b1000010,
+            'D-M' => 0b1010011,
+            'M-D' => 0b1000111,
+            'D&M' => 0b1000000,
+            'D|M' => 0b1010101,
+        })
+        
+        # turn jump specifications into bits
+        @@jump_bits = Hash.new{ |h,k| raise "invalid jump specification '#{k}'" }.merge!({
+            'JGT' => 0b001,
+            'JEQ' => 0b010,
+            'JGE' => 0b011,
+            'JLT' => 0b100,
+            'JNE' => 0b101,
+            'JLE' => 0b110,
+            'JMP' => 0b111,
+        })
+
     end
 
 end

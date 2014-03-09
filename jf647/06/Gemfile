@@ -1,3 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rltk'
+gem 'promise'
+
+group :development do
+    gem 'debugger'
+end
