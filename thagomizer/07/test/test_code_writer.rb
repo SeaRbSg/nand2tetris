@@ -318,21 +318,18 @@ class TestCodeWriter < Minitest::Test
     @cw.write_arithmetic("neg")
 
     asm = @cw.asm
-    assert_equal 7, asm.length
+    assert_equal 4, asm.length
     assert_equal "// neg", asm[0]
     assert_equal "@SP",    asm[1]
-    assert_equal "AM=M-1", asm[2]
-    assert_equal "D=M",    asm[3]
-    assert_equal "MD=-D",  asm[4]
-    assert_equal "@SP",    asm[5]
-    assert_equal "M=M+1",  asm[6]
+    assert_equal "A=M-1",  asm[2]
+    assert_equal "M=-M",   asm[3]
   end
 
   def test_write_arithmetic_eq
     @cw.write_arithmetic("eq")
 
     asm = @cw.asm
-    assert_equal 22, asm.length
+    assert_equal 21, asm.length
     assert_equal "// eq",       asm[0]
     assert_equal "@SP",         asm[1]
     assert_equal "AM=M-1",      asm[2]
@@ -344,27 +341,26 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@TRUE0001",   asm[8]
     assert_equal "D;JEQ",       asm[9]
 
-    assert_equal "(FALSE0002)", asm[10]
-    assert_equal "D=0",         asm[11]
-    assert_equal "@PUSHD0003",  asm[12]
-    assert_equal "0;JMP",       asm[13]
+    assert_equal "D=0",         asm[10]
+    assert_equal "@PUSHD0002",  asm[11]
+    assert_equal "0;JMP",       asm[12]
 
-    assert_equal "(TRUE0001)",  asm[14]
-    assert_equal "D=-1",        asm[15]
+    assert_equal "(TRUE0001)",  asm[13]
+    assert_equal "D=-1",        asm[14]
 
-    assert_equal "(PUSHD0003)", asm[16]
-    assert_equal "@SP",         asm[17]
-    assert_equal "A=M",         asm[18]
-    assert_equal "M=D",         asm[19]
-    assert_equal "@SP",         asm[20]
-    assert_equal "M=M+1",       asm[21]
+    assert_equal "(PUSHD0002)", asm[15]
+    assert_equal "@SP",         asm[16]
+    assert_equal "A=M",         asm[17]
+    assert_equal "M=D",         asm[18]
+    assert_equal "@SP",         asm[19]
+    assert_equal "M=M+1",       asm[20]
   end
 
   def test_write_arithmetic_gt
     @cw.write_arithmetic("gt")
 
     asm = @cw.asm
-    assert_equal 22, asm.length
+    assert_equal 21, asm.length
     assert_equal "// gt",       asm[0]
     assert_equal "@SP",         asm[1]
     assert_equal "AM=M-1",      asm[2]
@@ -376,27 +372,26 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@TRUE0001",   asm[8]
     assert_equal "D;JGT",       asm[9]
 
-    assert_equal "(FALSE0002)", asm[10]
-    assert_equal "D=0",         asm[11]
-    assert_equal "@PUSHD0003",  asm[12]
-    assert_equal "0;JMP",       asm[13]
+    assert_equal "D=0",         asm[10]
+    assert_equal "@PUSHD0002",  asm[11]
+    assert_equal "0;JMP",       asm[12]
 
-    assert_equal "(TRUE0001)",  asm[14]
-    assert_equal "D=-1",        asm[15]
+    assert_equal "(TRUE0001)",  asm[13]
+    assert_equal "D=-1",        asm[14]
 
-    assert_equal "(PUSHD0003)", asm[16]
-    assert_equal "@SP",         asm[17]
-    assert_equal "A=M",         asm[18]
-    assert_equal "M=D",         asm[19]
-    assert_equal "@SP",         asm[20]
-    assert_equal "M=M+1",       asm[21]
+    assert_equal "(PUSHD0002)", asm[15]
+    assert_equal "@SP",         asm[16]
+    assert_equal "A=M",         asm[17]
+    assert_equal "M=D",         asm[18]
+    assert_equal "@SP",         asm[19]
+    assert_equal "M=M+1",       asm[20]
   end
 
   def test_write_arithmetic_lt
     @cw.write_arithmetic("lt")
 
     asm = @cw.asm
-    assert_equal 22, asm.length
+    assert_equal 21, asm.length
     assert_equal "// lt",       asm[0]
     assert_equal "@SP",         asm[1]
     assert_equal "AM=M-1",      asm[2]
@@ -408,34 +403,30 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@TRUE0001",   asm[8]
     assert_equal "D;JLT",       asm[9]
 
-    assert_equal "(FALSE0002)", asm[10]
-    assert_equal "D=0",         asm[11]
-    assert_equal "@PUSHD0003",  asm[12]
-    assert_equal "0;JMP",       asm[13]
+    assert_equal "D=0",         asm[10]
+    assert_equal "@PUSHD0002",  asm[11]
+    assert_equal "0;JMP",       asm[12]
 
-    assert_equal "(TRUE0001)",  asm[14]
-    assert_equal "D=-1",        asm[15]
+    assert_equal "(TRUE0001)",  asm[13]
+    assert_equal "D=-1",        asm[14]
 
-    assert_equal "(PUSHD0003)", asm[16]
-    assert_equal "@SP",         asm[17]
-    assert_equal "A=M",         asm[18]
-    assert_equal "M=D",         asm[19]
-    assert_equal "@SP",         asm[20]
-    assert_equal "M=M+1",       asm[21]
+    assert_equal "(PUSHD0002)", asm[15]
+    assert_equal "@SP",         asm[16]
+    assert_equal "A=M",         asm[17]
+    assert_equal "M=D",         asm[18]
+    assert_equal "@SP",         asm[19]
+    assert_equal "M=M+1",       asm[20]
   end
 
   def test_write_arithmetic_not
     @cw.write_arithmetic("not")
 
     asm = @cw.asm
-    assert_equal 7, asm.length
+    assert_equal 4, asm.length
     assert_equal "// not", asm[0]
     assert_equal "@SP",    asm[1]
-    assert_equal "AM=M-1", asm[2]
-    assert_equal "D=M",    asm[3]
-    assert_equal "MD=!D",  asm[4]
-    assert_equal "@SP",    asm[5]
-    assert_equal "M=M+1",  asm[6]
+    assert_equal "A=M-1",  asm[2]
+    assert_equal "M=-M",   asm[3]
   end
 
   def test_write_arithmetic_and

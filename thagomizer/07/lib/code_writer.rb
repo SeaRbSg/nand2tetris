@@ -181,7 +181,6 @@ class CodeWriter
 
   def comparison(jump_to_use)
     label_true = next_label("TRUE")
-    label_false = next_label("FALSE")
     label_pushd = next_label("PUSHD")
 
     binary_operation {
@@ -189,7 +188,6 @@ class CodeWriter
       @asm << "@#{label_true}"
       @asm << "D;#{jump_to_use}"
 
-      @asm << "(#{label_false})"
       @asm << "D=0"
       @asm << "@#{label_pushd}"
       @asm << "0;JMP"
@@ -204,10 +202,8 @@ class CodeWriter
   # The block must put the result in D
   def unary_operation
     @asm << "@SP"
-    @asm << "AM=M-1"
-    @asm << "D=M"
-    yield if block_given?
-    increment_sp
+    @asm << "A=M-1"
+    @asm << "M=-M"
   end
 
   # The block must put the result in D
