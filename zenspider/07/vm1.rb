@@ -119,8 +119,7 @@ class Compiler
       self.class.name.split(/::/).last.downcase
     end
 
-    def dereference name, deref2
-      a =
+    def dereference name
       case offset
       when 0 then
         asm "@#{name}", "A=M"
@@ -129,46 +128,40 @@ class Compiler
       else
         asm "@#{name}", "D=M", "@#{offset}", "A=A+D"
       end
-      a << asm(deref2 ? "D=M" : "D=A") # TODO: consider pushing down, way down
-      a
     end
 
-    def constant _ = false
-      asm "@#{offset}", "D=A"
+    def constant
+      asm "@#{offset}"
     end
 
-    def local deref = false
-      dereference "LCL", deref
+    def local
+      dereference "LCL"
     end
 
-    def argument deref = false
-      dereference "ARG", deref
+    def argument
+      dereference "ARG"
     end
 
-    def this deref = false
-      dereference "THIS", deref
+    def this
+      dereference "THIS"
     end
 
-    def that deref = false
-      dereference "THAT", deref
+    def that
+      dereference "THAT"
     end
 
-    def temp deref = false
-      a_m  = deref ? "M" : "A"
-      off = offset + 5
-      asm "@R#{off}", "D=#{a_m}"
+    def temp
+      asm "@R#{offset + 5}"
     end
 
-    def static deref = false
-      a_m = deref ? "M" : "A"
-      off = offset ? [ "@#{offset}", "A=A+D" ] : nil
-      asm "@16", "D=A", off, "D=#{a_m}"
+    def static
+      off = [ "@#{offset}", "A=A+D" ] if offset
+      asm "@16", "D=A", off
     end
 
-    def pointer deref = false
-      a_m  = deref ? "M" : "A"
-      off = offset == 0 ? nil : "A=A+1"
-      asm "@THIS", off, "D=#{a_m}"
+    def pointer
+      off = "A=A+1" if offset != 0
+      asm "@THIS", off
     end
   end
 
@@ -183,9 +176,14 @@ class Compiler
   end
 
   class Push < StackThingy
+    def store
+      asm segment == "constant" ? "D=A" : "D=M"
+    end
+
     def to_s
       assemble(comment,
-               send(segment, :double),
+               send(segment),
+               store,
                push_d)
     end
   end
@@ -195,9 +193,14 @@ class Compiler
       asm reg, "M=D", yield, reg, "A=M"
     end
 
+    def store
+      asm "D=A"
+    end
+
     def to_s
       assemble(comment,
                send(segment),
+               store,
                temp_store("@R15") do
                  peek
                end,
@@ -215,7 +218,7 @@ class Compiler
     end
 
     def push_d
-      super("A=M") unless %w[not neg].include? msg
+      super "A=M" unless %w[not neg].include? msg
     end
 
     def to_s
