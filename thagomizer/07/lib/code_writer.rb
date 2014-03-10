@@ -127,7 +127,7 @@ class CodeWriter
 
   def write_neg
     unary_operation {
-      @asm << "MD=-D"
+      @asm << "M=-M"
     }
   end
 
@@ -157,7 +157,7 @@ class CodeWriter
 
   def write_not
     unary_operation {
-      @asm << "MD=!D"
+      @asm << "M=!M"
     }
   end
 
@@ -203,7 +203,7 @@ class CodeWriter
   def unary_operation
     @asm << "@SP"
     @asm << "A=M-1"
-    @asm << "M=-M"
+    yield
   end
 
   # The block must put the result in D
