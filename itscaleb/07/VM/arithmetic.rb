@@ -13,16 +13,33 @@ class Arithmetic
 
   def self.eq
     asm = Arithmetic.op "D=A-D"
-    asm <<  "@EQ"
-    asm <<  "D;JEQ"
+    Arithmetic.cmp asm "D;JEQ"
+    Push.push_d asm
+  end
+
+  def self.cmp asm cmp
+    asm <<  "@TRUE"
+    asm <<  cmp
     asm <<  "D=0"
     asm <<  "@END"
     asm <<  "0;JMP"
-    asm <<  "(EQ)"
+    asm <<  "(TRUE)"
     asm <<  "D=-1"
     asm <<  "(END)"
+  end
+
+  def self.lt
+    asm = Arithmetic.op "D=A-D"
+    Arithmetic.cmp asm "D;JLT"
     Push.push_d asm
   end
+
+  def self.gt
+    asm = Arithmetic.op "D=A-D"
+    Arithmetic.cmp asm "D;JGT"
+    Push.push_d asm
+  end
+
 
   def self.op op
     asm = []
