@@ -97,38 +97,19 @@ Function: Returns the second argument of the current command.  Should be called 
       var3 = var1.to_i + var2.to_i
       self.stack.push(var3)
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-// @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-// @#{var2mem}
-// M=D
-
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
 @#{var1mem}
 M=D+M
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
 @0
-M=D
+M=D+1
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "sub"
@@ -153,37 +134,19 @@ PARAGRAPH
       temp = var1.to_i - var2.to_i
       self.stack.push(temp)
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-// @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-// @#{var2mem}
-// M=D
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
 @#{var1mem}
 M=M-D
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
 @0
-M=D
+M=D+1
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "neg"
@@ -195,15 +158,13 @@ PARAGRAPH
       self.stack.push(var1 * -1)
 
 file = <<PARAGRAPH
-// M=-D
-// @#{var1}
-// D=D
-
 @#{var1mem}
 M=-M
 
+@#{var1mem}
+D=A
 @0
-M=D
+M=D+1
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "eq"
@@ -220,22 +181,6 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-//  @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-//  @#{var2mem}
-// M=D
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
@@ -248,15 +193,14 @@ D;JEQ
 @#{var1mem}
 M=0
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
+
 @0
-M=D
+M=D+1
 
 @END#{counter}
 0;JMP
@@ -266,15 +210,14 @@ M=D
 @#{var1mem}
 M=-1
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
+
 @0
-M=D
+M=D+1
 
 (END#{counter})
 
@@ -294,22 +237,6 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-// @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-// @#{var2mem}
-// M=D
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
@@ -322,15 +249,14 @@ D;JGT
 @#{var1mem}
 M=0
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
+
 @0
-M=D
+M=D+1
 
 @END#{counter}
 0;JMP
@@ -340,15 +266,14 @@ M=D
 @#{var1mem}
 M=-1
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
+
 @#{var2mem}
 D=A
 @0
-M=D
+M=D+1
 
 (END#{counter})
 
@@ -368,22 +293,6 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-// @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-// @#{var2mem}
-// M=D
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
@@ -396,15 +305,14 @@ D;JLT
 @#{var1mem}
 M=0
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
+
 @0
-M=D
+M=D+1
 
 @END#{counter}
 0;JMP
@@ -414,15 +322,14 @@ M=D
 @#{var1mem}
 M=-1
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
+
 @#{var2mem}
 D=A
 @0
-M=D
+M=D+1
 
 (END#{counter})
 
@@ -451,37 +358,19 @@ PARAGRAPH
         self.stack.push(-1)
       end
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-// @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-// @#{var2mem}
-// M=D
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
 @#{var1mem}
 M=M&D
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
 @0
-M=D
+M=D+1
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "or"
@@ -507,37 +396,19 @@ PARAGRAPH
         self.stack.push(-1)
       end
 file = <<PARAGRAPH
-// @256 = 7
-// @256 = var1
-// var1mem = 256 + (self.sp - 2)
-// #{256 + (self.sp - 2)}
-// @#{var1}
-// D=A
-// @#{var1mem}
-// M=D
-
-// @257 = 8
-// @#{var2}
-// D=A
-// @#{var2mem}
-// M=D
-
-// @256 = @256 + @257
 @#{var2mem}
 D=M
 
 @#{var1mem}
 M=D|M
 
-// @257 = 0
 @#{var2mem}
 M=0
 
-// @0 = 257
 @#{var2mem}
 D=A
 @0
-M=D
+M=D+1
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "not"
@@ -559,14 +430,15 @@ PARAGRAPH
       self.stack.push(var2bit.to_i(2))
 
 file = <<PARAGRAPH
-// M=-D
 @#{var1}
 D=A
 @#{var1mem}
 M=!M
 
+@#{var1mem}
+D=A
 @0
-M=D
+M=D+1
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     end
