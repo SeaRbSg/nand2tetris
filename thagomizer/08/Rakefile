@@ -1,0 +1,23 @@
+file "lib/vm_translator.rb"
+
+rule ".asm" => ".vm" do |t|
+  sh "./lib//vm_translator.rb #{t.source}"
+end
+
+rule ".out" => ".asm" do |t|
+  base = t.source.sub(/\.asm$/, "")
+  full = File.expand_path base
+  sh "../../tools/CPUEmulator.sh #{full}.tst || diff -u #{base}.cmp #{t.name}"
+end
+
+def wire base
+  file "#{base}.asm" => [ "Rakefile", "./lib/vm_translator.rb", "#{base}.vm"]
+  file "#{base}.out" => [ "#{base}.asm" ]
+  task :default => "#{base}.out"
+end
+
+wire "ProgramFlow/BasicLoop"
+# wire "StackArithmetic/StackTest/StackTest"
+# wire "MemoryAccess/BasicTest/BasicTest"
+# wire "MemoryAccess/PointerTest/PointerTest"
+# wire "MemoryAccess/StaticTest/StaticTest"
