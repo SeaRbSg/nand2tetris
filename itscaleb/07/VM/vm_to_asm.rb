@@ -13,32 +13,35 @@ clean_lines = raw_lines.map {|line| line.strip}
 asm = []
 arithmetic = Arithmetic.new
 clean_lines.each do |line|
-  if line.start_with? "push"
+  case line
+  when /^push/
     lines = line.split
     push = Push.new lines[1], lines[2].to_i, file
     asm << push.to_asm
-  elsif line.start_with? "pop"
+  when /^pop/
     lines = line.split
     pop = Pop.new lines[1], lines[2].to_i, file
     asm << pop.to_asm
-  elsif line.start_with? "add"
+  when /^add/
     asm << arithmetic.add
-  elsif line.start_with? "eq"
+  when /^eq/
     asm << arithmetic.eq
-  elsif line.start_with? "lt"
+  when /^lt/
     asm << arithmetic.lt
-  elsif line.start_with? "gt"
+  when /^gt/
     asm << arithmetic.gt
-  elsif line.start_with? "sub"
+  when /^sub/
     asm << arithmetic.sub
-  elsif line.start_with? "neg"
+  when /^neg/
     asm << arithmetic.neg
-  elsif line.start_with? "and"
+  when /^and/
     asm << arithmetic.and
-  elsif line.start_with? "or"
+  when /^or/
     asm << arithmetic.or
-  elsif line.start_with? "not"
+  when /^not/
     asm << arithmetic.not
+  else
+    raise "cannot parse line"
   end
 end
 

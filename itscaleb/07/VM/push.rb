@@ -11,31 +11,31 @@ class Push
     @segment = segment
     @index = index
     @file = file
+    @asm = []
   end
 
   def to_asm
-    asm = []
     case @segment
     when "constant"
-      asm << "@#@index"
-      asm << "D=A"
+      @asm << "@#@index"
+      @asm << "D=A"
     when "local", "argument", "this", "that"
-      asm << "@#@index"
-      asm << "D=A"
-      asm << @@segment[@segment]
-      asm << "A=D+M"
-      asm << "D=M"
+      @asm << "@#@index"
+      @asm << "D=A"
+      @asm << @@segment[@segment]
+      @asm << "A=D+M"
+      @asm << "D=M"
     when "temp"
-      asm << "@#{5 + @index}"
-      asm << "D=M"
+      @asm << "@#{5 + @index}"
+      @asm << "D=M"
     when "pointer"
-      asm << "@#{3 + @index}"
-      asm << "D=M"
+      @asm << "@#{3 + @index}"
+      @asm << "D=M"
     when "static"
-      asm << "@#{@file}.#{@index}"
-      asm << "D=M"
+      @asm << "@#{@file}.#{@index}"
+      @asm << "D=M"
     end
-    Push.push_d asm
+    Push.push_d @asm
   end
 
   def self.push_d asm

@@ -11,48 +11,40 @@ class Pop
     @segment = segment
     @index = index
     @file = file
+    @asm = []
   end
 
   def to_asm
-    asm = []
     case @segment
     when "local", "argument", "this", "that"
       # calculate the memory location
       # and store it in @R13
-      asm << "@#@index"
-      asm << "D=A"
-      asm << @@segment[@segment]
-      asm << "D=D+M"
+      @asm << "@#@index"
+      @asm << "D=A"
+      @asm << @@segment[@segment]
+      @asm << "D=D+M"
       # store the location in @R13 because I need
       # the registers for popping
-      asm << "@R13"
-      asm << "M=D"
+      @asm << "@R13"
+      @asm << "M=D"
       # pop off stack
-      asm << "@SP"
-      asm << "AM=M-1"
-      asm << "D=M"
+      @asm.concat Pop.pop "D"
       # put @R13 in memory
-      asm << "@R13"
-      asm << "A=M"
-      asm << "M=D"
+      @asm << "@R13"
+      @asm << "A=M"
+      @asm << "M=D"
     when "temp"
-      asm << "@SP"
-      asm << "AM=M-1"
-      asm << "D=M"
-      asm << "@#{5 + @index}"
-      asm << "M=D"
+      @asm.concat Pop.pop "D"
+      @asm << "@#{5 + @index}"
+      @asm << "M=D"
     when "pointer"
-      asm << "@SP"
-      asm << "AM=M-1"
-      asm << "D=M"
-      asm << "@#{3 + @index}"
-      asm << "M=D"
+      @asm.concat Pop.pop "D"
+      @asm << "@#{3 + @index}"
+      @asm << "M=D"
     when "static"
-      asm << "@SP"
-      asm << "AM=M-1"
-      asm << "D=M"
-      asm << "@#{@file}.#{@index}"
-      asm << "M=D"
+      @asm.concat Pop.pop "D"
+      @asm << "@#{@file}.#{@index}"
+      @asm << "M=D"
     end
   end
 
