@@ -426,7 +426,7 @@ class TestCodeWriter < Minitest::Test
     assert_equal "// not", asm[0]
     assert_equal "@SP",    asm[1]
     assert_equal "A=M-1",  asm[2]
-    assert_equal "M=-M",   asm[3]
+    assert_equal "M=!M",   asm[3]
   end
 
   def test_write_arithmetic_and
