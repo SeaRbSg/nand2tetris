@@ -4,7 +4,8 @@ require_relative 'arithmetic'
 
 class ArithmeticTests < Minitest::Test
   def test_add
-    asm = Arithmetic.add
+    arithmetic = Arithmetic.new
+    asm = arithmetic.add
     assert_equal "@SP", asm[0]
     assert_equal "AM=M-1", asm[1]
     assert_equal "D=M", asm[2]
@@ -20,7 +21,8 @@ class ArithmeticTests < Minitest::Test
   end
 
   def test_sub
-    asm = Arithmetic.sub
+    arithmetic = Arithmetic.new
+    asm = arithmetic.sub
     assert_equal "@SP", asm[0]
     assert_equal "AM=M-1", asm[1]
     assert_equal "D=M", asm[2]

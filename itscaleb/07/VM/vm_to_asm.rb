@@ -1,5 +1,6 @@
 require_relative 'arithmetic'
 require_relative 'push'
+require_relative 'pop'
 require 'pry'
 
 raw_lines = File.readlines(ARGV[0])
@@ -15,6 +16,10 @@ clean_lines.each do |line|
     lines = line.split
     push = Push.new lines[1], lines[2].to_i
     asm << push.to_asm
+  elsif line.start_with? "pop"
+    lines = line.split
+    pop = Pop.new lines[1], lines[2].to_i
+    asm << pop.to_asm
   elsif line.start_with? "add"
     asm << arithmetic.add
   elsif line.start_with? "eq"

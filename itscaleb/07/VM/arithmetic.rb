@@ -43,22 +43,15 @@ class Arithmetic
   end
    
   def neg
-    asm = pop "D"
+    asm = Pop.pop "D"
     asm << "D=-D"
     Push.push_d asm
   end
 
   def not
-    asm = pop "D"
+    asm = Pop.pop "D"
     asm << "D=!D"
     Push.push_d asm
-  end
-
-  def pop reg
-    asm = []
-    asm << "@SP"
-    asm << "AM=M-1"
-    asm << "#{reg}=M"
   end
 
   def cmp asm, cmp
@@ -74,8 +67,8 @@ class Arithmetic
   end
 
   def op op
-    popd = pop "D"
-    popa = pop "A"
+    popd = Pop.pop "D"
+    popa = Pop.pop "A"
     popd.concat popa <<  op
   end
 end
