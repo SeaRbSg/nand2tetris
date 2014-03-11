@@ -1,4 +1,5 @@
 require_relative 'push'
+require_relative 'pop'
 
 class Arithmetic
   def initialize

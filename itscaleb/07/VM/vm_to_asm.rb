@@ -5,6 +5,7 @@ require 'pry'
 
 raw_lines = File.readlines(ARGV[0])
 
+file = ARGV[0].split('.')[0]
 clean_lines = raw_lines.map {|line| line.strip}
               .select {|line| !line.start_with?("//") && !line.empty?}
               .map {|line| line.split("//")[0].strip}
@@ -14,11 +15,11 @@ arithmetic = Arithmetic.new
 clean_lines.each do |line|
   if line.start_with? "push"
     lines = line.split
-    push = Push.new lines[1], lines[2].to_i
+    push = Push.new lines[1], lines[2].to_i, file
     asm << push.to_asm
   elsif line.start_with? "pop"
     lines = line.split
-    pop = Pop.new lines[1], lines[2].to_i
+    pop = Pop.new lines[1], lines[2].to_i, file
     asm << pop.to_asm
   elsif line.start_with? "add"
     asm << arithmetic.add

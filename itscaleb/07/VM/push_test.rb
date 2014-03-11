@@ -4,7 +4,7 @@ require_relative 'push'
 
 class PushTests < Minitest::Test
   def test_push_constant
-    push = Push.new "constant", 7
+    push = Push.new "constant", 7, "file"
     asm = push.to_asm
     assert_equal "@7", asm[0]
     assert_equal "D=A", asm[1]

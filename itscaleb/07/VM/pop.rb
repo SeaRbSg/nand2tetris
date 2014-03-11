@@ -7,9 +7,10 @@ class Pop
     "that" => "@THAT",
   }
 
-  def initialize segment, index
+  def initialize segment, index, file
     @segment = segment
     @index = index
+    @file = file
   end
 
   def to_asm
@@ -45,6 +46,12 @@ class Pop
       asm << "AM=M-1"
       asm << "D=M"
       asm << "@#{3 + @index}"
+      asm << "M=D"
+    when "static"
+      asm << "@SP"
+      asm << "AM=M-1"
+      asm << "D=M"
+      asm << "@#{@file}.#{@index}"
       asm << "M=D"
     end
   end
