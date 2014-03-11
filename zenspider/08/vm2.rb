@@ -41,6 +41,12 @@ class Compiler
         Pop.new $1, $2.to_i
       when /^(#{OPS})$/ then
         Op.new $1
+      when /^label (\S+)$/ then
+        Label.new $1
+      when /^if-goto (\S+)$/ then
+        IfGoto.new $1
+      when /^goto (\S+)$/ then
+        Goto.new $1
       else
         raise "Unparsed: #{line.inspect}"
       end
@@ -225,6 +231,36 @@ class Compiler
       assemble(comment,
                send(msg), # perform whatever operation, put into D
                push_d)
+    end
+  end
+
+  class Label < Struct.new :name
+    include Asmable
+
+    def comment
+      asm "// label #{name}"
+    end
+
+    def to_s
+      assemble(comment,
+               asm("(#{name})"))
+    end
+  end
+
+  class IfGoto < Struct.new :name
+    include Asmable
+    include Stackable
+
+    def to_s
+      assemble pop(:D), "@#{name}", "D;JNE"
+    end
+  end
+
+  class Goto < Struct.new :name
+    include Asmable
+
+    def to_s
+      assemble "@#{name}", "0;JMP"
     end
   end
 end

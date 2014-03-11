@@ -1,0 +1,20 @@
+file "vm1.rb"
+
+rule ".asm" => ".vm" do |t|
+  sh "./vm2.rb #{t.source} > #{t.name}"
+end
+
+rule ".out" => ".asm" do |t|
+  base = t.source.sub(/\.asm$/, "")
+  full = File.expand_path base
+  sh "../../tools/CPUEmulator.sh #{full}.tst || diff -u #{base}.cmp #{t.name}"
+end
+
+def wire base
+  file "#{base}.asm" => [ "Rakefile", "vm2.rb", "#{base}.vm"]
+  file "#{base}.out" => [ "#{base}.asm" ]
+  task :default => "#{base}.out"
+end
+
+wire "ProgramFlow/BasicLoop/BasicLoop"
+wire "ProgramFlow/FibonacciSeries/FibonacciSeries"
