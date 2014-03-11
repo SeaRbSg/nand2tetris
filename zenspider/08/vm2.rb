@@ -60,6 +60,10 @@ class Compiler
   module Stackable
     @@next_num = Hash.new 0
 
+    def pop dest
+      asm "@SP", "AM=M-1", "#{dest}=M"
+    end
+
     def next_num name
       n = @@next_num[name] += 1
       "#{name}.#{n}"
@@ -76,10 +80,6 @@ class Compiler
   end
 
   module Operable
-    def pop dest
-      asm "@SP", "AM=M-1", "#{dest}=M"
-    end
-
     def binary *instructions
       asm pop(:D), "A=A-1", "A=M", instructions
     end
