@@ -40,7 +40,7 @@ class VMTranslator
       when :c_goto
         @code_writer.write_goto(@parser.arg1)
       when :c_if
-        @code_writer.write_goto(@parser.arg1)
+        @code_writer.write_if(@parser.arg1)
       end
     end
   end
