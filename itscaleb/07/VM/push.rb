@@ -27,6 +27,9 @@ class Push
     when "temp"
       asm << "@#{5 + @index}"
       asm << "D=M"
+    when "pointer"
+      asm << "@#{3 + @index}"
+      asm << "D=M"
     end
     Push.push_d asm
   end
