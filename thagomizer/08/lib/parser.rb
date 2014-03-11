@@ -22,7 +22,7 @@ class Parser
 
   def advance
     begin
-      @current_command = @source.gets.gsub(/(\/\/.*$)/, '').gsub(/\s*\n/, '')
+      @current_command = @source.gets.gsub(/(\/\/.*$)/, '').gsub(/\s*\n/, '').strip
     end while @current_command.empty?
 
    command_type

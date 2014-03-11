@@ -78,7 +78,7 @@ class TestParser < Minitest::Test
   end
 
   def test_command_type_if
-    source = "if-goto IF_TRUE"
+    source = "if-goto LOOP_START // If counter > 0, goto LOOP_START"
     parser = Parser.new StringIO.new(source)
     parser.advance
 
