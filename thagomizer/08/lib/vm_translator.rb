@@ -3,6 +3,7 @@
 require_relative 'parser'
 require_relative 'code_writer'
 require 'stringio'
+require 'pp'
 
 class VMTranslator
   attr_accessor :code_writer
@@ -13,15 +14,27 @@ class VMTranslator
   end
 
   def self.run path
-    sio = StringIO.new File.read path
+    paths = []
 
-    vmt = VMTranslator.new(sio)
+    if File.directory?(path)
+      Dir.entries("ProgramFlow/BasicLoop").each do |entry|
+        paths << "#{path}#{entry}" if entry =~ /vm$/
+      end
+    else
+      paths << path
+    end
 
-    path =~ /\/(\w*)\.vm$/
-    vmt.code_writer.file_name = $1
+    paths.each do |p|
+      sio = StringIO.new File.read p
 
-    vmt.translate
-    vmt.write(path.gsub(/\..*/, '.asm'))
+      vmt = VMTranslator.new(sio)
+
+      path =~ /\/(\w*)\.vm$/
+      vmt.code_writer.file_name = $1
+
+      vmt.translate
+      vmt.write(p.gsub(/\..*/, '.asm'))
+    end
   end
 
   def translate

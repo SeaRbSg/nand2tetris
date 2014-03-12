@@ -1,6 +1,7 @@
 file "lib/vm_translator.rb"
 
 rule ".asm" => ".vm" do |t|
+  puts t.source
   sh "./lib//vm_translator.rb #{t.source}"
 end
 
@@ -11,13 +12,19 @@ rule ".out" => ".asm" do |t|
 end
 
 def wire base
-  file "#{base}.asm" => [ "Rakefile", "./lib/vm_translator.rb", "#{base}.vm"]
-  file "#{base}.out" => [ "#{base}.asm" ]
-  task :default => "#{base}.out"
+  file "#{base}/*.asm" => [ "Rakefile", "./lib/vm_translator.rb", "#{base}"]
+  file "#{base}/*.out" => [ "#{base}/*.asm" ]
+  task :default => "#{base}/*.out"
 end
 
 wire "ProgramFlow/BasicLoop"
+wire "ProgramFlow/FibonacciSeries"
 # wire "StackArithmetic/StackTest/StackTest"
 # wire "MemoryAccess/BasicTest/BasicTest"
 # wire "MemoryAccess/PointerTest/PointerTest"
 # wire "MemoryAccess/StaticTest/StaticTest"
+
+task :clean do
+  sh "rm */*/*.asm"
+  sh "rm */*/*.out"
+end
