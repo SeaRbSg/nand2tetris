@@ -1,6 +1,6 @@
 class Parser
-  PUSH_COMMAND     = /^push(?:\s+([\w.]+))?(?:\s+(\w+))?$/
-  POP_COMMAND      = /^pop(?:\s+([\w.]+))?(?:\s+(\w+))?$/
+  PUSH_COMMAND     = /^push(?:\s+([\w.]+))?(?:\s+(\d+))?$/
+  POP_COMMAND      = /^pop(?:\s+([\w.]+))?(?:\s+(\d+))?$/
   LABEL_COMMAND    = /^label(?:\s+([\w.]+))?(?:\s+(\w+))?$/
   GOTO_COMMAND     = /^goto(?:\s+([\w.]+))?(?:\s+(\w+))?$/
   IF_COMMAND       = /^if-goto(?:\s+([\w.]+))?(?:\s+(\w+))?$/
@@ -9,7 +9,7 @@ class Parser
   CALL_COMMAND     = /^call(?:\s+([\w.]+))?(?:\s+(\w+))?$/
   ARTH_COMMAND     = /^(add|sub|neg|eq|gt|lt|and|or|not)(?:\s+([\w.]+))?(?:\s+(\w+))?$/
 
-  attr_accessor :current_command, :arg1, :arg2
+  attr_accessor :current_command, :arg1, :arg2, :command_type
 
   def initialize source
     @source = source
@@ -25,34 +25,28 @@ class Parser
       @current_command = @source.gets.gsub(/(\/\/.*$)/, '').gsub(/\s*\n/, '')
     end while @current_command.empty?
 
-   command_type
-  end
-
-  def command_type
-    c_type = case @current_command
-             when PUSH_COMMAND
-               :c_push
-             when POP_COMMAND
-               :c_pop
-             when LABEL_COMMAND
-               :c_label
-             when GOTO_COMMAND
-               :c_goto
-             when IF_COMMAND
-               :c_if
-             when FUNCTION_COMMAND
-               :c_function
-             when RETURN_COMMAND
-               :c_return
-             when CALL_COMMAND
-               :c_call
-             when ARTH_COMMAND
-               :c_arithmetic
-             end
+    @command_type = case @current_command
+                    when PUSH_COMMAND
+                      :c_push
+                    when POP_COMMAND
+                      :c_pop
+                    when LABEL_COMMAND
+                      :c_label
+                    when GOTO_COMMAND
+                      :c_goto
+                    when IF_COMMAND
+                      :c_if
+                    when FUNCTION_COMMAND
+                      :c_function
+                    when RETURN_COMMAND
+                      :c_return
+                    when CALL_COMMAND
+                      :c_call
+                    when ARTH_COMMAND
+                      :c_arithmetic
+                    end
 
     @arg1, @arg2 = $~.captures
     @arg2 = @arg2.to_i
-
-    c_type
   end
 end
