@@ -1,0 +1,35 @@
+emulator = File.expand_path File.join "..", "..", "tools", "CPUEmulator.sh"
+my_vm = "ruby vm.rb"
+
+def tool t, f=nil
+  file = f ? File.expand_path(File.join(File.dirname(__FILE__), f)) : ""
+  sh t + " " + file
+end
+
+def vm(f)   f + ".vm" end
+def asm(f)  f + ".asm" end
+def tst(f)  f + ".tst" end
+
+tests = %w[
+  StackArithmetic/SimpleAdd/SimpleAdd
+  StackArithmetic/StackTest/StackTest
+  MemoryAccess/BasicTest/BasicTest
+  MemoryAccess/PointerTest/PointerTest
+  MemoryAccess/StaticTest/StaticTest
+]
+
+tests.each do |t|
+  task t do
+    out = asm(t)
+    sh "#{my_vm} #{vm(t)} > #{asm(t)}"
+    tool emulator, tst(t)
+  end
+end
+
+task :default => :test
+
+task :test => [:clean, *tests]
+
+task :clean do
+  tests.each {|t| rm asm(t) rescue nil }
+end
