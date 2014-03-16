@@ -79,13 +79,8 @@ Function: Returns the second argument of the current command.  Should be called 
     case command
     when "add"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      var1mem = 256 + (self.sp - 2)
-      var2mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
       var3 = var1.to_i + var2.to_i
@@ -141,6 +136,7 @@ A=M
 
 A
 M=0
+
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "sub"
