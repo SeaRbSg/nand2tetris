@@ -9,10 +9,9 @@ class Parser
   CALL_COMMAND     = /^call(?:\s+([\w.]+))?(?:\s+(\w+))?$/
   ARTH_COMMAND     = /^(add|sub|neg|eq|gt|lt|and|or|not)(?:\s+([\w.]+))?(?:\s+(\w+))?$/
 
-  attr_accessor :current_command, :arg1, :arg2, :command_type
+  attr_accessor :current_command, :arg1, :arg2, :command_type, :source
 
-  def initialize source
-    @source = source
+  def initialize
     @current_command = ''
   end
 
@@ -49,6 +48,6 @@ class Parser
                     end
 
     @arg1, @arg2 = $~.captures
-    @arg2 = @arg2.to_i
+    @arg2 = @arg2.to_i if @arg2
   end
 end
