@@ -18,3 +18,11 @@ end
 
 wire "ProgramFlow/BasicLoop/BasicLoop"
 wire "ProgramFlow/FibonacciSeries/FibonacciSeries"
+
+wire "FunctionCalls/SimpleFunction/SimpleFunction"
+
+# wire "FunctionCalls/FibonacciElement/Main"
+# wire "FunctionCalls/FibonacciElement/Sys"
+# wire "FunctionCalls/StaticsTest/Class1"
+# wire "FunctionCalls/StaticsTest/Class2"
+# wire "FunctionCalls/StaticsTest/Sys"

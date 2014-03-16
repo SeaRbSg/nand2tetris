@@ -52,6 +52,10 @@ class Compiler
         IfGoto.new $1
       when /^goto (\S+)$/ then
         Goto.new $1
+      when /^function (\S+) (\d+)$/ then
+        Function.new $1, $2.to_i
+      when /^return$/ then
+        Return.new
       else
         raise "Unparsed: #{line.inspect}"
       end
@@ -80,13 +84,13 @@ class Compiler
       "#{name}.#{n}"
     end
 
-    def push_d deref = "AM=M+1"
+    def push_d deref = "AM=M+1", val="D"
       # deref_sp      dec_ptr  write
-      asm "@SP", deref, "A=A-1", "M=D"
+      asm "@SP", deref, "A=A-1", "M=#{val}"
     end
 
     def peek
-      asm "@SP", "AM=M-1", "D=M"
+      asm "@SP", "AM=M-1", "D=M" # TODO: this modifies SP, not a peek
     end
   end
 
@@ -264,8 +268,72 @@ class Compiler
   class Goto < Struct.new :name
     include Asmable
 
+    def comment
+      "// goto @#{name}"
+    end
+
     def to_s
-      assemble "@#{name}", "0;JMP"
+      assemble comment, "@#{name}", "0;JMP"
+    end
+  end
+
+  class Function < Struct.new :name, :size
+    include Asmable
+    include Stackable
+
+    def comment
+      asm "// function #{name} #{size}"
+    end
+
+    def push_locals
+      case size
+      when 0 then
+      when 1, 2 then # 4n=5+2n == 2n=5 == n=2.5
+        asm [push_d("AM=M+1", "0")] * size
+      else
+        asm "@#{size}", "D=A", "@SP", "AM=M+D", "A=A-D", ["M=0", "A=A+1"] * size
+      end
+    end
+
+    def to_s
+      assemble comment, "(#{name})", push_locals
+    end
+  end
+
+  class Return
+    include Asmable
+    include Stackable
+
+    def comment
+      "// return"
+    end
+
+    def store_frame arg, off
+      asm("/// #{arg} = *(FRAME-#{off})",
+          "@#{off}", "D=A", "@R14", "A=M-D", "D=M", "@#{arg}", "M=D")
+    end
+
+    def to_s
+      assemble(comment,
+               "/// FRAME = LCL",
+               "@LCL", "D=M", "@R14", "M=D",
+
+               store_frame("13", 5),
+
+               "/// *ARG = pop()",
+               pop(:D), "@ARG", "A=M", "M=D",
+
+               "/// SP = ARG+1",
+               "@ARG", "D=M+1", "@SP", "M=D",
+
+               store_frame("THAT", 1),
+               store_frame("THIS", 2),
+               store_frame("ARG", 3),
+               store_frame("LCL", 4),
+
+               "/// goto RET",
+               "@R13", "A=M", "0;JMP"
+      )
     end
   end
 end
