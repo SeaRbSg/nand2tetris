@@ -17,7 +17,7 @@ class VMTranslator
     paths = []
 
     if File.directory?(path)
-      Dir.entries("ProgramFlow/BasicLoop").each do |entry|
+      Dir.entries(path).each do |entry|
         paths << "#{path}#{entry}" if entry =~ /vm$/
       end
     else
@@ -54,6 +54,12 @@ class VMTranslator
         @code_writer.write_goto(@parser.arg1)
       when :c_if
         @code_writer.write_if(@parser.arg1)
+      when :c_function
+        @code_writer.write_function(@parser.arg1, @parser.arg2)
+      when :c_return
+        @code_writer.write_return
+      else
+        raise "No translate handler for #{@parser.command_type}"
       end
     end
   end

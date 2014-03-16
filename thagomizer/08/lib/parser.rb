@@ -44,6 +44,8 @@ class Parser
                       :c_call
                     when ARTH_COMMAND
                       :c_arithmetic
+                    else
+                      raise "Unknown command #{@current_command}"
                     end
 
     @arg1, @arg2 = $~.captures

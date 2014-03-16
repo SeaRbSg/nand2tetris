@@ -500,4 +500,83 @@ class TestCodeWriter < Minitest::Test
     assert_equal "@LOOP_START", asm[4]
     assert_equal "D;JNE",       asm[5]
   end
+
+  def test_write_return
+    @cw.write_return
+
+    expected = ["// return",
+                "@LCL",
+                "D=M",
+                "@LCL",
+                "D=M",
+                "@R14",
+                "M=D",
+                "@5",
+                "AD=D-A",
+                "D=M",
+                "@R15",
+                "M=D",
+                "@SP",
+                "AM=M-1",
+                "D=M",
+                "@ARG",
+                "A=M",
+                "M=D",
+                "@ARG",
+                "D=M+1",
+                "@SP",
+                "M=D",
+                "@R14",
+                "AMD=M-1",
+                "D=M",
+                "@THAT",
+                "M=D",
+                "@R14",
+                "AMD=M-1",
+                "D=M",
+                "@THIS",
+                "M=D",
+                "@R14",
+                "AMD=M-1",
+                "D=M",
+                "@ARG",
+                "M=D",
+                "@R14",
+                "AMD=M-1",
+                "D=M",
+                "@LCL",
+                "M=D",
+                "@R15",
+                "A=M",
+                "0;JMP"
+                ]
+    assert_equal expected, @cw.asm
+  end
+
+  def test_write_function
+    # function SimpleFunction.test 2
+
+    @cw.write_function("SimpleFunction.test", 2)
+
+    expected = ["// function SimpleFunction.test 2",
+                "(SimpleFunction.test)",
+                "@2",
+                "D=A",
+                "@R13",
+                "M=D",
+                "(LOOP0001)",
+                "@0",
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@R13",
+                "MD=M-1",
+                "@LOOP0001",
+                "D;JGT"]
+    assert_equal expected, @cw.asm
+
+  end
 end

@@ -26,8 +26,8 @@ class CodeWriter
     end
   end
 
-  def write_push(segment, index)
-    @asm << "// push #{segment} #{index}"
+  def write_push(segment, index, include_comment = true)
+    @asm << "// push #{segment} #{index}" if include_comment
 
     case segment
     when "temp"
@@ -181,9 +181,82 @@ class CodeWriter
     @asm << "D;JNE"
   end
 
+  def write_function(function_name, num_locals)
+    loop_label = next_label("LOOP")
+
+    @asm << "// function #{function_name} #{num_locals}"
+    @asm << "(#{function_name})"
+    @asm << "@#{num_locals}"
+    @asm << "D=A"
+    @asm << "@R13"
+    @asm << "M=D"
+    @asm << "(#{loop_label})"
+
+    write_push("constant", 0, false)
+
+    @asm << "@R13"
+    @asm << "MD=M-1"
+    @asm << "@#{loop_label}"
+    @asm << "D;JGT"
+  end
+
+  def write_return
+    # TODO Reduce code duplication
+
+    @asm += ["// return",
+             "@LCL",        # FRAME = LCL
+              "D=M",
+              "@LCL",
+              "D=M",
+              "@R14",
+              "M=D",
+              "@5",         # RET = *(FRAME - 5)
+              "AD=D-A",
+              "D=M",
+              "@R15",
+              "M=D",
+              "@SP",        # *ARG = pop()
+              "AM=M-1",
+              "D=M",
+              "@ARG",
+              "A=M",
+              "M=D",
+              "@ARG",       # SP = ARG + 1
+              "D=M+1",
+              "@SP",
+              "M=D"]
+
+    restore_frame_var("THAT")  # THAT = *(FRAME-1)
+    restore_frame_var("THIS")  # THIS = *(FRAME-2)
+    restore_frame_var("ARG")   # ARG = *(FRAME-3)
+    restore_frame_var("LCL")   # LCL = *(FRAME-4)
+
+    @asm += ["@R15",       # goto RET
+              "A=M",
+              "0;JMP"]
+  end
+
+  def restore_frame_var(var)
+    @asm += ["@R14",
+             "AMD=M-1",
+             "D=M",
+             "@#{var}",
+              "M=D"]
+  end
+
   def write path
+    i = 0
+
     File.open(path, "w") do |f|
-      f.write @asm.join("\n")
+      @asm.each do |line|
+        if line =~ /\/\// or line =~ /\(/
+          f.puts line
+        else
+          f.puts line + "\t\t // #{i}"
+          i += 1
+        end
+      end
+#      f.write @asm.join("\n")
     end
   end
 
