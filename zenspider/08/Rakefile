@@ -1,13 +1,17 @@
-file "vm1.rb"
+file "vm2.rb"
+
+def vm out, *files
+  sh "./vm2.rb #{files.join " "} > #{out}"
+end
 
 rule ".asm" => ".vm" do |t|
-  sh "./vm2.rb #{t.source} > #{t.name}"
+  vm t.name, t.source
 end
 
 rule ".out" => ".asm" do |t|
   base = t.source.sub(/\.asm$/, "")
   full = File.expand_path base
-  sh "../../tools/CPUEmulator.sh #{full}.tst || diff -u #{base}.cmp #{t.name}"
+  sh "../../tools/CPUEmulator.sh #{full}.tst || (diff -u #{base}.cmp #{t.name}; rm #{t.name} ; false)"
 end
 
 def wire base
