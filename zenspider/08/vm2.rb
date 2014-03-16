@@ -4,8 +4,13 @@ class String
   def number_instructions
     i = -1
     self.lines.map { |s|
-      if s =~ /^\// then
+      case s
+      when /^\/\/\/+/ then
+        "   #{s.chomp}"
+      when /^\/\/ / then
         "\n#{s}"
+      when /^\(/ then
+        s.chomp
       else
         i += 1
         "%-21s // %d" % [s.chomp, i]
@@ -24,7 +29,7 @@ class Compiler
   end
 
   def self.postprocess result
-    result.flatten.compact.join("\n").gsub(/^(?!\/)/, '   ').number_instructions
+    result.flatten.compact.join("\n").gsub(/^(?![\/\(])/, '   ').number_instructions
   end
 
   SEGMENTS = %w(argument local static constant this that pointer temp).join "|"
