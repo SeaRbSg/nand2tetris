@@ -141,15 +141,8 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "sub"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      sp1 = self.sp - 2
-      sp2 = self.sp - 1
-      var1mem = 256 + (sp1)
-      var2mem = 256 + (sp2)
       stack1 = self.stack.length - 1
       self.stack.delete_at(stack1)
       stack2 = self.stack.length - 1
@@ -164,47 +157,90 @@ PARAGRAPH
       temp = var1.to_i - var2.to_i
       self.stack.push(temp)
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
-M=M-D
+@R13
+M=D
 
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D-M
+
+@SP
+A=M
+
+A
+M=D
+
+@R14
 M=0
 
-@#{var2mem}
-D=A
-@0
-M=D+1
+@R13
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
+
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "neg"
+      #784 D=-28
       file = ""
       var1 = self.stack.last
-      var1mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.push(var1 * -1)
 
 file = <<PARAGRAPH
-@#{var1mem}
-M=-M
+@SP
+M=M-1
 
-@#{var1mem}
-D=A
-@0
-M=D+1
+@SP
+A=M
+
+A
+M=-D
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "eq"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      var1mem = 256 + (self.sp - 2)
-      var2mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
       if var1 == var2 then
@@ -213,43 +249,97 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
+@R13
+M=D
+
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
 D=D-M
 
 @EQTRUE#{counter}
 D;JEQ
 
-@#{var1mem}
+@SP
+A=M
+
+A
 M=0
 
-@#{var2mem}
+@R14
 M=0
 
-@#{var2mem}
-D=A
+@R13
+M=0
 
-@0
-M=D+1
+@SP
+A=M
+
+A
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 
 @END#{counter}
 0;JMP
 
 (EQTRUE#{counter})
 
-@#{var1mem}
-M=-1
+@SP
+A=M
 
-@#{var2mem}
+A
 M=0
 
-@#{var2mem}
-D=A
+@R14
+M=0
 
-@0
-M=D+1
+@R13
+M=0
+
+@SP
+A=M
+
+A
+M=-1
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 
 (END#{counter})
 
@@ -257,13 +347,8 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "gt"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      var1mem = 256 + (self.sp - 2)
-      var2mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
       if var1 > var2 then
@@ -272,43 +357,97 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
-D=M-D
+@R13
+M=D
+
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D-M
 
 @GTTRUE#{counter}
 D;JGT
 
-@#{var1mem}
+@SP
+A=M
+
+A
 M=0
 
-@#{var2mem}
+@R14
 M=0
 
-@#{var2mem}
-D=A
+@R13
+M=0
 
-@0
-M=D+1
+@SP
+A=M
+
+A
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 
 @END#{counter}
 0;JMP
 
 (GTTRUE#{counter})
 
-@#{var1mem}
-M=-1
+@SP
+A=M
 
-@#{var2mem}
+A
 M=0
 
+@R14
+M=0
 
-@#{var2mem}
-D=A
-@0
-M=D+1
+@R13
+M=0
+
+@SP
+A=M
+
+A
+M=-1
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 
 (END#{counter})
 
@@ -316,13 +455,8 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "lt"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      var1mem = 256 + (self.sp - 2)
-      var2mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
       if var1 < var2 then
@@ -331,42 +465,97 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
-D=M-D
+@R13
+M=D
+
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D-M
 
 @LTTRUE#{counter}
 D;JLT
 
-@#{var1mem}
+@SP
+A=M
+
+A
 M=0
 
-@#{var2mem}
+@R14
 M=0
 
-@#{var2mem}
-D=A
+@R13
+M=0
 
-@0
-M=D+1
+@SP
+A=M
+
+A
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 
 @END#{counter}
 0;JMP
 
 (LTTRUE#{counter})
 
-@#{var1mem}
-M=-1
+@SP
+A=M
 
-@#{var2mem}
+A
 M=0
 
-@#{var2mem}
-D=A
-@0
-M=D+1
+@R14
+M=0
+
+@R13
+M=0
+
+@SP
+A=M
+
+A
+M=-1
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 
 (END#{counter})
 
@@ -379,8 +568,6 @@ PARAGRAPH
       end
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
-      var1mem = 256 + (self.sp - 2)
-      var2mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
 
@@ -398,19 +585,57 @@ PARAGRAPH
         self.stack.push(-1)
       end
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
-M=M&D
+@R13
+M=D
 
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D&M
+
+@SP
+A=M
+
+A
+M=D
+
+@R14
 M=0
 
-@#{var2mem}
-D=A
-@0
-M=D+1
+@R13
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
+
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "or"
@@ -420,8 +645,6 @@ PARAGRAPH
       end
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
-      var1mem = 256 + (self.sp - 2)
-      var2mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
 
@@ -439,25 +662,62 @@ PARAGRAPH
         self.stack.push(-1)
       end
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
-M=D|M
+@R13
+M=D
 
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D|M
+
+@SP
+A=M
+
+A
+M=D
+
+@R14
 M=0
 
-@#{var2mem}
-D=A
-@0
-M=D+1
+@R13
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
+
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "not"
       file = ""
       var1 = self.stack.last
-      var1mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       var1bit = var1.to_s(2).rjust(16,"0")
       var2bit = ""
@@ -473,15 +733,23 @@ PARAGRAPH
       self.stack.push(var2bit.to_i(2))
 
 file = <<PARAGRAPH
-@#{var1}
-D=A
-@#{var1mem}
-M=!M
+@SP
+M=M-1
 
-@#{var1mem}
-D=A
-@0
-M=D+1
+@SP
+A=M
+
+A
+M=!D
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     end
