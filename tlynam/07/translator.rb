@@ -1,7 +1,8 @@
 require './parser'
 
 #filename = ARGV[0]
-filename = "stackarithmetic/stacktest/stacktest.vm"
+#filename = "MemoryAccess/StaticTest/StaticTest.vm"
+filename = "StackArithmetic/SimpleAdd/SimpleAdd.vm"
 output = filename.gsub("vm","asm")
 
 parse = Parser.new
@@ -17,10 +18,10 @@ vm.each_line do |line|
     arthmetic = parse.arg1(line)
     parse.writearithmetic(arthmetic,output,counter)
   when "C_PUSH"
-    constant = parse.arg2(line)
-    #parse.stack.push(constant)
-    parse.writepushpop(output,command_type, constant)
+    arg2 = parse.arg2(line)
+    arg1 = parse.arg1(line)
+    parse.writepushpop(command_type,output,arg1,arg2)
   when "C_POP"
-    constant = parse.arg2(line)
+    int = parse.integer(line)
   end
 end

@@ -9,7 +9,8 @@ class Parser
   attr_accessor :stack
   def initialize 
     @stack = []
-
+    @static = []
+    sp = 256
   end
 
   def sp
@@ -34,23 +35,7 @@ Function: Returns the type of the current VM command.  C_ARITHMETIC is return fo
   def commandtype(line)
     command = line[/^\w+/]
     case command
-    when "add"
-      return "C_ARITHMETIC"
-    when "sub"
-      return "C_ARITHMETIC"
-    when "neg"
-      return "C_ARITHMETIC"
-    when "eq"
-      return "C_ARITHMETIC"
-    when "gt"
-      return "C_ARITHMETIC"
-    when "lt"
-      return "C_ARITHMETIC"
-    when "and"
-      return "C_ARITHMETIC"
-    when "or"
-      return "C_ARITHMETIC"
-    when "not"
+    when "add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"
       return "C_ARITHMETIC"
     when "push"
       return "C_PUSH"
@@ -66,7 +51,13 @@ Returns: string
 Function: Returns the first argument of the current command.  C_ARITHMETIC the command itself (add, sub, etc) is returned.  Shouldn't be called for C_RETURN.
 =end
   def arg1(line)
-    return line[/^\w+/]
+    case line[/^\w*/]
+    when "add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"
+      return line
+    else
+      line.gsub!(/^\w*/,"")
+      return line[/^*\w+/]
+    end
   end
 
 =begin
@@ -88,6 +79,9 @@ Function: Returns the second argument of the current command.  Should be called 
     case command
     when "add"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
       var1mem = 256 + (self.sp - 2)
@@ -97,23 +91,63 @@ Function: Returns the second argument of the current command.  Should be called 
       var3 = var1.to_i + var2.to_i
       self.stack.push(var3)
 file = <<PARAGRAPH
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
 D=M
 
-@#{var1mem}
-M=D+M
+@R13
+M=D
 
-@#{var2mem}
+@SP
+M=M-1
+
+@SP
+A=M
+
+A
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D+M
+
+@SP
+A=M
+
+A
+M=D
+
+@R14
 M=0
 
-@#{var2mem}
-D=A
-@0
-M=D+1
+@R13
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+A
+M=0
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "sub"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
       sp1 = self.sp - 2
@@ -152,7 +186,6 @@ PARAGRAPH
     when "neg"
       file = ""
       var1 = self.stack.last
-
       var1mem = 256 + (self.sp - 1)
       self.stack.delete_at(self.stack.length-1)
       self.stack.push(var1 * -1)
@@ -169,6 +202,9 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "eq"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
       var1mem = 256 + (self.sp - 2)
@@ -225,6 +261,9 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "gt"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
       var1mem = 256 + (self.sp - 2)
@@ -281,6 +320,9 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "lt"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
       var1mem = 256 + (self.sp - 2)
@@ -325,7 +367,6 @@ M=-1
 @#{var2mem}
 M=0
 
-
 @#{var2mem}
 D=A
 @0
@@ -337,6 +378,9 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "and"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
       var1mem = 256 + (self.sp - 2)
@@ -375,6 +419,9 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "or"
       file = ""
+      if self.sp >= 257 then
+        self.sp = self.sp - 1
+      end
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
       var1mem = 256 + (self.sp - 2)
@@ -450,24 +497,54 @@ PARAGRAPH
  Args: command (C_PUSH or C_POP), segment (string), index (int)
  Function: Writes the assembly code that is the translation of the given command, where command is either C_PUSH or C_POP.
 =end
-  def writepushpop(output,command,segment)
-    case command
+  def writepushpop(command_type,output,arg1,arg2)
+    case command_type
     when "C_POP"
-      return self.stack.last
+        if self.sp >= 257 then
+         self.sp = self.sp - 1
+        end
+        if self.static[arg2] == nil then
+          self.static.insert(arg2,self.stack.last)
+        else
+          self.static[arg2] = self.stack.last
+        end
     when "C_PUSH"
-      self.stack.push(segment)
-      var1 = segment
-      var1mem = 256 + (self.sp - 1)
+      case arg1
+      when "constant"
+        self.stack.push(arg2)
+        var1 = arg2
+        var1mem = 256 + (self.sp - 1)
+file = <<PARAGRAPH
+@#{var1}
+D=A
+
+@SP
+A=M
+
+A
+M=D
+
+@SP
+M=M+1
+PARAGRAPH
+        File.open(output, "a") { |f| f.write file }
+      when "static"
+        var1 = self.static[int]
+        var1mem = 256 + (self.sp - 1)
 file = <<PARAGRAPH
 @#{var1}
 D=A
 @#{var1mem}
-M=D
+M=!M
+
+@#{var1mem}
+D=A
+@0
+M=D+1
 PARAGRAPH
-      File.open(output, "a") { |f| f.write file }
+        File.open(output, "a") { |f| f.write file }
+      end
     end
   end
-
-
 end
 
