@@ -89,12 +89,8 @@ class Compiler
     end
 
     def push_d deref = "AM=M+1", val="D"
-      # deref_sp      dec_ptr  write
+      #   deref_sp      dec_ptr  write
       asm "@SP", deref, "A=A-1", "M=#{val}"
-    end
-
-    def peek
-      asm "@SP", "AM=M-1", "D=M" # TODO: this modifies SP, not a peek
     end
   end
 
@@ -221,7 +217,7 @@ class Compiler
                send(segment),
                store,
                temp_store("@R15") do
-                 peek
+                 pop "D"
                end,
                asm("M=D"))
     end
