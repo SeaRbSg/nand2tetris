@@ -2,7 +2,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     ffi (1.9.3)
-    promise (0.3.0)
     rltk (2.2.1)
       ffi (>= 1.0.0)
 
@@ -10,5 +9,4 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  promise
   rltk

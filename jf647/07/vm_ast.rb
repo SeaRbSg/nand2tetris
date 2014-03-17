@@ -2,7 +2,6 @@ require 'rltk/ast'
 
 module VM
 
-
     class VMLine < RLTK::ASTNode
     end
     
@@ -18,6 +17,7 @@ module VM
     class PushCommand < Command
         value :segname, Symbol
         value :offset, Fixnum
+        value :ns, String
         def descr
             "push #{@segname} #{@offset}"
         end
@@ -43,6 +43,10 @@ module VM
                     # *(base[segment]+offset), base is constant
                     asm << "@R#{VM::Helper::SEGBASE[@segname]+@offset}"
                     asm << 'D=M'
+                when :static
+                    # *(Xxx.j), where Xxx is the current filename
+                    asm << "@#{@ns}.#{@offset}"
+                    asm << 'D=M'
                 else
                     raise "unhandled segment '#{@segname}'"
             end
@@ -55,6 +59,7 @@ module VM
     class PopCommand < Command
         value :segname, Symbol
         value :offset, Fixnum
+        value :ns, String
         def descr
             "pop #{@segname} #{@offset}"
         end
@@ -84,6 +89,10 @@ module VM
                     # pop stack to R13
                     asm << VM::Helper.pop_d
                     asm << "@R#{VM::Helper::SEGBASE[@segname]+@offset}"
+                when :static
+                    # *(Xxx.j), where Xxx is the current filename
+                    asm << VM::Helper.pop_d
+                    asm << "@#{@ns}.#{@offset}"
                 else
                     raise "unhandled segment '#{@segname}'"
             end

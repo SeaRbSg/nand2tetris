@@ -4,6 +4,10 @@ module VM
     
     class Parser < RLTK::Parser
     
+        class Environment < Environment
+            attr_accessor :ns
+        end
+    
         p(:vmline) do
             c('op')                         { |o| o }
             c('COMMENT')                    { |_| Comment.new }
@@ -11,8 +15,8 @@ module VM
         end
     
         p(:op) do
-            c('PUSH segname NUMBER')        { |_,seg,val| PushCommand.new(seg, val) }
-            c('POP segname NUMBER')         { |_,seg,val| PopCommand.new(seg, val) }
+            c('PUSH segname NUMBER')        { |_,seg,val| PushCommand.new(seg, val, @ns) }
+            c('POP segname NUMBER')         { |_,seg,val| PopCommand.new(seg, val, @ns) }
             c('ADD')                        { |_| AddCommand.new }
             c('SUB')                        { |_| SubCommand.new }
             c('EQ')                         { |_| EqualsCommand.new }

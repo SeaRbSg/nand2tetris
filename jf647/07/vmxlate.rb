@@ -10,10 +10,11 @@ $: << '.'
 require 'vm_translator'
 
 infname = Pathname.new ARGV[0]
-outfname = infname.parent + "#{infname.basename(infname.extname)}.asm"
+ns = infname.basename(infname.extname)
+outfname = infname.parent + "#{ns}.asm"
 
 File.open(outfname, 'w') do |f|
-    ast = VM::Translator.new.translate(infname) do |op|
+    ast = VM::Translator.new.translate(infname, ns) do |op|
         if ENV.key?('DEBUG')
             puts op.inspect
         end
