@@ -21,11 +21,15 @@ end
 
 class Compiler
   def self.run paths
-    paths.each do |path|
+    compiler = Compiler.new
+
+    result = paths.map { |path|
       File.open path do |file|
-        puts postprocess Compiler.new.assemble file
+        compiler.assemble file
       end
-    end
+    }
+
+    puts postprocess result
   end
 
   def self.postprocess result
