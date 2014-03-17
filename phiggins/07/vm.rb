@@ -76,7 +76,7 @@ class Parser
       _, @segment, @index = *line.split
     end
 
-    def store_segment_address(segment, index)
+    def store_segment_address
       if segment == "temp"
         <<-ASM
           @#{index.to_i + 5}
@@ -113,15 +113,11 @@ class Parser
 
     def asm
       [
-        store_segment_address(segment, index),
+        store_segment_address,
         "@R15",
         "A=M",
         "D=M",
-        "@SP",
-        "A=M",
-        "M=D",
-        "@SP",
-        "M=M+1",
+        push_stack,
       ]
     end
   end
@@ -133,12 +129,8 @@ class Parser
 
     def asm
       [
-        store_segment_address(segment, index),
-        "@SP",
-        "M=M-1",
-        "@SP",
-        "A=M",
-        "D=M",
+        store_segment_address,
+        pop_stack,
         "@R15",
         "A=M",
         "M=D",
