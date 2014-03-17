@@ -5,24 +5,21 @@ require 'n2t_parser'
 
 class Assembler
   attr_reader :input_file, :output_file, :parser
+
   def initialize(input_file, output_file)
     @input_file = input_file
     @output_file = output_file
-    @parser = Assembler::Parser.new(input_file)
+    @parser = Parser.new(input_file)
   end
 
   def assemble
-    File.open(output_file, 'w') do |hack|
+    File.open(output_file, 'w') do |f|
       while parser.more_commands?
-        if parser.command.real?
-          bits = parser.translate_current_command
-          p "command: #{parser.command.value} translates to #{bits}"
-          hack.write("#{bits}\n")
-        end
+        bits = parser.translate_current_command
+        f.write("#{bits}\n")
         parser.advance
       end
     end
-    p "binary file available at: #{output_file}"
   end
 end
 

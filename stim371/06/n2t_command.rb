@@ -1,4 +1,4 @@
-require 'n2t_code'
+require_relative './n2t_code'
 
 class Assembler
   class Parser
@@ -7,11 +7,15 @@ class Assembler
 
       def initialize(command)
         @command = command
+        remove_comments
       end
 
       def value
-        if command_type == 'A_COMMAND'
-          command.match(/@(.*)/)[1].to_i
+        case command_type
+        when 'A_COMMAND'
+          address_value_or_label
+        when 'L_COMMAND'
+          command.match(/^\((.*)\)/)[1]
         else
           command
         end
@@ -30,6 +34,14 @@ class Assembler
         else
           nil
         end
+      end
+
+      def l_command?
+        command_type == 'L_COMMAND'
+      end
+
+      def a_command?
+        command_type == 'A_COMMAND'
       end
 
       def real?
@@ -60,12 +72,16 @@ class Assembler
         )[1]
       end
 
-      def translate
-        if command_type == 'A_COMMAND'
-          "%016b" % value
+      def address_value_or_label
+        if command.match(/^@\d+/)
+          command.match(/@(.*)/)[1].to_i
         else
-          [111, Code.comp(comp), Code.dest(dest), Code.jump(jump)].join
+          command.match(/@(.*)/)[1]
         end
+      end
+
+      def remove_comments
+        @command = command.gsub(/\/\/.*/, '').strip
       end
     end
   end

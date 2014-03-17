@@ -45,4 +45,16 @@ describe Assembler::Parser do
       parser.command.should_not be_nil
     end
   end
+
+  describe '#generate_symbol_table' do
+    it 'should add entries for each symbol' do
+      @file = Tempfile.new('test')
+      @file.write("(LOOP)\nM=A\n0;JMP\n")
+      @file.close
+
+      parser = Assembler::Parser.new(@file.path)
+
+      parser.symbol_table.table.should have_key('LOOP')
+    end
+  end
 end

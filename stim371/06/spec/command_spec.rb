@@ -29,6 +29,23 @@ describe Assembler::Parser::Command do
     end
   end
 
+  describe '#value' do
+    describe 'A_COMMANDs' do
+      it 'should return the integer value' do
+        cmd = Assembler::Parser::Command.new('@2001')
+        cmd.value.should eq 2001
+      end
+    end
+
+    describe 'L_COMMANDs' do
+      it 'should return the label for the goto' do
+        cmd = Assembler::Parser::Command.new('@LOOP')
+        cmd.command_type.should eq 'A_COMMAND'
+        cmd.value.should eq 'LOOP'
+      end
+    end
+  end
+
   context 'fields' do
     #[dest, comp, jump]
     def commands
