@@ -29,6 +29,8 @@ class Compiler
       end
     }
 
+    result.unshift Init.new if paths.size > 1
+
     puts postprocess result
   end
 
@@ -177,6 +179,21 @@ class Compiler
     def pointer
       off = "A=A+1" if offset != 0
       asm "@THIS", off
+    end
+  end
+
+  class Init
+    include Asmable
+
+    def comment
+      "// bootstrap"
+    end
+
+    def to_s
+      assemble(comment,
+               "/// SP = 256",
+               "@256", "D=A", "@SP",  "M=D",
+               Call.new("Sys.init", 0))
     end
   end
 
