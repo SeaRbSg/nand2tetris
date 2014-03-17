@@ -13,6 +13,14 @@ module VM
         p(:op) do
             c('PUSH segname NUMBER')        { |_,seg,val| PushCommand.new(seg, val) }
             c('ADD')                        { |_| AddCommand.new }
+            c('SUB')                        { |_| SubCommand.new }
+            c('EQ')                         { |_| EqualsCommand.new }
+            c('LT')                         { |_| LessThanCommand.new }
+            c('GT')                         { |_| GreaterThanCommand.new }
+            c('NEG')                        { |_| NegateCommand.new }
+            c('AND')                        { |_| AndCommand.new }
+            c('OR')                         { |_| OrCommand.new }
+            c('NOT')                        { |_| NotCommand.new }
         end
         
         p(:segname) do
