@@ -39,7 +39,7 @@ module VM
                     asm << "A=M+D"
                     # deref into D
                     asm << 'D=M'
-                when :temp
+                when :temp, :pointer
                     # *(base[segment]+offset), base is constant
                     asm << "@R#{VM::Helper::SEGBASE[@segname]+@offset}"
                     asm << 'D=M'
@@ -79,7 +79,7 @@ module VM
                     # put *R13 into M
                     asm << '@R13'
                     asm << 'A=M'
-                when :temp
+                when :temp, :pointer
                     # *(base[segment]+offset), base is constant
                     # pop stack to R13
                     asm << VM::Helper.pop_d
@@ -233,6 +233,7 @@ module VM
             :this => 'THIS',
             :that => 'THAT',
             :local => 'LCL',
+            :pointer => 3,
             :temp => 5,
         }
     
