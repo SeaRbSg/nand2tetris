@@ -17,6 +17,8 @@ File.open(outfname, 'w') do |f|
         if ENV.key?('DEBUG')
             puts op.inspect
         end
-        f.puts op.to_asm if op.respond_to?(:to_asm)
+        if op.respond_to?(:to_asm)
+            f.puts op.to_asm
+        end
     end
 end
