@@ -12,6 +12,7 @@ module VM
     
         p(:op) do
             c('PUSH segname NUMBER')        { |_,seg,val| PushCommand.new(seg, val) }
+            c('POP segname NUMBER')         { |_,seg,val| PopCommand.new(seg, val) }
             c('ADD')                        { |_| AddCommand.new }
             c('SUB')                        { |_| SubCommand.new }
             c('EQ')                         { |_| EqualsCommand.new }

@@ -17,19 +17,78 @@ module VM
     
     class PushCommand < Command
         value :segname, Symbol
-        value :v, Fixnum
+        value :offset, Fixnum
+        def descr
+            "push #{@segname} #{@offset}"
+        end
         def to_asm
             asm = []
-            # put value into D reg
+            # get the value into the D reg
             case @segname
                 when :constant
-                    asm << "@#{v}"
+                    # literal value of the offset
+                    asm << "@#{offset}"
+                    asm << 'D=A'
+                when :local, :argument, :this, :that
+                    # *(base[segment]+offset), base is symbolic
+                    # store offset in D
+                    asm << "@#{@offset}"
+                    asm << "D=A"
+                    # inc by the base addr
+                    asm << "@#{VM::Helper::SEGBASE[@segname]}"
+                    asm << "A=M+D"
+                    # deref into D
+                    asm << 'D=M'
+                when :temp
+                    # *(base[segment]+offset), base is constant
+                    asm << "@R#{VM::Helper::SEGBASE[@segname]+@offset}"
+                    asm << 'D=M'
                 else
-                    raise "unhandled segment '#{segname}'"
+                    raise "unhandled segment '#{@segname}'"
             end
-            asm << 'D=A'
             # push D to stack
             asm << VM::Helper.push_d
+            return asm.flatten
+        end
+    end
+
+    class PopCommand < Command
+        value :segname, Symbol
+        value :offset, Fixnum
+        def descr
+            "pop #{@segname} #{@offset}"
+        end
+        def to_asm
+            asm = []
+            case @segname
+                when :constant
+                    raise 'cannot pop into constant segment'
+                when :local, :argument, :this, :that
+                    # *(base[segment]+offset), base is symbolic
+                    # store offset in D
+                    asm << "@#{@offset}"
+                    asm << "D=A"
+                    # inc by the base addr
+                    asm << "@#{VM::Helper::SEGBASE[@segname]}"
+                    asm << "D=M+D"
+                    # store dest in R13
+                    asm << '@R13'
+                    asm << 'M=D'
+                    # pop stack to D
+                    asm << VM::Helper.pop_d
+                    # put *R13 into M
+                    asm << '@R13'
+                    asm << 'A=M'
+                when :temp
+                    # *(base[segment]+offset), base is constant
+                    # pop stack to R13
+                    asm << VM::Helper.pop_d
+                    asm << "@R#{VM::Helper::SEGBASE[@segname]+@offset}"
+                else
+                    raise "unhandled segment '#{@segname}'"
+            end
+            # set M to popped value
+            asm << 'M=D'
             return asm.flatten
         end
     end
@@ -59,18 +118,27 @@ module VM
     end
 
     class AddCommand < ArithmeticCommand
+        def descr
+            "add"
+        end
         def to_asm
             super(2, 'A+D')
         end
     end
 
     class SubCommand < ArithmeticCommand
+        def descr
+            "sub"
+        end
         def to_asm
             super(2, 'A-D')
         end
     end
     
     class NegateCommand < ArithmeticCommand
+        def descr
+            "neg"
+        end
         def to_asm
             super(1, '-D')
         end
@@ -105,42 +173,68 @@ module VM
     end
 
     class EqualsCommand < ComparisonCommand
+        def descr
+            "eq"
+        end
         def to_asm
             super('JEQ')
         end
     end
     
     class LessThanCommand < ComparisonCommand
+        def descr
+            "lt"
+        end
         def to_asm
             super('JLT')
         end
     end
     
     class GreaterThanCommand < ComparisonCommand
+        def descr
+            "gt"
+        end
         def to_asm
             super('JGT')
         end
     end
     
     class AndCommand < LogicalCommand
+        def descr
+            "and"
+        end
         def to_asm
             super(2, 'D&A')
         end
     end
     
     class OrCommand < LogicalCommand
+        def descr
+            "or"
+        end
         def to_asm
             super(2, 'D|A')
         end
     end
     
     class NotCommand < LogicalCommand
+        def descr
+            "not"
+        end
         def to_asm
             super(1, '!D')
         end
     end
     
     module Helper
+    
+        SEGBASE = {
+            :argument => 'ARG',
+            :this => 'THIS',
+            :that => 'THAT',
+            :local => 'LCL',
+            :temp => 5,
+        }
     
         # label generator sequence
         @@nextlabelnum = 0
@@ -161,6 +255,10 @@ module VM
         
         def self.push_d
             [ '@SP',  'A=M', 'M=D', self.inc_sp ]
+        end
+
+        def self.pop_d
+            [ self.dec_sp, '@SP',  'A=M', 'D=M' ]
         end
         
         def self.load_into_d_a
