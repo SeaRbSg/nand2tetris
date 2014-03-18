@@ -106,7 +106,36 @@ class Compiler
     end
   end
 
-  module Segmentable
+  class Init
+    include Asmable
+
+    def comment
+      "// bootstrap"
+    end
+
+    def to_s
+      assemble(comment,
+               "/// SP = 256",
+               "@256", "D=A", "@SP",  "M=D",
+
+               "/// set THIS=THAT=LCL=ARG=-1 to force error if used as pointer",
+               "@0", "D=-A",
+               "@THIS", "M=D", "@THAT", "M=D", "@LCL", "M=D", "@ARG", "M=D",
+
+               Call.new("Sys.init", 0),
+               Label.new("FUCK_IT_BROKE"),
+               Goto.new("FUCK_IT_BROKE"))
+    end
+  end
+
+  class StackThingy < Struct.new :segment, :offset, :file_name
+    include Asmable
+    include Stackable
+
+    def comment
+      asm "// #{name} #{segment} #{offset}"
+    end
+
     def name
       self.class.name.split(/::/).last.downcase
     end
@@ -146,38 +175,6 @@ class Compiler
     def pointer
       off = "A=A+1" if offset != 0
       asm "@THIS", off
-    end
-  end
-
-  class Init
-    include Asmable
-
-    def comment
-      "// bootstrap"
-    end
-
-    def to_s
-      assemble(comment,
-               "/// SP = 256",
-               "@256", "D=A", "@SP",  "M=D",
-
-               "/// set THIS=THAT=LCL=ARG=-1 to force error if used as pointer",
-               "@0", "D=-A",
-               "@THIS", "M=D", "@THAT", "M=D", "@LCL", "M=D", "@ARG", "M=D",
-
-               Call.new("Sys.init", 0),
-               Label.new("FUCK_IT_BROKE"),
-               Goto.new("FUCK_IT_BROKE"))
-    end
-  end
-
-  class StackThingy < Struct.new :segment, :offset, :file_name
-    include Asmable
-    include Stackable
-    include Segmentable
-
-    def comment
-      asm "// #{name} #{segment} #{offset}"
     end
   end
 
