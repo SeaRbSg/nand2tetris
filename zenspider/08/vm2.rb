@@ -106,41 +106,6 @@ class Compiler
     end
   end
 
-  module Operable
-    def binary *instructions
-      asm pop(:D), "A=A-1", "A=M", instructions
-    end
-
-    def unary *instructions
-      asm "@SP", "A=M-1", *instructions
-    end
-
-    def binary_test test
-      addr = next_num test
-      binary("D=A-D",
-             "@#{addr}",
-             "D;#{test}",
-             "D=0",
-             "@#{addr}.done",
-             "0;JMP",
-             "(#{addr})",
-             "D=-1",
-             "(#{addr}.done)")
-    end
-
-    def neg; unary "M=-M";      end
-    def not; unary "M=!M";      end
-
-    def add; binary "D=A+D";    end
-    def and; binary "D=A&D";    end
-    def or;  binary "D=A|D";    end
-    def sub; binary "D=A-D";    end
-
-    def eq;  binary_test "JEQ"; end
-    def gt;  binary_test "JGT"; end
-    def lt;  binary_test "JLT"; end
-  end
-
   module Segmentable
     def name
       self.class.name.split(/::/).last.downcase
@@ -252,7 +217,6 @@ class Compiler
   class Op < Struct.new :msg
     include Asmable
     include Stackable
-    include Operable
 
     def comment
       asm "// #{msg}"
@@ -267,6 +231,39 @@ class Compiler
                send(msg), # perform whatever operation, put into D
                push_d)
     end
+
+    def binary *instructions
+      asm pop(:D), "A=A-1", "A=M", instructions
+    end
+
+    def unary *instructions
+      asm "@SP", "A=M-1", *instructions
+    end
+
+    def binary_test test
+      addr = next_num test
+      binary("D=A-D",
+             "@#{addr}",
+             "D;#{test}",
+             "D=0",
+             "@#{addr}.done",
+             "0;JMP",
+             "(#{addr})",
+             "D=-1",
+             "(#{addr}.done)")
+    end
+
+    def neg; unary "M=-M";      end
+    def not; unary "M=!M";      end
+
+    def add; binary "D=A+D";    end
+    def and; binary "D=A&D";    end
+    def or;  binary "D=A|D";    end
+    def sub; binary "D=A-D";    end
+
+    def eq;  binary_test "JEQ"; end
+    def gt;  binary_test "JGT"; end
+    def lt;  binary_test "JLT"; end
   end
 
   class Label < Struct.new :name
