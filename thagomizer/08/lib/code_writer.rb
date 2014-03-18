@@ -182,31 +182,17 @@ class CodeWriter
   end
 
   def write_function(function_name, num_locals)
-    loop_label = next_label("LOOP")
-    onward_label = next_label("ONWARD")  # I hate this
-
     @asm << "// function #{function_name} #{num_locals}"
     @asm << "(#{function_name})"
-    @asm << "@#{num_locals}"
+    @asm << "@0"
     @asm << "D=A"
-    @asm << "@R13"
-    @asm << "M=D"
-    @asm << "@#{onward_label}"
-    @asm << "D;JLE"
-    @asm << "(#{loop_label})"
 
-    write_push("constant", 0, false)
-
-    @asm << "@R13"
-    @asm << "MD=M-1"
-    @asm << "@#{loop_label}"
-    @asm << "D;JGT"
-    @asm << "(#{onward_label})"
+    num_locals.times do
+      pushd
+    end
   end
 
   def write_call(function_name, num_args, include_comment = true)
-    # TODO Reduce code duplication
-
     return_label = next_label("RET")
 
     @asm << "// call #{function_name} #{num_args}" if include_comment
@@ -216,37 +202,15 @@ class CodeWriter
              "D=A",
              "@SP",
              "A=M",
-             "M=D",
-             "@SP",
-             "M=M+1",
-             "@LCL",               # Push LCL
-             "D=M",
-             "@SP",
-             "A=M",
-             "M=D",
-             "@SP",
-             "M=M+1",
-             "@ARG",               # Push ARG
-             "D=M",
-             "@SP",
-             "A=M",
-             "M=D",
-             "@SP",
-             "M=M+1",
-             "@THIS",              # Push THIS
-             "D=M",
-             "@SP",
-             "A=M",
-             "M=D",
-             "@SP",
-             "M=M+1",
-             "@THAT",              # Push THAT
-             "D=M",
-             "@SP",
-             "A=M",
-             "M=D",
-             "@SP",
-             "M=M+1",
+             "M=D"]
+    increment_sp
+
+    push_var_onto_stack "LCL"
+    push_var_onto_stack "ARG"
+    push_var_onto_stack "THIS"
+    push_var_onto_stack "THAT"
+
+    @asm += [
              "@SP",                # ARG = SP-n-5
              "D=M",
              "@#{num_args + 5}",   # n+5
@@ -263,9 +227,16 @@ class CodeWriter
             ]
   end
 
-  def write_return
-    # TODO Reduce code duplication
+  def push_var_onto_stack var
+    @asm += ["@#{var}",
+             "D=M",
+             "@SP",
+             "A=M",
+             "M=D",]
+    increment_sp
+  end
 
+  def write_return
     @asm += ["// return",
              "@LCL",        # FRAME = LCL
               "D=M",

@@ -549,7 +549,7 @@ class TestCodeWriter < Minitest::Test
                 "@R15",
                 "A=M",
                 "0;JMP"
-                ]
+               ]
     assert_equal expected, @cw.asm
   end
 
@@ -560,13 +560,6 @@ class TestCodeWriter < Minitest::Test
 
     expected = ["// function SimpleFunction.test 2",
                 "(SimpleFunction.test)",
-                "@2",
-                "D=A",
-                "@R13",
-                "M=D",
-                "@ONWARD0002",
-                "D;JLE",
-                "(LOOP0001)",
                 "@0",
                 "D=A",
                 "@SP",
@@ -574,11 +567,11 @@ class TestCodeWriter < Minitest::Test
                 "M=D",
                 "@SP",
                 "M=M+1",
-                "@R13",
-                "MD=M-1",
-                "@LOOP0001",
-                "D;JGT",
-                "(ONWARD0002)",]
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",]
     assert_equal expected, @cw.asm
   end
 
@@ -634,7 +627,7 @@ class TestCodeWriter < Minitest::Test
                 "@Main.fibonacci",        # goto f
                 "0;JMP",
                 "(RET0001)"   # (return-address)
-                ]
+               ]
     assert_equal expected, @cw.asm
   end
 
@@ -694,6 +687,6 @@ class TestCodeWriter < Minitest::Test
                 "@Sys.init",  # goto Sys.init
                 "0;JMP",
                 "(RET0001)"   # (return-address)
-                ]
+               ]
   end
 end
