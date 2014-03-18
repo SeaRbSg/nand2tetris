@@ -1,75 +1,94 @@
 require_relative 'push'
 require_relative 'pop'
+require 'pry'
 
-class Arithmetic
-  def initialize
-    @label_number = 0
-  end
-  def add
-    asm = op "D=D+A"
-    Push.push_d asm
-  end
 
-  def sub
-    asm = op "D=A-D"
-    Push.push_d asm
+class Add
+  def self.to_asm
+    Op.stack_operation "D=D+A"
   end
+end
 
-  def and
-    asm = op "D=A&D"
-    Push.push_d asm
+class Sub
+  def self.to_asm
+    Op.stack_operation "D=A-D"
   end
+end
 
-  def or
-    asm = op "D=A|D"
-    Push.push_d asm
+class And
+  def self.to_asm
+    Op.stack_operation "D=A&D"
   end
+end
 
-  def eq
-    asm = op "D=A-D"
-    cmp asm, "D;JEQ"
-    Push.push_d asm
+class Or
+  def self.to_asm
+    Op.stack_operation "D=A|D"
   end
+end
 
-  def lt
-    asm = op "D=A-D"
-    cmp asm, "D;JLT"
-    Push.push_d asm
+class Eq
+  def self.to_asm
+    Op.conditional_operation "D=A-D", "D;JEQ"
   end
+end
 
-  def gt
-    asm = op "D=A-D"
-    cmp asm, "D;JGT"
-    Push.push_d asm
+class Lt
+  def self.to_asm
+    Op.conditional_operation "D=A-D", "D;JLT"
   end
-   
-  def neg
+end
+
+class Gt
+  def self.to_asm
+    Op.conditional_operation "D=A-D", "D;JGT"
+  end
+end
+
+class Neg
+  def self.to_asm
     asm = Pop.pop "D"
     asm << "D=-D"
     Push.push_d asm
   end
+end
 
-  def not
+class Not
+  def self.to_asm
     asm = Pop.pop "D"
     asm << "D=!D"
     Push.push_d asm
   end
+end
 
-  def cmp asm, cmp
-    label_suffix = @label_number+=1
-    asm <<  "@TRUE#{label_suffix}"
-    asm <<  cmp
-    asm <<  "D=0"
-    asm <<  "@END#{label_suffix}"
-    asm <<  "0;JMP"
-    asm <<  "(TRUE#{label_suffix})"
-    asm <<  "D=-1"
-    asm <<  "(END#{label_suffix})"
-  end
-
-  def op op
+class Op
+  def self.stack_operation comp
     popd = Pop.pop "D"
     popa = Pop.pop "A"
-    popd.concat popa <<  op
+    Push.push_d popd.concat popa << comp
+  end
+
+  def self.conditional_operation computation, conditional
+    popd = Pop.pop "D"
+    popa = Pop.pop "A"
+    asm = popd.concat(popa) << computation
+    cond = Cond.to_asm(conditional)
+    Push.push_d(asm.concat(cond))
+  end
+end
+
+class Cond
+  @@label_count = 0; # don't really like this
+  def self.to_asm cmp
+    @@label_count = @@label_count += 1
+    asm = []
+    asm <<  "@TRUE#{@@label_count}"
+    asm <<  cmp
+    asm <<  "D=0"
+    asm <<  "@END#{@@label_count}"
+    asm <<  "0;JMP"
+    asm <<  "(TRUE#{@@label_count})"
+    asm <<  "D=-1"
+    asm <<  "(END#{@@label_count})"
   end
 end

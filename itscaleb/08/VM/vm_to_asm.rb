@@ -12,7 +12,6 @@ clean_lines = raw_lines.map {|line| line.strip}
               .map {|line| line.split("//")[0].strip}
 
 asm = []
-arithmetic = Arithmetic.new
 clean_lines.each do |line|
   case line
   when /^push/
@@ -24,23 +23,23 @@ clean_lines.each do |line|
     pop = Pop.new lines[1], lines[2].to_i, file
     asm << pop.to_asm
   when /^add/
-    asm << arithmetic.add
+    asm << Add.to_asm
   when /^eq/
-    asm << arithmetic.eq
+    asm << Eq.to_asm
   when /^lt/
-    asm << arithmetic.lt
+    asm << Lt.to_asm
   when /^gt/
-    asm << arithmetic.gt
+    asm << Gt.to_asm
   when /^sub/
-    asm << arithmetic.sub
+    asm << Sub.to_asm
   when /^neg/
-    asm << arithmetic.neg
+    asm << Neg.to_asm
   when /^and/
-    asm << arithmetic.and
+    asm << And.to_asm
   when /^or/
-    asm << arithmetic.or
+    asm << Or.to_asm
   when /^not/
-    asm << arithmetic.not
+    asm << Not.to_asm
   when /^label/
     lines = line.split
     asm << Label.to_asm(lines[0])
