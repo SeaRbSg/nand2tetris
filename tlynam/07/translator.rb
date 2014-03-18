@@ -2,8 +2,9 @@ require './parser'
 
 #filename = ARGV[0]
 #filename = "MemoryAccess/StaticTest/StaticTest.vm"
+filename = "MemoryAccess/BasicTest/BasicTest.vm"
 #filename = "StackArithmetic/SimpleAdd/SimpleAdd.vm"
-filename = "StackArithmetic/StackTest/StackTest.vm"
+#filename = "StackArithmetic/StackTest/StackTest.vm"
 output = filename.gsub("vm","asm")
 
 parse = Parser.new
@@ -23,6 +24,8 @@ vm.each_line do |line|
     arg1 = parse.arg1(line)
     parse.writepushpop(command_type,output,arg1,arg2)
   when "C_POP"
-    int = parse.integer(line)
+    arg2 = parse.arg2(line)
+    arg1 = parse.arg1(line) 
+    parse.writepushpop(command_type,output,arg1,arg2)
   end
 end

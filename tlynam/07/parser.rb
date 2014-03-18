@@ -10,11 +10,6 @@ class Parser
   def initialize 
     @stack = []
     @static = []
-    sp = 256
-  end
-
-  def sp
-    return self.stack.length
   end
 
 =begin
@@ -35,12 +30,16 @@ Function: Returns the type of the current VM command.  C_ARITHMETIC is return fo
   def commandtype(line)
     command = line[/^\w+/]
     case command
+    when nil
+      # do nothing
     when "add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"
       return "C_ARITHMETIC"
     when "push"
       return "C_PUSH"
     when "pop"
       return "C_POP"
+    else
+      raise "Unhandled #{command.inspect} in commandtype"
     end
   end
 
@@ -86,13 +85,13 @@ Function: Returns the second argument of the current command.  Should be called 
       var3 = var1.to_i + var2.to_i
       self.stack.push(var3)
 file = <<PARAGRAPH
+// Add
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -104,7 +103,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -119,7 +117,6 @@ D=D+M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -134,7 +131,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 PARAGRAPH
@@ -157,13 +153,13 @@ PARAGRAPH
       temp = var1.to_i - var2.to_i
       self.stack.push(temp)
 file = <<PARAGRAPH
+// Sub
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -175,7 +171,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -190,7 +185,6 @@ D=D-M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -205,7 +199,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 PARAGRAPH
@@ -218,13 +211,13 @@ PARAGRAPH
       self.stack.push(var1 * -1)
 
 file = <<PARAGRAPH
+// Neg
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 M=-D
 
 @SP
@@ -233,7 +226,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
@@ -249,13 +241,13 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
+// EQ
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -267,7 +259,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -285,7 +276,6 @@ D;JEQ
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -297,7 +287,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -306,7 +295,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END#{counter}
@@ -317,7 +305,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -329,7 +316,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -338,7 +324,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END#{counter})
@@ -357,13 +342,13 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
+// GT
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -375,7 +360,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -393,7 +377,6 @@ D;JGT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -405,7 +388,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -414,7 +396,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END#{counter}
@@ -425,7 +406,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -437,7 +417,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -446,7 +425,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END#{counter})
@@ -465,13 +443,13 @@ PARAGRAPH
         self.stack.push(0)
       end
 file = <<PARAGRAPH
+// LT
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -483,7 +461,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -501,7 +478,6 @@ D;JLT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -513,7 +489,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -522,7 +497,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END#{counter}
@@ -533,7 +507,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -545,7 +518,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -554,7 +526,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END#{counter})
@@ -563,9 +534,6 @@ PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "and"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
       self.stack.delete_at(self.stack.length-1)
@@ -585,13 +553,13 @@ PARAGRAPH
         self.stack.push(-1)
       end
 file = <<PARAGRAPH
+// And
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -603,7 +571,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -618,7 +585,6 @@ D=D&M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -633,16 +599,12 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
     when "or"
       file = ""
-      if self.sp >= 257 then
-        self.sp = self.sp - 1
-      end
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
       self.stack.delete_at(self.stack.length-1)
@@ -662,13 +624,13 @@ PARAGRAPH
         self.stack.push(-1)
       end
 file = <<PARAGRAPH
+// Or
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -680,7 +642,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -695,7 +656,6 @@ D=D|M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -710,7 +670,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 PARAGRAPH
@@ -733,13 +692,13 @@ PARAGRAPH
       self.stack.push(var2bit.to_i(2))
 
 file = <<PARAGRAPH
+// Not
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 M=!D
 
 @SP
@@ -748,10 +707,11 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 PARAGRAPH
       File.open(output, "a") { |f| f.write file }
+    else
+      raise "Unhandled #{command} in writearithmetic"
     end
 
   end
@@ -760,32 +720,75 @@ PARAGRAPH
  Method: writepushpop
  Args: command (C_PUSH or C_POP), segment (string), index (int)
  Function: Writes the assembly code that is the translation of the given command, where command is either C_PUSH or C_POP.
+ pg 142 table of ram mapping names
 =end
   def writepushpop(command_type,output,arg1,arg2)
     case command_type
     when "C_POP"
-        if self.sp >= 257 then
-         self.sp = self.sp - 1
-        end
+      case arg1
+      when "local"
+        file = pop_thing "@LCL", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "argument"
+        file = pop_thing "@ARG", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "this"
+        file = pop_thing "@THIS", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "that"
+        file = pop_thing "@THAT", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "temp"
+        file = pop_thing "@R5", arg2, false
+        File.open(output, "a") { |f| f.write file }
+      when "pointer"
+        file = pop_thing "@THIS", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "static"
         if self.static[arg2] == nil then
           self.static.insert(arg2,self.stack.last)
         else
           self.static[arg2] = self.stack.last
         end
+      else
+        raise "Umnhandled #{arg1} in #{command_type}"
+      end
     when "C_PUSH"
       case arg1
+      when "local"
+        self.stack.push(arg2)
+        file = push_thing "@LCL", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "this"
+        self.stack.push(arg2)
+        file = push_thing "@THIS", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "that"
+        self.stack.push(arg2)
+        file = push_thing "@THAT", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "argument"
+        self.stack.push(arg2)
+        file = push_thing "@ARG", arg2
+        File.open(output, "a") { |f| f.write file }
+      when "temp"
+        self.stack.push(arg2)
+        file = push_thing "@R5", arg2, false
+        File.open(output, "a") { |f| f.write file }
+      when "pointer"
+        self.stack.push(arg2)
+        file = push_thing "@THIS", arg2
+        File.open(output, "a") { |f| f.write file }
       when "constant"
         self.stack.push(arg2)
-        var1 = arg2
-        var1mem = 256 + (self.sp - 1)
 file = <<PARAGRAPH
-@#{var1}
+// Push Constant #{arg2}
+@#{arg2}
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
@@ -794,21 +797,68 @@ PARAGRAPH
         File.open(output, "a") { |f| f.write file }
       when "static"
         var1 = self.static[int]
-        var1mem = 256 + (self.sp - 1)
 file = <<PARAGRAPH
-@#{var1}
-D=A
-@#{var1mem}
-M=!M
 
-@#{var1mem}
-D=A
-@0
-M=D+1
 PARAGRAPH
         File.open(output, "a") { |f| f.write file }
+      else
+         raise "Unhandled #{arg1} in #{command_type}"
       end
+    else
+        raise "Unhandled command #{command_type}"
     end
   end
-end
 
+  def push_thing loc, arg2, deref=true
+<<PARAGRAPH
+// Push #{loc} #{arg2}
+#{loc}
+D=#{deref ? "M" : "A"}
+
+@#{arg2}
+A=D+A
+
+D=M
+
+@SP
+A=M
+
+M=D
+
+@SP
+M=M+1
+
+PARAGRAPH
+  end
+
+  def pop_thing loc, arg2, deref=true
+<<PARAGRAPH
+// Pop #{loc} #{arg2}
+@SP
+AM=M-1
+
+D=M
+
+@R13
+M=D
+
+#{loc}
+D=#{deref ? "M" : "A"}
+
+@#{arg2}
+D=D+A
+
+@R14
+M=D
+
+@R13
+D=M
+
+@R14
+A=M
+
+M=D
+
+PARAGRAPH
+  end
+end
