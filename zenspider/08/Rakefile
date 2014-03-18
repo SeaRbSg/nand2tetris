@@ -20,13 +20,22 @@ def wire base
   task :default => "#{base}.out"
 end
 
+def wire_multi base, input
+  file "#{base}.asm" => [ "Rakefile", "vm2.rb", *input] do |t|
+    vm t.name, *input
+  end
+  file "#{base}.out" => [ "#{base}.asm" ]
+  task :default => "#{base}.out"
+end
+
 wire "ProgramFlow/BasicLoop/BasicLoop"
 wire "ProgramFlow/FibonacciSeries/FibonacciSeries"
 
 wire "FunctionCalls/SimpleFunction/SimpleFunction"
 
-# wire "FunctionCalls/FibonacciElement/Main"
-# wire "FunctionCalls/FibonacciElement/Sys"
+wire_multi("FunctionCalls/FibonacciElement/FibonacciElement",
+           Dir["FunctionCalls/FibonacciElement/{Main,Sys}.vm"])
+
 # wire "FunctionCalls/StaticsTest/Class1"
 # wire "FunctionCalls/StaticsTest/Class2"
 # wire "FunctionCalls/StaticsTest/Sys"

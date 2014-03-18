@@ -60,6 +60,8 @@ class Compiler
         Goto.new $1
       when /^function (\S+) (\d+)$/ then
         Function.new $1, $2.to_i
+      when /^call (\S+) (\d+)$/ then
+        Call.new $1, $2.to_i
       when /^return$/ then
         Return.new
       else
@@ -351,6 +353,39 @@ class Compiler
                "/// goto RET",
                "@R13", "A=M", "0;JMP"
       )
+    end
+  end
+
+  class Call < Struct.new :name, :size
+    include Asmable
+    include Stackable
+
+    def comment
+      asm "// call #{name} #{size}"
+    end
+
+    def push name, loc="M"
+      asm "/// push #{name}", name, "D=#{loc}", push_d
+    end
+
+    def set dest, *instructions
+      asm instructions + [dest, "M=D"]
+    end
+
+    def to_s
+      addr = next_num "return"
+      assemble(comment,
+               push("@#{addr}", "A"),
+               push("@LCL"),
+               push("@ARG"),
+               push("@THIS"),
+               push("@THAT"),
+               set("@ARG", "/// ARG = SP-#{size}-5",
+                   "@#{size + 5}", "D=A", "@SP", "D=M-D"),
+               set("@LCL", "/// LCL = SP",
+                   "@SP", "D=M"),
+               "/// goto #{name}", "@#{name}", "0;JMP",
+               "(#{addr})")
     end
   end
 end
