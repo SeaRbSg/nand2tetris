@@ -34,16 +34,68 @@ class Parser
       %w[@SP A=M M=D @SP M=M+1]
     end
 
-    def debug
-      "// #{self.class} #{line}"
+    def debug info=line
+      "// #{self.class} #{info}"
     end
 
     def to_asm
       [debug, asm].join("\n")
     end
+  end
+
+  class Call < Instruction
+    REGEXP = /^call ([^ ]*) (\d+)$/
+
+    def self.match? line
+      line =~ REGEXP
+    end
+
+    def name
+      line.match(REGEXP)[1]
+    end
+
+    def args
+      line.match(REGEXP)[2].to_i
+    end
+
+    def index
+      @index ||= begin
+        @@index ||= 0
+        i = @@index
+        @@index += 1
+        i
+      end
+    end
 
     def asm
-      # intentionally blank
+      return_label = "CALL.#{index}"
+
+      [
+        "@#{return_label}", "D=A", push_stack,
+
+        ["LCL", "ARG", "THIS", "THAT"].map { |r|
+          ["@#{r}", "D=M", push_stack]
+        },
+
+        "@SP",
+        "D=M",
+        "@5",
+        "D=D-A",
+        "@#{args}",
+        "D=D-A",
+        "@ARG",
+        "M=D",
+
+        "@SP",
+        "D=M",
+        "@LCL",
+        "M=D",
+
+        "@#{name}",
+        "0;JMP",
+
+        "(#{return_label})",
+      ]
     end
   end
 
@@ -63,7 +115,10 @@ class Parser
     end
 
     def asm
-      args.times.map { ["@0", "D=A", push_stack] }
+      [
+        "(#{name})",
+        args.times.map { ["@0", "D=A", push_stack] },
+      ]
     end
   end
 
@@ -82,7 +137,7 @@ class Parser
         pop_stack,
         "@ARG",
         "A=M",
-        "M=D", 
+        "M=D",
 
         "@ARG", # Set SP = ARG+1
         "D=M",
@@ -101,6 +156,11 @@ class Parser
             "M=D",
           ]
         },
+        "@R13",
+        "M=M-1",
+        "@R13",
+        "A=M",
+        "0;JMP",
       ]
     end
   end
@@ -350,9 +410,13 @@ class Parser
     def self.match? *_
       true
     end
+
+    def asm
+    end
   end
 
   INSTRUCTIONS = [
+    Call,
     Function,
     Return,
     Goto,
@@ -384,7 +448,8 @@ if $0 == __FILE__
     puts Parser.parse File.readlines(files.first)
   else
     puts [
-      "// preamble",
+      ["@256", "D=A", "@SP", "M=D", "@Sys.init", "0;JMP"],
+      #Parser.parse(["call Sys.init 0"]),
       Dir[File.join(input, "*.vm")].map {|f| Parser.parse File.readlines(f) }
     ].join("\n")
   end

@@ -1,4 +1,5 @@
 // Parser::Function function SimpleFunction.test 2
+(SimpleFunction.test)
 @0
 D=A
 @SP
@@ -197,3 +198,8 @@ A=M
 D=M
 @LCL
 M=D
+@R13
+M=M-1
+@R13
+A=M
+0;JMP
