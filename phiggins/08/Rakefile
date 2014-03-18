@@ -3,7 +3,7 @@ my_vm = "ruby vm.rb"
 
 def tool t, f=nil
   file = f ? File.expand_path(File.join(File.dirname(__FILE__), f)) : ""
-  sh t + " " + file
+  `#{t + " " + file}`
 end
 
 def filename(f) f + "/" + f.split("/").last end
@@ -21,6 +21,13 @@ tests.each do |t|
   task t do
     sh "#{my_vm} #{t} > #{asm(t)}"
     tool emulator, tst(t)
+
+    unless $?.success?
+      outfile = filename(t) + ".out"
+      cmp = filename(t) + ".cmp"
+
+      abort ["Expected:", File.read(cmp), "Got:", File.read(outfile)].join("\n")
+    end
   end
 end
 
