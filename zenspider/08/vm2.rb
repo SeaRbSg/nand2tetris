@@ -24,6 +24,8 @@ class Compiler
     compiler = Compiler.new
 
     result = paths.map { |path|
+      compiler.file_name = File.basename path, ".vm"
+
       File.open path do |file|
         compiler.assemble file
       end
@@ -38,8 +40,14 @@ class Compiler
     result.flatten.compact.join("\n").gsub(/^(?![\/\(])/, '   ').number_instructions
   end
 
+  attr_accessor :file_name
+
   SEGMENTS = %w(argument local static constant this that pointer temp).join "|"
   OPS      = %w(add sub neg eq gt lt and or not).join "|"
+
+  def initialize
+    self.file_name = "unknown"
+  end
 
   def assemble io
     io.each_line.map { |line|
@@ -47,9 +55,9 @@ class Compiler
       when "" then
         nil
       when /^push (#{SEGMENTS}) (\d+)/ then
-        Push.new $1, $2.to_i
+        Push.new $1, $2.to_i, file_name
       when /^pop (#{SEGMENTS}) (\d+)/ then
-        Pop.new $1, $2.to_i
+        Pop.new $1, $2.to_i, file_name
       when /^(#{OPS})$/ then
         Op.new $1
       when /^label (\S+)$/ then
@@ -174,8 +182,7 @@ class Compiler
     end
 
     def static
-      off = [ "@#{offset}", "A=A+D" ] if offset
-      asm "@16", "D=A", off
+      asm "@#{file_name}.#{offset}"
     end
 
     def pointer
@@ -206,7 +213,7 @@ class Compiler
     end
   end
 
-  class StackThingy < Struct.new :segment, :offset
+  class StackThingy < Struct.new :segment, :offset, :file_name
     include Asmable
     include Stackable
     include Segmentable
