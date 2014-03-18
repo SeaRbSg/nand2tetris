@@ -34,6 +34,8 @@ class VMTranslator
     paths.each do |p|
       sio = StringIO.new File.read p
 
+      vmt.code_writer.file_name = File.basename p, ".vm"
+
       vmt.parse(sio)
 
       vmt.translate
