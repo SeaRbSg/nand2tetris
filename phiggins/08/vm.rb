@@ -26,20 +26,12 @@ class Parser
       new(line).to_asm
     end
 
-    def decrement_stack_pointer
-      %w[@SP M=M-1]
-    end
-
-    def increment_stack_pointer
-      %w[@SP M=M+1]
-    end
-
     def pop_stack
-      decrement_stack_pointer + %w[@SP A=M D=M]
+      %w[@SP M=M-1 @SP A=M D=M]
     end
 
     def push_stack
-      %w[@SP A=M M=D] + increment_stack_pointer
+      %w[@SP A=M M=D @SP M=M+1]
     end
 
     def debug
@@ -52,6 +44,64 @@ class Parser
 
     def asm
       # intentionally blank
+    end
+  end
+
+  class Function < Instruction
+    REGEXP = /^function ([^ ]*) (\d+)$/
+
+    def self.match? line
+      line =~ REGEXP
+    end
+
+    def name
+      line.match(REGEXP)[1]
+    end
+
+    def args
+      line.match(REGEXP)[2].to_i
+    end
+
+    def asm
+      args.times.map { ["@0", "D=A", push_stack] }
+    end
+  end
+
+  class Return < Instruction
+    def self.match? line
+      line =~ /^return$/
+    end
+
+    def asm
+      [
+        "@LCL", # Store LCL
+        "D=M",
+        "@R13",
+        "M=D",
+
+        pop_stack,
+        "@ARG",
+        "A=M",
+        "M=D", 
+
+        "@ARG", # Set SP = ARG+1
+        "D=M",
+        "D=D+1",
+        "@SP",
+        "M=D",
+
+        %w[THAT THIS ARG LCL].map { |r|
+          [
+            "@R13",
+            "M=M-1",
+            "@R13",
+            "A=M",
+            "D=M",
+            "@#{r}",
+            "M=D",
+          ]
+        },
+      ]
     end
   end
 
@@ -303,6 +353,8 @@ class Parser
   end
 
   INSTRUCTIONS = [
+    Function,
+    Return,
     Goto,
     IfGoto,
     Label,

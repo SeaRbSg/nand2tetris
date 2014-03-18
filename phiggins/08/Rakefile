@@ -13,6 +13,7 @@ def tst(f)  f + ".tst" end
 tests = %w[
   ProgramFlow/BasicLoop/BasicLoop
   ProgramFlow/FibonacciSeries/FibonacciSeries
+  FunctionCalls/SimpleFunction/SimpleFunction
 ]
 
 tests.each do |t|
