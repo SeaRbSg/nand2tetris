@@ -55,6 +55,22 @@ class Parser
     end
   end
 
+  class Goto < Instruction
+    REGEXP = /^goto (.*)$/
+
+    def self.match? line
+      line =~ REGEXP
+    end
+
+    def label
+      line[REGEXP, 1]
+    end
+
+    def asm
+      ["@#{label}", "0;JMP"]
+    end
+  end
+
   class IfGoto < Instruction
     REGEXP = /^if-goto (.*)$/
 
@@ -287,6 +303,7 @@ class Parser
   end
 
   INSTRUCTIONS = [
+    Goto,
     IfGoto,
     Label,
     PushConstant,
