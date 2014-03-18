@@ -195,7 +195,14 @@ class Compiler
       assemble(comment,
                "/// SP = 256",
                "@256", "D=A", "@SP",  "M=D",
-               Call.new("Sys.init", 0))
+
+               "/// set THIS=THAT=LCL=ARG=-1 to force error if used as pointer",
+               "@0", "D=-A",
+               "@THIS", "M=D", "@THAT", "M=D", "@LCL", "M=D", "@ARG", "M=D",
+
+               Call.new("Sys.init", 0),
+               Label.new("FUCK_IT_BROKE"),
+               Goto.new("FUCK_IT_BROKE"))
     end
   end
 
