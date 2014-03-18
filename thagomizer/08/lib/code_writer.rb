@@ -31,25 +31,25 @@ class CodeWriter
 
     case segment
     when "temp"
-      @asm << "@R#{5+index}"
-      @asm << "D=M"
+      @asm += ["@R#{5+index}",
+               "D=M",]
     when "pointer"
-      @asm << "@#{3+index}"
-      @asm << "D=M"
+      @asm += ["@#{3+index}",
+               "D=M",]
     when "constant"
-      @asm << "@#{index}"
-      @asm << "D=A"
+      @asm += ["@#{index}",
+               "D=A",]
     when "static"
-      @asm << "@#{self.file_name}.#{index}"
-      @asm << "D=M"
+      @asm += ["@#{self.file_name}.#{index}",
+               "D=M"]
     when "local", "argument", "this", "that"
-      @asm << "@#{index}"
-      @asm << "D=A"
-      @asm << SEGMENTS[segment]
-      @asm << "A=M+D"
-      @asm << "D=M"
+      @asm += ["@#{index}",
+               "D=A",
+               SEGMENTS[segment],
+               "A=M+D",
+               "D=M",]
     end
-    pushd
+    push_d
   end
 
   def write_pop(segment, index)
@@ -57,32 +57,32 @@ class CodeWriter
 
     case segment
     when "temp"
-      @asm << "@SP"
-      @asm << "AM=M-1"
-      @asm << "D=M"
-      @asm << "@R#{5+index}"
+      @asm += ["@SP",
+               "AM=M-1",
+               "D=M",
+               "@R#{5+index}",]
     when "pointer"
-      @asm << "@SP"
-      @asm << "AM=M-1"
-      @asm << "D=M"
-      @asm << "@#{3+index}"
+      @asm += ["@SP",
+               "AM=M-1",
+               "D=M",
+               "@#{3+index}",]
     when "static"
-      @asm << "@SP"
-      @asm << "AM=M-1"
-      @asm << "D=M"
-      @asm << "@#{self.file_name}.#{index}"
+      @asm += ["@SP",
+               "AM=M-1",
+               "D=M",
+               "@#{self.file_name}.#{index}",]
     else
-      @asm << "@#{index}"
-      @asm << "D=A"
-      @asm << SEGMENTS[segment]
-      @asm << "D=M+D"
-      @asm << "@R13"
-      @asm << "M=D"
-      @asm << "@SP"
-      @asm << "AM=M-1"
-      @asm << "D=M"
-      @asm << "@R13"
-      @asm << "A=M"
+      @asm += ["@#{index}",
+               "D=A",
+               SEGMENTS[segment],
+               "D=M+D",
+               "@R13",
+               "M=D",
+               "@SP",
+               "AM=M-1",
+               "D=M",
+               "@R13",
+               "A=M",]
     end
 
     @asm << "M=D"
@@ -91,26 +91,7 @@ class CodeWriter
   def write_arithmetic(cmd)
     @asm << "// #{cmd}"
 
-    case cmd
-    when "add"
-      write_add
-    when "sub"
-      write_sub
-    when "neg"
-      write_neg
-    when "eq"
-      write_eq
-    when "gt"
-      write_gt
-    when "lt"
-      write_lt
-    when "and"
-      write_and
-    when "or"
-      write_or
-    when "not"
-      write_not
-    end
+    send("write_#{cmd}")
   end
 
   def write_add
@@ -162,34 +143,35 @@ class CodeWriter
   end
 
   def write_label(label)
-    @asm << "// label"
-    @asm << "(#{label})"
+    @asm += ["// label",
+             "(#{label})",]
   end
 
   def write_goto(label)
-    @asm << "// goto"
-    @asm << "@#{label}"
-    @asm << "0;JMP"
+    @asm += ["// goto",
+             "@#{label}",
+             "0;JMP",]
   end
 
   def write_if(label)
-    @asm << "// if-goto"
-    @asm << "@SP"
-    @asm << "AM=M-1"
-    @asm << "D=M"
-    @asm << "@#{label}"
-    @asm << "D;JNE"
+    @asm += ["// if-goto",
+             "@SP",
+             "AM=M-1",
+             "D=M",
+             "@#{label}",
+             "D;JNE",]
   end
 
   def write_function(function_name, num_locals)
-    @asm << "// function #{function_name} #{num_locals}"
-    @asm << "(#{function_name})"
-    @asm << "@0"
-    @asm << "D=A"
+    @asm += ["// function #{function_name} #{num_locals}",
+             "(#{function_name})",
+             "@0",
+             "D=A",]
 
     num_locals.times do
-      pushd
+      push_d
     end
+
   end
 
   def write_call(function_name, num_args, include_comment = true)
@@ -301,16 +283,16 @@ class CodeWriter
     end
   end
 
-  def pushd
-    @asm << "@SP"
-    @asm << "A=M"
-    @asm << "M=D"
+  def push_d
+    @asm += ["@SP",
+             "A=M",
+             "M=D",]
     increment_sp
   end
 
   def increment_sp
-    @asm << "@SP"
-    @asm << "M=M+1"
+    @asm += ["@SP",
+             "M=M+1",]
   end
 
   def comparison(jump_to_use)
@@ -318,25 +300,22 @@ class CodeWriter
     label_pushd = next_label("PUSHD")
 
     binary_operation {
-      @asm << "D=A-D"
-      @asm << "@#{label_true}"
-      @asm << "D;#{jump_to_use}"
-
-      @asm << "D=0"
-      @asm << "@#{label_pushd}"
-      @asm << "0;JMP"
-
-      @asm << "(#{label_true})"
-      @asm << "D=-1"
-
-      @asm << "(#{label_pushd})"
+      @asm += ["D=A-D",
+               "@#{label_true}",
+               "D;#{jump_to_use}",
+               "D=0",
+               "@#{label_pushd}",
+               "0;JMP",
+               "(#{label_true})",
+               "D=-1",
+               "(#{label_pushd})",]
     }
   end
 
   # The block must put the result in D
   def unary_operation
-    @asm << "@SP"
-    @asm << "A=M-1"
+    @asm += ["@SP",
+             "A=M-1",]
     yield
   end
 
@@ -344,16 +323,16 @@ class CodeWriter
   def binary_operation
     load_top_two_stack_vars
     yield if block_given?
-    pushd
+    push_d
   end
 
   def load_top_two_stack_vars
-    @asm << "@SP"
-    @asm << "AM=M-1"
-    @asm << "D=M"
-    @asm << "@SP"
-    @asm << "AM=M-1"
-    @asm << "A=M"
+    @asm += ["@SP",
+             "AM=M-1",
+             "D=M",
+             "@SP",
+             "AM=M-1",
+             "A=M",]
   end
 
 end
