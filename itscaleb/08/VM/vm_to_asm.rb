@@ -1,6 +1,7 @@
 require_relative 'arithmetic'
 require_relative 'push'
 require_relative 'pop'
+require_relative 'program_flow'
 require 'pry'
 
 raw_lines = File.readlines(ARGV[0])
@@ -40,6 +41,12 @@ clean_lines.each do |line|
     asm << arithmetic.or
   when /^not/
     asm << arithmetic.not
+  when /^label/
+    lines = line.split
+    asm << Label.to_asm(lines[0])
+  when /^if-goto/
+    lines = line.split
+    asm << IfGoto.to_asm(lines[0])
   else
     raise "cannot parse line"
   end
