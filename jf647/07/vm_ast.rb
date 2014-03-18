@@ -272,7 +272,7 @@ module VM
         end
         
         def self.load_into_d_a
-            [ '@SP', 'AM=M-1', 'D=M', '@SP', 'AM=M-1', 'A=M' ]
+            [ self.load_into_d, '@SP', 'AM=M-1', 'A=M' ]
         end
 
         def self.load_into_d
