@@ -161,21 +161,14 @@ class Compiler
       asm "@#{offset}"
     end
 
-    def local
-      dereference "LCL"
+    def self.def_deref name, slot
+      define_method name do dereference slot end
     end
 
-    def argument
-      dereference "ARG"
-    end
-
-    def this
-      dereference "THIS"
-    end
-
-    def that
-      dereference "THAT"
-    end
+    def_deref :local,    "LCL"
+    def_deref :argument, "ARG"
+    def_deref :this,     "THIS"
+    def_deref :that,     "THAT"
 
     def temp
       asm "@R#{offset + 5}"
