@@ -6,20 +6,20 @@ def tool t, f=nil
   sh t + " " + file
 end
 
-def vm(f)   f + ".vm" end
-def asm(f)  f + ".asm" end
-def tst(f)  f + ".tst" end
+def filename(f) f + "/" + f.split("/").last end
+def asm(f)  filename(f) + ".asm" end
+def tst(f)  filename(f) + ".tst" end
 
 tests = %w[
-  ProgramFlow/BasicLoop/BasicLoop
-  ProgramFlow/FibonacciSeries/FibonacciSeries
-  FunctionCalls/SimpleFunction/SimpleFunction
+  ProgramFlow/BasicLoop
+  ProgramFlow/FibonacciSeries
+  FunctionCalls/SimpleFunction
+  FunctionCalls/FibonacciElement
 ]
 
 tests.each do |t|
   task t do
-    out = asm(t)
-    sh "#{my_vm} #{vm(t)} > #{asm(t)}"
+    sh "#{my_vm} #{t} > #{asm(t)}"
     tool emulator, tst(t)
   end
 end

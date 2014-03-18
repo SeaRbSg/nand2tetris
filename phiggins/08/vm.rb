@@ -369,10 +369,23 @@ class Parser
 end
 
 if $0 == __FILE__
-  input_file = ARGV.first
+  input = ARGV.first
 
-  abort "Usage: #{$0} vm_file" unless input_file
+  unless input && File.exists?(input)
+    abort "Usage: #{$0} input"
+  end
 
-  out = Parser.parse File.readlines(input_file)
-  puts out
+  files = Dir[File.join(input, "*.vm")]
+
+  case files.size
+  when 0
+    abort "No *.vm files found in #{input}"
+  when 1
+    puts Parser.parse File.readlines(files.first)
+  else
+    puts [
+      "// preamble",
+      Dir[File.join(input, "*.vm")].map {|f| Parser.parse File.readlines(f) }
+    ].join("\n")
+  end
 end
