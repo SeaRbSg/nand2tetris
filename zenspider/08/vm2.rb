@@ -339,6 +339,11 @@ class Compiler
           "@#{off}", "D=A", "@R14", "A=M-D", "D=M", "@#{arg}", "M=D")
     end
 
+    def decrement_and_store_frame arg, off
+      asm("/// #{arg} = *(FRAME-#{off})",
+          "@R14", "AM=M-1", "D=M", "@#{arg}", "M=D")
+    end
+
     def to_s
       assemble(comment,
                "/// FRAME = LCL",
@@ -352,10 +357,10 @@ class Compiler
                "/// SP = ARG+1",
                "@ARG", "D=M+1", "@SP", "M=D",
 
-               store_frame("THAT", 1),
-               store_frame("THIS", 2),
-               store_frame("ARG", 3),
-               store_frame("LCL", 4),
+               decrement_and_store_frame("THAT", 1),
+               decrement_and_store_frame("THIS", 2),
+               decrement_and_store_frame("ARG", 3),
+               decrement_and_store_frame("LCL", 4),
 
                "/// goto RET",
                "@R13", "A=M", "0;JMP"
