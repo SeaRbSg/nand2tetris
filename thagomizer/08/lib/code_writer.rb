@@ -183,6 +183,7 @@ class CodeWriter
 
   def write_function(function_name, num_locals)
     loop_label = next_label("LOOP")
+    onward_label = next_label("ONWARD")  # I hate this
 
     @asm << "// function #{function_name} #{num_locals}"
     @asm << "(#{function_name})"
@@ -190,6 +191,8 @@ class CodeWriter
     @asm << "D=A"
     @asm << "@R13"
     @asm << "M=D"
+    @asm << "@#{onward_label}"
+    @asm << "D;JLE"
     @asm << "(#{loop_label})"
 
     write_push("constant", 0, false)
@@ -198,6 +201,66 @@ class CodeWriter
     @asm << "MD=M-1"
     @asm << "@#{loop_label}"
     @asm << "D;JGT"
+    @asm << "(#{onward_label})"
+  end
+
+  def write_call(function_name, num_args, include_comment = true)
+    # TODO Reduce code duplication
+
+    return_label = next_label("RET")
+
+    @asm << "// call #{function_name} #{num_args}" if include_comment
+
+    @asm += [
+             "@#{return_label}",   # Push return-address
+             "D=A",
+             "@SP",
+             "A=M",
+             "M=D",
+             "@SP",
+             "M=M+1",
+             "@LCL",               # Push LCL
+             "D=M",
+             "@SP",
+             "A=M",
+             "M=D",
+             "@SP",
+             "M=M+1",
+             "@ARG",               # Push ARG
+             "D=M",
+             "@SP",
+             "A=M",
+             "M=D",
+             "@SP",
+             "M=M+1",
+             "@THIS",              # Push THIS
+             "D=M",
+             "@SP",
+             "A=M",
+             "M=D",
+             "@SP",
+             "M=M+1",
+             "@THAT",              # Push THAT
+             "D=M",
+             "@SP",
+             "A=M",
+             "M=D",
+             "@SP",
+             "M=M+1",
+             "@SP",                # ARG = SP-n-5
+             "D=M",
+             "@#{num_args + 5}",   # n+5
+             "D=D-A",
+             "@ARG",
+             "M=D",
+             "@SP",                # LCL = SP
+             "D=M",
+             "@LCL",
+             "M=D",
+             "@#{function_name}",  # goto f
+             "0;JMP",
+             "(#{return_label})",  # (return-address)
+            ]
   end
 
   def write_return
@@ -205,8 +268,6 @@ class CodeWriter
 
     @asm += ["// return",
              "@LCL",        # FRAME = LCL
-              "D=M",
-              "@LCL",
               "D=M",
               "@R14",
               "M=D",
@@ -234,6 +295,15 @@ class CodeWriter
     @asm += ["@R15",       # goto RET
               "A=M",
               "0;JMP"]
+  end
+
+  def write_bootstrap
+    @asm += ["// bootstrap",
+             "@256",
+             "D=A",
+             "@SP",
+             "M=D"]
+    write_call("Sys.init", 0, false)
   end
 
   def restore_frame_var(var)

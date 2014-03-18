@@ -6,35 +6,44 @@ require 'stringio'
 require 'pp'
 
 class VMTranslator
-  attr_accessor :code_writer
+  attr_accessor :code_writer, :parser
 
-  def initialize source
-    @parser = Parser.new(source)
+  def initialize
+    @parser = Parser.new
     @code_writer = CodeWriter.new
   end
 
   def self.run path
     paths = []
+    out_path = ""
+
+    vmt = VMTranslator.new
 
     if File.directory?(path)
       Dir.entries(path).each do |entry|
         paths << "#{path}#{entry}" if entry =~ /vm$/
       end
+
+      out_path = File.join(path, "#{path.split(File::SEPARATOR).last}.asm")
+      vmt.code_writer.write_bootstrap
     else
       paths << path
+      out_path = path.gsub(".vm", ".asm")
     end
 
     paths.each do |p|
       sio = StringIO.new File.read p
 
-      vmt = VMTranslator.new(sio)
-
-      path =~ /\/(\w*)\.vm$/
-      vmt.code_writer.file_name = $1
+      vmt.parse(sio)
 
       vmt.translate
-      vmt.write(p.gsub(/\..*/, '.asm'))
     end
+
+    vmt.write(out_path)
+  end
+
+  def parse(io)
+    @parser.source = io
   end
 
   def translate
@@ -58,6 +67,8 @@ class VMTranslator
         @code_writer.write_function(@parser.arg1, @parser.arg2)
       when :c_return
         @code_writer.write_return
+      when :c_call
+        @code_writer.write_call(@parser.arg1, @parser.arg2)
       else
         raise "No translate handler for #{@parser.command_type}"
       end

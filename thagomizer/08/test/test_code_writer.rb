@@ -3,6 +3,8 @@ require 'minitest/autorun'
 require_relative '../lib/code_writer'
 
 class TestCodeWriter < Minitest::Test
+  make_my_diffs_pretty!
+
   def setup
     @cw = CodeWriter.new
     @cw.file_name = "test"
@@ -507,8 +509,6 @@ class TestCodeWriter < Minitest::Test
     expected = ["// return",
                 "@LCL",
                 "D=M",
-                "@LCL",
-                "D=M",
                 "@R14",
                 "M=D",
                 "@5",
@@ -564,6 +564,8 @@ class TestCodeWriter < Minitest::Test
                 "D=A",
                 "@R13",
                 "M=D",
+                "@ONWARD0002",
+                "D;JLE",
                 "(LOOP0001)",
                 "@0",
                 "D=A",
@@ -575,8 +577,123 @@ class TestCodeWriter < Minitest::Test
                 "@R13",
                 "MD=M-1",
                 "@LOOP0001",
-                "D;JGT"]
+                "D;JGT",
+                "(ONWARD0002)",]
     assert_equal expected, @cw.asm
+  end
 
+  def test_call
+    @cw.write_call("Main.fibonacci", 1)
+
+    expected = ["// call Main.fibonacci 1",
+                "@RET0001",  # Push return-address
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@LCL",      # Push LCL
+                "D=M",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@ARG",      # Push ARG
+                "D=M",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@THIS",      # Push THIS
+                "D=M",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@THAT",      # Push THAT
+                "D=M",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@SP",        # ARG = SP-n-5
+                "D=M",
+                "@6",         # 1+5
+                "D=D-A",
+                "@ARG",
+                "M=D",
+                "@SP",        # LCL = SP
+                "D=M",
+                "@LCL",
+                "M=D",
+                "@Main.fibonacci",        # goto f
+                "0;JMP",
+                "(RET0001)"   # (return-address)
+                ]
+    assert_equal expected, @cw.asm
+  end
+
+  def test_write_bootstrap
+    @cw.write_bootstrap
+
+    expected = ["// bootstrap",
+                "@256",
+                "D=A",
+                "@SP",
+                "M=D",
+                "@RET0001",  # Push return-address
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@LCL",      # Push LCL
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@ARG",      # Push ARG
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@THIS",      # Push THIS
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@THAT",      # Push THAT
+                "D=A",
+                "@SP",
+                "A=M",
+                "M=D",
+                "@SP",
+                "M=M+1",
+                "@SP",        # ARG = SP-n-5
+                "D=M",
+                "@6",         # 1+5
+                "D=D-A",
+                "@ARG",
+                "M=D",
+                "@SP",        # LCL = SP
+                "D=M",
+                "@LCL",
+                "M=D",
+                "@Sys.init",  # goto Sys.init
+                "0;JMP",
+                "(RET0001)"   # (return-address)
+                ]
   end
 end

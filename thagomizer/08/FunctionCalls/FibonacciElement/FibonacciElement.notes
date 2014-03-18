@@ -1,0 +1,20 @@
+Before the call to Sys.init
+------------------------
+SP: 256
+
+After the function Sys.init line
+------------------------
+SP: 261
+
+Before first call to fib
+------------------------
+SP: 261
+Stack: 261:4
+
+Before the fuction fib line
+---------------------------
+SP: 267
+LCL: 267
+ARG: 261
+Stack: 261-266:4,0,0,0,0
+
