@@ -13,3 +13,11 @@ class IfGoto
     asm << "D;JNE"
   end
 end
+
+class Goto
+  def self.to_asm label_name
+    asm = []
+    asm << "@#{label_name}"
+    asm << "0;JMP"
+  end
+end

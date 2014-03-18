@@ -42,10 +42,13 @@ clean_lines.each do |line|
     asm << Not.to_asm
   when /^label/
     lines = line.split
-    asm << Label.to_asm(lines[0])
+    asm << Label.to_asm(lines[1])
   when /^if-goto/
     lines = line.split
-    asm << IfGoto.to_asm(lines[0])
+    asm << IfGoto.to_asm(lines[1])
+  when /^goto/
+    lines = line.split
+    asm << Goto.to_asm(lines[1])
   else
     raise "cannot parse line"
   end
