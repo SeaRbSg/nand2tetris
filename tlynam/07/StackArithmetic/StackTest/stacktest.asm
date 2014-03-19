@@ -1,32 +1,32 @@
+// Push Constant 17
 @17
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 17
 @17
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// eq
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -38,7 +38,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -56,7 +55,6 @@ D;JEQ
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -68,7 +66,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -77,7 +74,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END1
@@ -88,7 +84,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -100,7 +95,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -109,40 +103,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END1)
-
+// Push Constant 17
 @17
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 16
 @16
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// eq
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -154,7 +146,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -172,7 +163,6 @@ D;JEQ
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -184,7 +174,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -193,7 +182,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END2
@@ -204,7 +192,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -216,7 +203,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -225,40 +211,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END2)
-
+// Push Constant 16
 @16
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 17
 @17
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// eq
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -270,7 +254,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -288,7 +271,6 @@ D;JEQ
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -300,7 +282,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -309,7 +290,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END3
@@ -320,7 +300,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -332,7 +311,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -341,40 +319,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END3)
-
+// Push Constant 892
 @892
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 891
 @891
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// lt
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -386,7 +362,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -404,7 +379,6 @@ D;JLT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -416,7 +390,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -425,7 +398,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END4
@@ -436,7 +408,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -448,7 +419,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -457,40 +427,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END4)
-
+// Push Constant 891
 @891
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 892
 @892
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// lt
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -502,7 +470,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -520,7 +487,6 @@ D;JLT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -532,7 +498,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -541,7 +506,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END5
@@ -552,7 +516,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -564,7 +527,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -573,40 +535,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END5)
-
+// Push Constant 891
 @891
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 891
 @891
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// lt
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -618,7 +578,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -636,7 +595,6 @@ D;JLT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -648,7 +606,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -657,7 +614,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END6
@@ -668,7 +624,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -680,7 +635,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -689,40 +643,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END6)
-
+// Push Constant 32767
 @32767
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 32766
 @32766
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// gt
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -734,7 +686,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -752,7 +703,6 @@ D;JGT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -764,7 +714,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -773,7 +722,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END7
@@ -784,7 +732,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -796,7 +743,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -805,40 +751,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END7)
-
+// Push Constant 32766
 @32766
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 32767
 @32767
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// gt
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -850,7 +794,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -868,7 +811,6 @@ D;JGT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -880,7 +822,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -889,7 +830,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END8
@@ -900,7 +840,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -912,7 +851,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -921,40 +859,38 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END8)
-
+// Push Constant 32766
 @32766
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 32766
 @32766
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// gt
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -966,7 +902,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -984,7 +919,6 @@ D;JGT
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -996,7 +930,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @SP
@@ -1005,7 +938,6 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 @END9
@@ -1016,7 +948,6 @@ M=0
 @SP
 A=M
 
-A
 M=0
 
 @R14
@@ -1028,7 +959,6 @@ M=0
 @SP
 A=M
 
-A
 M=-1
 
 @SP
@@ -1037,51 +967,49 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
 (END9)
-
+// Push Constant 57
 @57
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 31
 @31
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// Push Constant 53
 @53
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// add
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -1093,7 +1021,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -1108,7 +1035,6 @@ D=D+M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -1123,27 +1049,26 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
+// Push Constant 112
 @112
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// sub
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -1155,7 +1080,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -1170,7 +1094,6 @@ D=D-M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -1185,16 +1108,15 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
+// neg
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 M=-D
 
 @SP
@@ -1203,15 +1125,14 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
+// and
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -1223,7 +1144,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -1238,7 +1158,6 @@ D=D&M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -1253,27 +1172,26 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
+// Push Constant 82
 @82
 D=A
 
 @SP
 A=M
 
-A
 M=D
 
 @SP
 M=M+1
+// or
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 D=M
 
 @R13
@@ -1285,7 +1203,6 @@ M=M-1
 @SP
 A=M
 
-A
 D=M
 
 @R14
@@ -1300,7 +1217,6 @@ D=D|M
 @SP
 A=M
 
-A
 M=D
 
 @R14
@@ -1315,16 +1231,15 @@ M=M+1
 @SP
 A=M
 
-A
 M=0
 
+// not
 @SP
 M=M-1
 
 @SP
 A=M
 
-A
 M=!D
 
 @SP
@@ -1333,5 +1248,4 @@ M=M+1
 @SP
 A=M
 
-A
 M=0

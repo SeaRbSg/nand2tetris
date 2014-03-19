@@ -77,468 +77,46 @@ Function: Returns the second argument of the current command.  Should be called 
   def writearithmetic(command,output,counter)
     case command
     when "add"
-      file = ""
-      var1 = self.stack.last(2)[0]
-      var2 = self.stack.last(2)[1]
-      self.stack.delete_at(self.stack.length-1)
-      self.stack.delete_at(self.stack.length-1)
-      var3 = var1.to_i + var2.to_i
-      self.stack.push(var3)
-file = <<PARAGRAPH
-// Add
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D+M
-
-@SP
-A=M
-
-M=D
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-PARAGRAPH
+      file = add_sub_thing command
       File.open(output, "a") { |f| f.write file }
     when "sub"
-      file = ""
-      var1 = self.stack.last(2)[0]
-      var2 = self.stack.last(2)[1]
-      stack1 = self.stack.length - 1
-      self.stack.delete_at(stack1)
-      stack2 = self.stack.length - 1
-      self.stack.delete_at(stack2)
-      temp = 0
-      if var1 == nil then
-        var1 = 0
-      end
-      if var2 == nil then
-        var2 = 0
-      end
-      temp = var1.to_i - var2.to_i
-      self.stack.push(temp)
-file = <<PARAGRAPH
-// Sub
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D-M
-
-@SP
-A=M
-
-M=D
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-PARAGRAPH
-      File.open(output, "a") { |f| f.write file }
-    when "neg"
-      #784 D=-28
-      file = ""
-      var1 = self.stack.last
-      self.stack.delete_at(self.stack.length-1)
-      self.stack.push(var1 * -1)
-
-file = <<PARAGRAPH
-// Neg
-@SP
-M=M-1
-
-@SP
-A=M
-
-M=-D
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-PARAGRAPH
+      file = add_sub_thing command
       File.open(output, "a") { |f| f.write file }
     when "eq"
-      file = ""
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      self.stack.delete_at(self.stack.length-1)
-      self.stack.delete_at(self.stack.length-1)
       if var1 == var2 then
         self.stack.push(-1)
       else
         self.stack.push(0)
       end
-file = <<PARAGRAPH
-// EQ
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D-M
-
-@EQTRUE#{counter}
-D;JEQ
-
-@SP
-A=M
-
-M=0
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-A=M
-
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-@END#{counter}
-0;JMP
-
-(EQTRUE#{counter})
-
-@SP
-A=M
-
-M=0
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-A=M
-
-M=-1
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-(END#{counter})
-
-PARAGRAPH
+      file = equality command, counter
       File.open(output, "a") { |f| f.write file }
     when "gt"
-      file = ""
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      self.stack.delete_at(self.stack.length-1)
-      self.stack.delete_at(self.stack.length-1)
       if var1 > var2 then
         self.stack.push(-1)
       else
         self.stack.push(0)
       end
-file = <<PARAGRAPH
-// GT
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D-M
-
-@GTTRUE#{counter}
-D;JGT
-
-@SP
-A=M
-
-M=0
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-A=M
-
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-@END#{counter}
-0;JMP
-
-(GTTRUE#{counter})
-
-@SP
-A=M
-
-M=0
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-A=M
-
-M=-1
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-(END#{counter})
-
-PARAGRAPH
+      file = equality command, counter
       File.open(output, "a") { |f| f.write file }
     when "lt"
-      file = ""
       var1 = self.stack.last(2)[0]
       var2 = self.stack.last(2)[1]
-      self.stack.delete_at(self.stack.length-1)
-      self.stack.delete_at(self.stack.length-1)
       if var1 < var2 then
         self.stack.push(-1)
       else
         self.stack.push(0)
       end
-file = <<PARAGRAPH
-// LT
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D-M
-
-@LTTRUE#{counter}
-D;JLT
-
-@SP
-A=M
-
-M=0
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-A=M
-
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-@END#{counter}
-0;JMP
-
-(LTTRUE#{counter})
-
-@SP
-A=M
-
-M=0
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-A=M
-
-M=-1
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-(END#{counter})
-
-PARAGRAPH
+      file = equality command, counter
       File.open(output, "a") { |f| f.write file }
     when "and"
-      file = ""
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
       self.stack.delete_at(self.stack.length-1)
       self.stack.delete_at(self.stack.length-1)
-
       var1bit = var1.to_s(2).rjust(16,"0")
       var2bit = var2.to_s(2).rjust(16,"0")
       bit = true
@@ -552,64 +130,13 @@ PARAGRAPH
       else
         self.stack.push(-1)
       end
-file = <<PARAGRAPH
-// And
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D&M
-
-@SP
-A=M
-
-M=D
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-PARAGRAPH
+      file = andor command
       File.open(output, "a") { |f| f.write file }
     when "or"
-      file = ""
       var1 = self.stack.last(2)[0].to_i
       var2 = self.stack.last(2)[1].to_i
       self.stack.delete_at(self.stack.length-1)
-      self.stack.delete_at(self.stack.length-1)
-
+      self.stack.delete_at(self.stack.length-1)  
       var1bit = var1.to_s(2).rjust(16,"0")
       var2bit = var2.to_s(2).rjust(16,"0")
       bit = true
@@ -623,59 +150,9 @@ PARAGRAPH
       else
         self.stack.push(-1)
       end
-file = <<PARAGRAPH
-// Or
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R13
-M=D
-
-@SP
-M=M-1
-
-@SP
-A=M
-
-D=M
-
-@R14
-M=D
-
-@R14
-D=M
-
-@R13
-D=D|M
-
-@SP
-A=M
-
-M=D
-
-@R14
-M=0
-
-@R13
-M=0
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-
-PARAGRAPH
+      file = andor command
       File.open(output, "a") { |f| f.write file }
     when "not"
-      file = ""
       var1 = self.stack.last
       self.stack.delete_at(self.stack.length-1)
       var1bit = var1.to_s(2).rjust(16,"0")
@@ -691,24 +168,13 @@ PARAGRAPH
 
       self.stack.push(var2bit.to_i(2))
 
-file = <<PARAGRAPH
-// Not
-@SP
-M=M-1
-
-@SP
-A=M
-
-M=!D
-
-@SP
-M=M+1
-
-@SP
-A=M
-
-M=0
-PARAGRAPH
+      file = negnot command
+      File.open(output, "a") { |f| f.write file }
+    when "neg"
+      var1 = self.stack.last
+      self.stack.delete_at(self.stack.length-1)
+      self.stack.push(var1 * -1)
+      file = negnot command
       File.open(output, "a") { |f| f.write file }
     else
       raise "Unhandled #{command} in writearithmetic"
@@ -859,6 +325,271 @@ A=M
 
 M=D
 
+PARAGRAPH
+  end
+
+  def add_sub_thing command
+    file = ""
+    var1 = self.stack.last(2)[0]
+    var2 = self.stack.last(2)[1]
+    self.stack.delete_at(self.stack.length-1)
+    self.stack.delete_at(self.stack.length-1)
+    if command == "add"
+      sym = "+"
+      var3 = var1.to_i + var2.to_i
+    elsif command == "sub"
+      sym = "-"
+      var3 = var1.to_i - var2.to_i
+    else
+      "Unhandled command #{command}"
+    end
+    self.stack.push(var3)
+<<PARAGRAPH
+// #{command}
+@SP
+M=M-1
+
+@SP
+A=M
+
+D=M
+
+@R13
+M=D
+
+@SP
+M=M-1
+
+@SP
+A=M
+
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D#{sym}M
+
+@SP
+A=M
+
+M=D
+
+@R14
+M=0
+
+@R13
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+M=0
+
+PARAGRAPH
+  end
+
+  def equality command, counter
+    self.stack.delete_at(self.stack.length-1)
+    self.stack.delete_at(self.stack.length-1)
+    case command
+    when "eq"
+      sym = "EQTRUE"
+      jmp = "JEQ"
+    when "gt"
+      sym = "GTTRUE"
+      jmp = "JGT"
+    when "lt"
+      sym = "LTTRUE"
+      jmp = "JLT"
+    else
+      "Unhandled command #{command}"
+    end
+<<PARAGRAPH
+// #{command}
+@SP
+M=M-1
+
+@SP
+A=M
+
+D=M
+
+@R13
+M=D
+
+@SP
+M=M-1
+
+@SP
+A=M
+
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D-M
+
+@#{sym}#{counter}
+D;#{jmp}
+
+@SP
+A=M
+
+M=0
+
+@R14
+M=0
+
+@R13
+M=0
+
+@SP
+A=M
+
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+M=0
+
+@END#{counter}
+0;JMP
+
+#{"(" + sym + counter.to_s + ")"}
+
+@SP
+A=M
+
+M=0
+
+@R14
+M=0
+
+@R13
+M=0
+
+@SP
+A=M
+
+M=-1
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+M=0
+
+(END#{counter})
+PARAGRAPH
+  end
+
+  def andor command
+    case command
+    when "and"
+      sym = "&"
+    when "or"
+      sym = "|"
+    else
+      raise "Unhandled command #{command}"
+    end
+
+<<PARAGRAPH
+// #{command}
+@SP
+M=M-1
+
+@SP
+A=M
+
+D=M
+
+@R13
+M=D
+
+@SP
+M=M-1
+
+@SP
+A=M
+
+D=M
+
+@R14
+M=D
+
+@R14
+D=M
+
+@R13
+D=D#{sym}M
+
+@SP
+A=M
+
+M=D
+
+@R14
+M=0
+
+@R13
+M=0
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+M=0
+
+PARAGRAPH
+  end
+
+  def negnot command
+    case command
+    when "not"
+      sym = "!"
+    when "neg"
+      sym = "-"
+    else
+      raise "Unhandled command #{command}"
+    end
+<<PARAGRAPH
+// #{command}
+@SP
+M=M-1
+
+@SP
+A=M
+
+M=#{sym}D
+
+@SP
+M=M+1
+
+@SP
+A=M
+
+M=0
 PARAGRAPH
   end
 end
