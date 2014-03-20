@@ -1,10 +1,6 @@
 require './parser'
 
-#filename = ARGV[0]
-#filename = "MemoryAccess/StaticTest/StaticTest.vm"
-#filename = "MemoryAccess/BasicTest/BasicTest.vm"
-#filename = "StackArithmetic/SimpleAdd/SimpleAdd.vm"
-filename = "StackArithmetic/StackTest/StackTest.vm"
+filename = ARGV[0]
 output = filename.gsub("vm","asm")
 
 parse = Parser.new

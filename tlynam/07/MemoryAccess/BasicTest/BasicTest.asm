@@ -291,7 +291,7 @@ M=D
 @SP
 M=M+1
 
-// Add
+// add
 @SP
 M=M-1
 
@@ -356,7 +356,7 @@ M=D
 @SP
 M=M+1
 
-// Sub
+// sub
 @SP
 M=M-1
 
@@ -438,7 +438,7 @@ M=D
 @SP
 M=M+1
 
-// Add
+// add
 @SP
 M=M-1
 
@@ -486,7 +486,7 @@ A=M
 
 M=0
 
-// Sub
+// sub
 @SP
 M=M-1
 
@@ -551,7 +551,7 @@ M=D
 @SP
 M=M+1
 
-// Add
+// add
 @SP
 M=M-1
 

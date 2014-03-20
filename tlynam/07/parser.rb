@@ -208,14 +208,11 @@ Function: Returns the second argument of the current command.  Should be called 
         file = pop_thing "@R5", arg2, false
         File.open(output, "a") { |f| f.write file }
       when "pointer"
-        file = pop_thing "@THIS", arg2
+        file = pop_thing "@THIS", arg2, false
         File.open(output, "a") { |f| f.write file }
       when "static"
-        if self.static[arg2] == nil then
-          self.static.insert(arg2,self.stack.last)
-        else
-          self.static[arg2] = self.stack.last
-        end
+        file = pop_thing "@16", arg2, false
+        File.open(output, "a") { |f| f.write file }
       else
         raise "Umnhandled #{arg1} in #{command_type}"
       end
@@ -243,7 +240,7 @@ Function: Returns the second argument of the current command.  Should be called 
         File.open(output, "a") { |f| f.write file }
       when "pointer"
         self.stack.push(arg2)
-        file = push_thing "@THIS", arg2
+        file = push_thing "@THIS", arg2, false
         File.open(output, "a") { |f| f.write file }
       when "constant"
         self.stack.push(arg2)
@@ -262,10 +259,8 @@ M=M+1
 PARAGRAPH
         File.open(output, "a") { |f| f.write file }
       when "static"
-        var1 = self.static[int]
-file = <<PARAGRAPH
-
-PARAGRAPH
+        self.stack.push(arg2)
+        file = push_thing "@16", arg2
         File.open(output, "a") { |f| f.write file }
       else
          raise "Unhandled #{arg1} in #{command_type}"
