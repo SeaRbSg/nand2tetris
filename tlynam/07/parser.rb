@@ -242,6 +242,10 @@ Function: Returns the second argument of the current command.  Should be called 
         self.stack.push(arg2)
         file = push_thing "@THIS", arg2, false
         File.open(output, "a") { |f| f.write file }
+      when "static"
+        self.stack.push(arg2)
+        file = push_thing "@16", arg2, false
+        File.open(output, "a") { |f| f.write file }
       when "constant"
         self.stack.push(arg2)
 file = <<PARAGRAPH
@@ -257,10 +261,6 @@ M=D
 @SP
 M=M+1
 PARAGRAPH
-        File.open(output, "a") { |f| f.write file }
-      when "static"
-        self.stack.push(arg2)
-        file = push_thing "@16", arg2
         File.open(output, "a") { |f| f.write file }
       else
          raise "Unhandled #{arg1} in #{command_type}"
