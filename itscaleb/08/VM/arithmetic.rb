@@ -1,6 +1,5 @@
 require_relative 'push'
 require_relative 'pop'
-require 'pry'
 
 
 class Add
