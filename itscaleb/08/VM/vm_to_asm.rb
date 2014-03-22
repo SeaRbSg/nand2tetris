@@ -12,12 +12,12 @@ class Compiler
     lines.each do |line|
       case line
       when /^push/
-        lines = line.split
-        push = Push.new lines[1], lines[2].to_i, file
+        instructions = line.split
+        push = Push.new instructions[1], instructions[2].to_i, file
         asm << push.to_asm
       when /^pop/
-        lines = line.split
-        pop = Pop.new lines[1], lines[2].to_i, file
+        instructions = line.split
+        pop = Pop.new instructions[1], instructions[2].to_i, file
         asm << pop.to_asm
       when /^add/
         asm << Add.to_asm
@@ -38,17 +38,17 @@ class Compiler
       when /^not/
         asm << Not.to_asm
       when /^label/
-        lines = line.split
-        asm << Label.to_asm(lines[1])
+        instructions = line.split
+        asm << Label.to_asm(instructions[1])
       when /^if-goto/
-        lines = line.split
-        asm << IfGoto.to_asm(lines[1])
+        instructions = line.split
+        asm << IfGoto.to_asm(instructions[1])
       when /^goto/
-        lines = line.split
-        asm << Goto.to_asm(lines[1])
+        instructions = line.split
+        asm << Goto.to_asm(instructions[1])
       when /^function/
-        tokens = line.split
-        func = Function.new(tokens[1], tokens[2].to_i)
+        instructions = line.split
+        func = Function.new(instructions[1], instructions[2].to_i)
         asm << func.to_asm
       when /^return/
         asm << Return.to_asm
