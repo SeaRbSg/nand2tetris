@@ -22,3 +22,4 @@ end
 
 wire "ProgramFlow/BasicLoop/BasicLoop"
 wire "ProgramFlow/FibonacciSeries/FibonacciSeries"
+wire "FunctionCalls/SimpleFunction/SimpleFunction"

@@ -4,6 +4,7 @@ require_relative 'arithmetic'
 require_relative 'push'
 require_relative 'pop'
 require_relative 'program_flow'
+require_relative 'function_calling'
 
 class Compiler
   def self.run lines, file
@@ -45,6 +46,12 @@ class Compiler
       when /^goto/
         lines = line.split
         asm << Goto.to_asm(lines[1])
+      when /^function/
+        tokens = line.split
+        func = Function.new(tokens[1], tokens[2].to_i)
+        asm << func.to_asm
+      when /^return/
+        asm << Return.to_asm
       else
         raise "cannot parse line"
       end
