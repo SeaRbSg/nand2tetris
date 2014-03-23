@@ -52,21 +52,39 @@ class Compiler
         asm << func.to_asm
       when /^return/
         asm << Return.to_asm
+      when /^call/
+        instructions = line.split
+        call = Call.new(instructions[1], instructions[2].to_i)
+        asm << call.to_asm
       else
-        raise "cannot parse line"
+        raise("cannot parse line: " + line)
       end
     end
     asm
   end
 end
 
-raw_lines = File.readlines(ARGV[0])
-clean_lines = raw_lines.map {|line| line.strip}
-  .select {|line| !line.start_with?("//") && !line.empty?}
-  .map {|line| line.split("//")[0].strip}
+asm = []
+vm_files = ARGV
+vm_files.each do |vm_file|
+  raw_lines = File.readlines(vm_file)
 
-asm = Compiler.run clean_lines, ARGV[0]
+  clean_lines = raw_lines.map {|line| line.strip}
+    .select {|line| !line.start_with?("//") && !line.empty?}
+    .map {|line| line.split("//")[0].strip}
 
-File.open(ARGV[0].gsub("vm", "asm"), 'w') do |file| 
+    asm << [
+      "@256",
+      "D=A",
+      "@SP",
+      "M=D"
+    ]
+    asm << Call.new("Sys.init", 0).to_asm
+    asm << Compiler.run(clean_lines, vm_file)
+end
+
+directory_paths = ARGV[0].split('/')[0..1]
+outfile = directory_paths.join('/') + "/" + directory_paths[1] + ".asm"
+File.open(outfile, 'w') do |file| 
   asm.flatten.each {|line| file.write(line + "\n")}
 end

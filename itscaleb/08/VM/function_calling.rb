@@ -67,3 +67,43 @@ class Return
     ]
   end
 end
+
+class Call
+  @@count = 0;
+  def initialize func_name, num_args
+    @func_name = func_name
+    @num_args = num_args
+    @asm = []
+  end
+
+  def to_asm
+    return_label = "RETURN#{@@count+=1}"
+    @asm << [
+      "@#{return_label}",
+      "D=A", ]
+    Push.push_d @asm
+    self.save_pointer "@LCL"
+    self.save_pointer "@ARG"
+    self.save_pointer "@THIS"
+    self.save_pointer "@THAT"
+    @asm << [
+      "@SP",
+      "D=M",
+      "@LCL",
+      "M=D",
+      "@#{@num_args + 5}",
+      "D=D-A",
+      "@ARG",
+      "M=D", ]
+    @asm << Goto.to_asm(@func_name)
+    @asm << Label.to_asm(return_label)
+    return @asm
+  end
+
+  def save_pointer pointer
+    @asm << [
+      pointer,
+      "D=M", ]
+    Push.push_d @asm
+  end
+end
