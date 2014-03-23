@@ -2,8 +2,57 @@
 D=A
 @SP
 M=D
+// Parser::Call call Sys.init 0
+@CALL.0
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THAT
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@SP
+D=M
+@5
+D=D-A
+@0
+D=D-A
+@ARG
+M=D
+@SP
+D=M
+@LCL
+M=D
 @Sys.init
 0;JMP
+(CALL.0)
 // Parser::Function function Main.fibonacci 0
 (Main.fibonacci)
 
@@ -142,6 +191,7 @@ M=D
 M=M-1
 @R13
 A=M
+A=M
 0;JMP
 // Parser::Label label IF_FALSE
 (IF_FALSE)
@@ -163,101 +213,6 @@ M=D
 M=M+1
 // Parser::PushConstant push constant 2
 @2
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-// Parser::BinaryOp sub
-@SP
-M=M-1
-@SP
-A=M
-D=M
-@R15
-M=D
-@SP
-M=M-1
-@SP
-A=M
-D=M
-@R15
-D=D-M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-// Parser::Call call Main.fibonacci 1
-@CALL.0
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-@LCL
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-@ARG
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-@THIS
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-@THAT
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-@SP
-D=M
-@5
-D=D-A
-@1
-D=D-A
-@ARG
-M=D
-@SP
-D=M
-@LCL
-M=D
-@Main.fibonacci
-0;JMP
-(CALL.0)
-// Parser::Push push argument 0
-          @ARG
-          D=M
-          @0
-          D=D+A
-          @R15
-          M=D
-
-@R15
-A=M
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-// Parser::PushConstant push constant 1
-@1
 D=A
 @SP
 A=M
@@ -335,6 +290,101 @@ M=D
 @Main.fibonacci
 0;JMP
 (CALL.1)
+// Parser::Push push argument 0
+          @ARG
+          D=M
+          @0
+          D=D+A
+          @R15
+          M=D
+
+@R15
+A=M
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// Parser::PushConstant push constant 1
+@1
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// Parser::BinaryOp sub
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R15
+M=D
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R15
+D=D-M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// Parser::Call call Main.fibonacci 1
+@CALL.2
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THAT
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@SP
+D=M
+@5
+D=D-A
+@1
+D=D-A
+@ARG
+M=D
+@SP
+D=M
+@LCL
+M=D
+@Main.fibonacci
+0;JMP
+(CALL.2)
 // Parser::BinaryOp add
 @SP
 M=M-1
@@ -405,6 +455,7 @@ M=D
 M=M-1
 @R13
 A=M
+A=M
 0;JMP
 // Parser::Function function Sys.init 0
 (Sys.init)
@@ -418,7 +469,7 @@ M=D
 @SP
 M=M+1
 // Parser::Call call Main.fibonacci 1
-@CALL.2
+@CALL.3
 D=A
 @SP
 A=M
@@ -467,7 +518,7 @@ D=M
 M=D
 @Main.fibonacci
 0;JMP
-(CALL.2)
+(CALL.3)
 // Parser::Label label WHILE
 (WHILE)
 // Parser::Goto goto WHILE

@@ -160,6 +160,7 @@ class Parser
         "M=M-1",
         "@R13",
         "A=M",
+        "A=M",
         "0;JMP",
       ]
     end
@@ -448,9 +449,9 @@ if $0 == __FILE__
     puts Parser.parse File.readlines(files.first)
   else
     puts [
-      ["@256", "D=A", "@SP", "M=D", "@Sys.init", "0;JMP"],
-      #Parser.parse(["call Sys.init 0"]),
-      Dir[File.join(input, "*.vm")].map {|f| Parser.parse File.readlines(f) }
+      ["@256", "D=A", "@SP", "M=D"],
+      Parser.parse(["call Sys.init 0"]),
+      Dir[File.join(input, "*.vm")].map {|f| Parser.parse File.readlines(f) },
     ].join("\n")
   end
 end

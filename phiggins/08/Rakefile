@@ -10,13 +10,14 @@ def filename(f) f + "/" + f.split("/").last end
 def asm(f)  filename(f) + ".asm" end
 def tst(f)  filename(f) + ".tst" end
 def out(f)  filename(f) + ".out" end
-def cmp(f)  filename(f) + ".cmp" end
+def _cmp(f) filename(f) + ".cmp" end
 
 tests = %w[
   ProgramFlow/BasicLoop
   ProgramFlow/FibonacciSeries
   FunctionCalls/SimpleFunction
   FunctionCalls/FibonacciElement
+  FunctionCalls/StaticsTest
 ]
 
 tests.each do |t|
@@ -25,7 +26,7 @@ tests.each do |t|
     tool emulator, tst(t)
 
     unless $?.success?
-      abort ["Expected:", File.read(cmp(t)), "Got:", File.read(out(t))].join("\n")
+      abort ["Expected:", File.read(_cmp(t)), "Got:", File.read(out(t))].join("\n")
     end
   end
 end
