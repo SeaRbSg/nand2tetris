@@ -9,6 +9,8 @@ end
 def filename(f) f + "/" + f.split("/").last end
 def asm(f)  filename(f) + ".asm" end
 def tst(f)  filename(f) + ".tst" end
+def out(f)  filename(f) + ".out" end
+def cmp(f)  filename(f) + ".cmp" end
 
 tests = %w[
   ProgramFlow/BasicLoop
@@ -23,18 +25,21 @@ tests.each do |t|
     tool emulator, tst(t)
 
     unless $?.success?
-      outfile = filename(t) + ".out"
-      cmp = filename(t) + ".cmp"
-
-      abort ["Expected:", File.read(cmp), "Got:", File.read(outfile)].join("\n")
+      abort ["Expected:", File.read(cmp(t)), "Got:", File.read(out(t))].join("\n")
     end
   end
 end
 
 task :default => :test
 
-task :test => [:clean, *tests]
+task :test => [:clean_out, *tests]
 
-task :clean do
+task :clean => [:clean_out, :clean_asm]
+
+task :clean_out do
+  tests.each {|t| rm out(t) rescue nil }
+end
+
+task :clean_asm do
   tests.each {|t| rm asm(t) rescue nil }
 end
