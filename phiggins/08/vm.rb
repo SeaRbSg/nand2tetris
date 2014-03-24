@@ -1,29 +1,31 @@
 class Parser
-  def self.parse lines=[]
+  def self.parse lines=[], namespace="__anon__"
     lines = lines.map {|line| line.strip.sub(%r{\s*//.*$}, '') }
     lines.reject! {|line| line.empty? }
 
-    new(lines).parse
+    new(lines, namespace).parse
   end
 
-  def initialize lines=[]
+  def initialize lines=[], namespace
     @lines = lines
+    @namespace = namespace
   end
 
   def parse
     @lines.map do |line|
-      INSTRUCTIONS.detect {|t| t.match? line }.to_asm(line)
+      INSTRUCTIONS.detect {|t| t.match? line }.to_asm(line, @namespace)
     end
   end
 
   class Instruction
-    attr_reader :line
-    def initialize line
+    attr_reader :line, :namespace
+    def initialize line, namespace
       @line = line
+      @namespace = namespace
     end
 
-    def self.to_asm(line)
-      new(line).to_asm
+    def self.to_asm(line, namespace)
+      new(line, namespace).to_asm
     end
 
     def pop_stack
@@ -129,9 +131,17 @@ class Parser
 
     def asm
       [
-        "@LCL", # Store LCL
+        "@LCL",
         "D=M",
         "@R13",
+        "M=D",
+
+        "@LCL",
+        "D=M",
+        "@5",
+        "A=D-A",
+        "D=M",
+        "@R14",
         "M=D",
 
         pop_stack,
@@ -139,7 +149,7 @@ class Parser
         "A=M",
         "M=D",
 
-        "@ARG", # Set SP = ARG+1
+        "@ARG",
         "D=M",
         "D=D+1",
         "@SP",
@@ -158,8 +168,7 @@ class Parser
         },
         "@R13",
         "M=M-1",
-        "@R13",
-        "A=M",
+        "@R14",
         "A=M",
         "0;JMP",
       ]
@@ -235,7 +244,7 @@ class Parser
   class MemoryInstruction < Instruction
     attr_reader :segment, :index
 
-    SEGMENTS = { "local" => "LCL", "argument" => "ARG", "this" => "THIS", "that" => "THAT", "static" => "static" }
+    SEGMENTS = { "local" => "LCL", "argument" => "ARG", "this" => "THIS", "that" => "THAT" }
 
     def initialize *args, &block
       super
@@ -243,17 +252,27 @@ class Parser
     end
 
     def store_segment_address
-      if segment == "temp"
+      case segment
+      when "temp"
         <<-ASM
           @#{index.to_i + 5}
           D=A
           @R15
           M=D
         ASM
-      elsif segment == "pointer"
+      when "pointer"
         pointer = index == "0" ? "THIS" : "THAT"
         <<-ASM
           @#{pointer}
+          D=A
+          @R15
+          M=D
+        ASM
+      when "static"
+        var = "#{namespace}.#{index}"
+        <<-ASM
+          @7777
+          @#{var}
           D=A
           @R15
           M=D
@@ -451,7 +470,9 @@ if $0 == __FILE__
     puts [
       ["@256", "D=A", "@SP", "M=D"],
       Parser.parse(["call Sys.init 0"]),
-      Dir[File.join(input, "*.vm")].map {|f| Parser.parse File.readlines(f) },
+      Dir[File.join(input, "*.vm")].map {|f|
+        Parser.parse File.readlines(f), File.basename(f, ".vm")
+      },
     ].join("\n")
   end
 end
