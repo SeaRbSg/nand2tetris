@@ -28,7 +28,7 @@ C_CALL
 Function: Returns the type of the current VM command.  C_ARITHMETIC is return for all the arithmetic commands.
 =end
   def commandtype(line)
-    command = line[/^\w+/]
+    command = line[/^[\w-]+/]
     case command
     when nil
       # do nothing
@@ -38,6 +38,10 @@ Function: Returns the type of the current VM command.  C_ARITHMETIC is return fo
       return "C_PUSH"
     when "pop"
       return "C_POP"
+    when "label"
+      return "C_LABEL"
+    when "if-goto"
+      return "C_IF"
     else
       raise "Unhandled #{command.inspect} in commandtype"
     end
@@ -50,12 +54,12 @@ Returns: string
 Function: Returns the first argument of the current command.  C_ARITHMETIC the command itself (add, sub, etc) is returned.  Shouldn't be called for C_RETURN.
 =end
   def arg1(line)
-    case line[/^\w*/]
+    case line[/^[\w-]*/]
     when "add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"
       return line
     else
-      line.gsub!(/^\w*/,"")
-      return line[/^*\w+/]
+      line.gsub!(/^[\w-]*/,"")
+      return line[/^*[\w_]+/]
     end
   end
 
@@ -587,4 +591,6 @@ A=M
 M=0
 PARAGRAPH
   end
+
+
 end
