@@ -29,6 +29,9 @@ vm.each_line do |line|
   when "C_IF"
     arg1 = parse.arg1(line) 
     parse.writeif(arg1,output)
+  when "goto"
+    arg1 = parse.arg1(line)
+    parse.writegoto(arg1,output)
   when ""
   else
     raise "Unhandled Command Type #{command_type}" 

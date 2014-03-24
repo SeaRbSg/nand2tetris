@@ -43,6 +43,8 @@ Function: Returns the type of the current VM command.  C_ARITHMETIC is return fo
       return "C_LABEL"
     when "if-goto"
       return "C_IF"
+    when "goto"
+      return "goto"
     when "\n", ""
       return ""
     else
@@ -525,6 +527,19 @@ PARAGRAPH
 #Args: label (string)
 #Returns: -
 #Function: Writes assembly code that effects the goto command.
+
+  def writegoto label,output
+file = <<PARAGRAPH
+// Write Label #{label}
+@SP
+M=M-1
+A=M
+D=M
+@#{label}
+D;JMP
+PARAGRAPH
+    File.open(output, "a") { |f| f.write file }
+  end
 
 #Method: writeIf
 #Args: label (string)
