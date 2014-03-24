@@ -80,7 +80,7 @@ vm_files.each do |vm_file|
       "M=D"
     ]
     asm << Call.new("Sys.init", 0).to_asm
-    asm << Compiler.run(clean_lines, vm_file)
+    asm << Compiler.run(clean_lines, vm_file.split('/').last)
 end
 
 directory_paths = ARGV[0].split('/')[0..1]

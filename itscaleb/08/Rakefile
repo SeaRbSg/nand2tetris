@@ -34,3 +34,6 @@ wire "FunctionCalls/SimpleFunction/SimpleFunction"
 
 wire_multi("FunctionCalls/FibonacciElement/FibonacciElement",
   Dir["FunctionCalls/FibonacciElement/{Main,Sys}.vm"])
+
+wire_multi("FunctionCalls/StaticsTest/StaticsTest",
+           Dir["FunctionCalls/StaticsTest/{Class1,Class2,Sys}.vm"])
