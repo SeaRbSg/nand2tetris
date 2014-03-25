@@ -17,30 +17,14 @@ class Compiler
       when /^pop (\w+) (\d+)/
         pop = Pop.new $1, $2.to_i, file
         asm << pop.to_asm
-      when /^add/
-        asm << Add.to_asm
-      when /^eq/
-        asm << Eq.to_asm
-      when /^lt/
-        asm << Lt.to_asm
-      when /^gt/
-        asm << Gt.to_asm
-      when /^sub/
-        asm << Sub.to_asm
-      when /^neg/
-        asm << Neg.to_asm
-      when /^and/
-        asm << And.to_asm
-      when /^or/
-        asm << Or.to_asm
-      when /^not/
-        asm << Not.to_asm
+      when /^(add|eq|lt|gt|sub|neg|and|or|not)/
+        operator = Object.const_get($1.capitalize)
+        asm << operator.to_asm
+      when /^(if-goto|goto) (.+)/
+        conditional = Object.const_get($1.capitalize)
+        asm << conditional.to_asm($1)
       when /^label (.+)/
         asm << Label.to_asm($1)
-      when /^if-goto (.+)/
-        asm << IfGoto.to_asm($1)
-      when /^goto (.+)/
-        asm << Goto.to_asm($1)
       when /^function (.+) (\d+)/
         func = Function.new($1, $2.to_i)
         asm << func.to_asm
@@ -66,13 +50,14 @@ vm_files.each do |vm_file|
     .select {|line| !line.start_with?("//") && !line.empty?}
     .map {|line| line.split("//")[0].strip}
 
-    #asm << [
-    #  "@256",
-    #  "D=A",
-    #  "@SP",
-    #  "M=D"
-    #]
-    #asm << Call.new("Sys.init", 0).to_asm
+    asm << [ # bootstrap code
+      "@256",
+      "D=A",
+      "@SP",
+      "M=D"
+    ]
+    asm << Call.new("Sys.init", 0).to_asm
+
     asm << Compiler.run(clean_lines, vm_file.split('/').last)
 end
 
