@@ -32,6 +32,12 @@ vm.each_line do |line|
   when "goto"
     arg1 = parse.arg1(line)
     parse.writegoto(arg1,output)
+  when "function"
+    arg1 = parse.arg1(line)
+    arg2 = parse.arg2(line)
+    parse.writefunction(arg1,arg2,output)
+  when "return"
+    parse.writereturn(output)
   when ""
   else
     raise "Unhandled Command Type #{command_type}" 

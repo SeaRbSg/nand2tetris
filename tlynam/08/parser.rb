@@ -45,6 +45,10 @@ Function: Returns the type of the current VM command.  C_ARITHMETIC is return fo
       return "C_IF"
     when "goto"
       return "goto"
+    when "function"
+      return "function"
+    when "return"
+      return "return"
     when "\n", ""
       return ""
     else
@@ -59,12 +63,12 @@ Returns: string
 Function: Returns the first argument of the current command.  C_ARITHMETIC the command itself (add, sub, etc) is returned.  Shouldn't be called for C_RETURN.
 =end
   def arg1(line)
-    case line[/^[\w-]*/]
+    case line[/^[.:\w-]*/]
     when "add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"
       return line
     else
-      line.gsub!(/^[\w-]*/,"")
-      return line[/^*[\w_]+/]
+      line.gsub!(/^[.:\w-]*/,"")
+      return line[/^*[.:\w_]+/]
     end
   end
 
@@ -527,10 +531,9 @@ PARAGRAPH
 #Args: label (string)
 #Returns: -
 #Function: Writes assembly code that effects the goto command.
-
   def writegoto label,output
 file = <<PARAGRAPH
-// Write Label #{label}
+// Goto #{label}
 @SP
 M=M-1
 A=M
@@ -545,10 +548,9 @@ PARAGRAPH
 #Args: label (string)
 #Returns: -
 #Function: Writes assembly code that effects the if-goto command.
-
   def writeif label,output
 file = <<PARAGRAPH
-// Write Label #{label}
+// If Goto Label #{label}
 @SP
 M=M-1
 A=M
@@ -568,10 +570,82 @@ PARAGRAPH
 #Args: -
 #Returns: -
 #Function: Writes assembly code that effects the return command.
+#New SP is address of initial last argument + 1
+  def writereturn output
+file = <<PARAGRAPH
+// Write Return
+//FRAME = LCL
+@LCL
+D=M
+@FRAME
+M=D
+//ARG = pop()
+@ARG
+D=M
+@R14
+M=D
+@ARG
+A=M
+@SP
+AM=M-1
+D=M
+@ARG
+A=M
+M=D 
+//SP = ARG+1
+@R14
+D=M
+@SP
+M=D+1
+//THAT = *(FRAME-1)
+@FRAME
+AM=M-1
+D=M
+@THAT
+M=D
+//THIS = *(FRAME-2)
+@FRAME
+AM=M-1
+D=M
+@THIS
+M=D
+//ARG = *(FRAME-3)
+@FRAME
+AM=M-1
+D=M
+@ARG
+M=D
+//LCL = *(FRAME-4)
+@FRAME
+AM=M-1
+D=M
+@LCL
+M=D
+//RET = *(FRAME-5)
+@FRAME
+AM=M-1
+D=M
+@RET
+M=D
+PARAGRAPH
+    File.open(output, "a") { |f| f.write file }
+  end
 
 #Method: writeFunction
 #Args: functionName (string), numLocals (int)
 #Returns: -
-#Function: Writes assembly code that effects the function command  
+#Function: Writes assembly code that effects the function command 
+  def writefunction function,numlocals,output
+#SP = local address + # of local variables
+file = <<PARAGRAPH
+// Function #{function} + number of locals #{numlocals}
+(#{function})
+@#{numlocals}
+D=A
+@SP
+M=D+M
+PARAGRAPH
+    File.open(output, "a") { |f| f.write file }
+  end
 
 end
