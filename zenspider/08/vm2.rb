@@ -12,8 +12,12 @@ class String
       when /^\(/ then
         s.chomp
       else
-        i += 1
-        "%-21s // %d" % [s.chomp, i]
+        if ENV["DEBUG"] then
+          i += 1
+          "%-21s // %d" % [s.chomp, i]
+        else
+          s.chomp
+        end
       end
     }.join "\n"
   end
