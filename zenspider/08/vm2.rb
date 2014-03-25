@@ -259,11 +259,10 @@ class Compiler
              "@#{addr}",
              "D;#{test}",
              "D=0",
-             "@#{addr}.done",
-             "0;JMP",
-             "(#{addr})",
+             Goto.new("#{addr}.done", :none),
+             Label.new(addr, :internal),
              "D=-1",
-             "(#{addr}.done)")
+             Label.new("#{addr}.done", :internal))
     end
 
     def neg; unary "M=-M";      end
@@ -279,10 +278,15 @@ class Compiler
     def lt;  binary_test "JLT"; end
   end
 
-  class Label < Struct.new :name
+  class Label < Struct.new :name, :internal
     include Asmable
 
+    def initialize name, internal=false
+      super
+    end
+
     def comment
+      return if internal
       asm "// label #{name}"
     end
 
@@ -301,11 +305,17 @@ class Compiler
     end
   end
 
-  class Goto < Struct.new :name
+  class Goto < Struct.new :name, :internal
     include Asmable
 
+    def initialize name, internal=false
+      super
+    end
+
     def comment
-      "// goto @#{name}"
+      return if internal == :none
+      comment = internal ? "///" : "//"
+      "#{comment} goto @#{name}"
     end
 
     def to_s
@@ -332,7 +342,7 @@ class Compiler
     end
 
     def to_s
-      assemble comment, "(#{name})", push_locals
+      assemble comment, Label.new(name, :internal), push_locals
     end
   end
 
@@ -406,8 +416,8 @@ class Compiler
                    "@#{size + 5}", "D=A", "@SP", "D=M-D"),
                set("@LCL", "/// LCL = SP",
                    "@SP", "D=M"),
-               "/// goto @#{name}", "@#{name}", "0;JMP",
-               "(#{addr})")
+               Goto.new(name, :internal),
+               Label.new(addr, :internal))
     end
   end
 end
