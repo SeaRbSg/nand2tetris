@@ -20,9 +20,10 @@ class Compiler
       when /^(add|eq|lt|gt|sub|neg|and|or|not)/
         operator = Object.const_get($1.capitalize)
         asm << operator.to_asm
-      when /^(if-goto|goto) (.+)/
-        conditional = Object.const_get($1.capitalize)
-        asm << conditional.to_asm($1)
+      when /^if-goto (.+)/
+        asm << IfGoto.to_asm($1)
+      when /^goto (.+)/
+        asm << Goto.to_asm($1)
       when /^label (.+)/
         asm << Label.to_asm($1)
       when /^function (.+) (\d+)/
@@ -61,8 +62,6 @@ vm_files.each do |vm_file|
     asm << Compiler.run(clean_lines, vm_file.split('/').last)
 end
 
-directory_paths = ARGV[0].split('/')[0..1]
-outfile = directory_paths.join('/') + "/" + directory_paths[1] + ".asm"
-File.open(outfile, 'w') do |file| 
-  asm.flatten.each {|line| file.write(line + "\n")}
+asm.flatten.each do |instruction|
+  puts instruction
 end

@@ -1,7 +1,7 @@
 file "vm_to_asm.rb"
 
 def vm out, *files
-  sh "./VM/vm_to_asm.rb #{files.join " "}"
+  sh "./VM/vm_to_asm.rb #{files.join " "} > #{out}"
 end
 
 rule ".asm" => ".vm" do |t|
