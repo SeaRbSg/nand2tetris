@@ -103,13 +103,13 @@
    D=M
    @R14
    M=D
-   /// 13 = *(FRAME-5)
+   /// @R13 = *(FRAME-5)
    @5
    D=A
    @R14
    A=M-D
    D=M
-   @13
+   @R13
    M=D
    /// *ARG = pop()
    @SP
@@ -123,25 +123,25 @@
    D=M+1
    @SP
    M=D
-   /// THAT = *(FRAME-1)
+   /// @THAT = *(FRAME-1)
    @R14
    AM=M-1
    D=M
    @THAT
    M=D
-   /// THIS = *(FRAME-2)
+   /// @THIS = *(FRAME-2)
    @R14
    AM=M-1
    D=M
    @THIS
    M=D
-   /// ARG = *(FRAME-3)
+   /// @ARG = *(FRAME-3)
    @R14
    AM=M-1
    D=M
    @ARG
    M=D
-   /// LCL = *(FRAME-4)
+   /// @LCL = *(FRAME-4)
    @R14
    AM=M-1
    D=M

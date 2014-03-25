@@ -7,8 +7,7 @@
    @SP
    M=D
    /// set THIS=THAT=LCL=ARG=-1 to force error if used as pointer
-   @0
-   D=-A
+   D=-1
    @THIS
    M=D
    @THAT
@@ -72,13 +71,13 @@
    0;JMP
 (return.1)
 
-// label FUCK_IT_BROKE
+// label FUCK_IT_BROKE.1
 
-(FUCK_IT_BROKE)
+(FUCK_IT_BROKE.1)
 
-// goto @FUCK_IT_BROKE
+// goto @FUCK_IT_BROKE.1
 
-   @FUCK_IT_BROKE
+   @FUCK_IT_BROKE.1
    0;JMP
 
 // function Main.fibonacci 0
@@ -156,13 +155,13 @@
    D=M
    @R14
    M=D
-   /// 13 = *(FRAME-5)
+   /// @R13 = *(FRAME-5)
    @5
    D=A
    @R14
    A=M-D
    D=M
-   @13
+   @R13
    M=D
    /// *ARG = pop()
    @SP
@@ -176,25 +175,25 @@
    D=M+1
    @SP
    M=D
-   /// THAT = *(FRAME-1)
+   /// @THAT = *(FRAME-1)
    @R14
    AM=M-1
    D=M
    @THAT
    M=D
-   /// THIS = *(FRAME-2)
+   /// @THIS = *(FRAME-2)
    @R14
    AM=M-1
    D=M
    @THIS
    M=D
-   /// ARG = *(FRAME-3)
+   /// @ARG = *(FRAME-3)
    @R14
    AM=M-1
    D=M
    @ARG
    M=D
-   /// LCL = *(FRAME-4)
+   /// @LCL = *(FRAME-4)
    @R14
    AM=M-1
    D=M
@@ -401,13 +400,13 @@
    D=M
    @R14
    M=D
-   /// 13 = *(FRAME-5)
+   /// @R13 = *(FRAME-5)
    @5
    D=A
    @R14
    A=M-D
    D=M
-   @13
+   @R13
    M=D
    /// *ARG = pop()
    @SP
@@ -421,25 +420,25 @@
    D=M+1
    @SP
    M=D
-   /// THAT = *(FRAME-1)
+   /// @THAT = *(FRAME-1)
    @R14
    AM=M-1
    D=M
    @THAT
    M=D
-   /// THIS = *(FRAME-2)
+   /// @THIS = *(FRAME-2)
    @R14
    AM=M-1
    D=M
    @THIS
    M=D
-   /// ARG = *(FRAME-3)
+   /// @ARG = *(FRAME-3)
    @R14
    AM=M-1
    D=M
    @ARG
    M=D
-   /// LCL = *(FRAME-4)
+   /// @LCL = *(FRAME-4)
    @R14
    AM=M-1
    D=M

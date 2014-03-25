@@ -95,40 +95,52 @@ class Compiler
   module Stackable
     @@next_num = Hash.new 0
 
-    def pop dest
-      asm "@SP", "AM=M-1", "#{dest}=M"
-    end
-
     def next_num name
       n = @@next_num[name] += 1
       "#{name}.#{n}"
+    end
+
+    def pop dest
+      asm "@SP", "AM=M-1", "#{dest}=M"
     end
 
     def push_d deref = "AM=M+1", val="D"
       #   deref_sp      dec_ptr  write
       asm "@SP", deref, "A=A-1", "M=#{val}"
     end
+
+    def store_d loc
+      asm loc, "M=D"
+    end
+
+    def store_d! loc
+      asm loc, "A=M", "M=D"
+    end
   end
 
   class Init
     include Asmable
+    include Stackable
 
     def comment
       "// bootstrap"
     end
 
     def to_s
+      fuck = next_num "FUCK_IT_BROKE"
+
       assemble(comment,
                "/// SP = 256",
-               "@256", "D=A", "@SP",  "M=D",
+               "@256", "D=A", store_d("@SP"),
 
                "/// set THIS=THAT=LCL=ARG=-1 to force error if used as pointer",
-               "@0", "D=-A",
-               "@THIS", "M=D", "@THAT", "M=D", "@LCL", "M=D", "@ARG", "M=D",
+               "D=-1",
+               store_d("@THIS"), store_d("@THAT"),
+               store_d("@LCL"),  store_d("@ARG"),
 
                Call.new("Sys.init", 0),
-               Label.new("FUCK_IT_BROKE"),
-               Goto.new("FUCK_IT_BROKE"))
+               Label.new(fuck),
+               Goto.new(fuck))
     end
   end
 
@@ -197,7 +209,7 @@ class Compiler
 
   class Pop < StackThingy
     def temp_store reg
-      asm reg, "M=D", yield, reg, "A=M"
+      asm store_d(reg), yield, reg, "A=M"
     end
 
     def store
@@ -334,31 +346,31 @@ class Compiler
 
     def store_frame arg, off
       asm("/// #{arg} = *(FRAME-#{off})",
-          "@#{off}", "D=A", "@R14", "A=M-D", "D=M", "@#{arg}", "M=D")
+          "@#{off}", "D=A", "@R14", "A=M-D", "D=M", store_d(arg))
     end
 
     def decrement_and_store_frame arg, off
       asm("/// #{arg} = *(FRAME-#{off})",
-          "@R14", "AM=M-1", "D=M", "@#{arg}", "M=D")
+          "@R14", "AM=M-1", "D=M", store_d(arg))
     end
 
     def to_s
       assemble(comment,
                "/// FRAME = LCL",
-               "@LCL", "D=M", "@R14", "M=D",
+               "@LCL", "D=M", store_d("@R14"),
 
-               store_frame("13", 5),
+               store_frame("@R13", 5),
 
                "/// *ARG = pop()",
-               pop(:D), "@ARG", "A=M", "M=D",
+               pop(:D), store_d!("@ARG"),
 
                "/// SP = ARG+1",
-               "@ARG", "D=M+1", "@SP", "M=D",
+               "@ARG", "D=M+1", store_d("@SP"),
 
-               decrement_and_store_frame("THAT", 1),
-               decrement_and_store_frame("THIS", 2),
-               decrement_and_store_frame("ARG", 3),
-               decrement_and_store_frame("LCL", 4),
+               decrement_and_store_frame("@THAT", 1),
+               decrement_and_store_frame("@THIS", 2),
+               decrement_and_store_frame("@ARG", 3),
+               decrement_and_store_frame("@LCL", 4),
 
                "/// goto RET",
                "@R13", "A=M", "0;JMP"
@@ -379,7 +391,7 @@ class Compiler
     end
 
     def set dest, *instructions
-      asm instructions + [dest, "M=D"]
+      asm instructions + store_d(dest)
     end
 
     def to_s
