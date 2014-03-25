@@ -406,7 +406,7 @@ class Compiler
                    "@#{size + 5}", "D=A", "@SP", "D=M-D"),
                set("@LCL", "/// LCL = SP",
                    "@SP", "D=M"),
-               "/// goto #{name}", "@#{name}", "0;JMP",
+               "/// goto @#{name}", "@#{name}", "0;JMP",
                "(#{addr})")
     end
   end

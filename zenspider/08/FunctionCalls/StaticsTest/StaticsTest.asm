@@ -66,7 +66,7 @@
    D=M
    @LCL
    M=D
-   /// goto Sys.init
+   /// goto @Sys.init
    @Sys.init
    0;JMP
 (return.1)
@@ -563,7 +563,7 @@
    D=M
    @LCL
    M=D
-   /// goto Class1.set
+   /// goto @Class1.set
    @Class1.set
    0;JMP
 (return.2)
@@ -648,7 +648,7 @@
    D=M
    @LCL
    M=D
-   /// goto Class2.set
+   /// goto @Class2.set
    @Class2.set
    0;JMP
 (return.3)
@@ -715,7 +715,7 @@
    D=M
    @LCL
    M=D
-   /// goto Class1.get
+   /// goto @Class1.get
    @Class1.get
    0;JMP
 (return.4)
@@ -769,7 +769,7 @@
    D=M
    @LCL
    M=D
-   /// goto Class2.get
+   /// goto @Class2.get
    @Class2.get
    0;JMP
 (return.5)

@@ -66,7 +66,7 @@
    D=M
    @LCL
    M=D
-   /// goto Sys.init
+   /// goto @Sys.init
    @Sys.init
    0;JMP
 (return.1)
@@ -289,7 +289,7 @@
    D=M
    @LCL
    M=D
-   /// goto Main.fibonacci
+   /// goto @Main.fibonacci
    @Main.fibonacci
    0;JMP
 (return.2)
@@ -375,7 +375,7 @@
    D=M
    @LCL
    M=D
-   /// goto Main.fibonacci
+   /// goto @Main.fibonacci
    @Main.fibonacci
    0;JMP
 (return.3)
@@ -511,7 +511,7 @@
    D=M
    @LCL
    M=D
-   /// goto Main.fibonacci
+   /// goto @Main.fibonacci
    @Main.fibonacci
    0;JMP
 (return.4)
