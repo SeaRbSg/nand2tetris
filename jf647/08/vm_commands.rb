@@ -1,0 +1,6 @@
+require 'vm_helper'
+require 'commands/push'
+require 'commands/pop'
+require 'commands/unary'
+require 'commands/binary'
+require 'commands/comparison'
