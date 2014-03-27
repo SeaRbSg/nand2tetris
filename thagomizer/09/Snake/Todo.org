@@ -1,0 +1,8 @@
+* DONE Make snake move based on arrows
+* DONE Make snake die when it hits walls
+* TODO Make snake grow
+* TODO Make snake grow when it eats food
+* TODO Fix flickering
+
+
+

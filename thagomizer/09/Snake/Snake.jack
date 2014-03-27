@@ -1,0 +1,112 @@
+class Snake {
+
+  // Segment Size
+  field int _segment_size;
+  
+  field int _speed;
+
+  // head location
+  field int _x, _y; 
+
+  field boolean _alive;
+
+  // direction
+  field int _direction; // 1 - up, 2 - down, 3 - left, 4 - right
+
+  // constructor, head location as (x, y)
+  constructor Snake new(int x, int y) {
+    let _x = x;
+    let _y = y;
+    let _segment_size = 10;
+    let _speed = 1;
+    let _alive = true;
+
+    do draw();
+
+    return this;
+  }
+  
+  // dispose
+  method void dispose() {
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method void set_direction(int direction) {
+    let _direction = direction;
+    return;
+  }
+
+  method void update() {
+    do erase();
+
+    // up
+    if (_direction = 1) {
+      let _y = _y - _speed;
+    }
+
+    // down
+    if (_direction = 2) {
+      let _y = _y + _speed;
+    }
+
+    // left
+    if (_direction = 3) {
+      let _x = _x - _speed;
+    }
+
+    // right
+    if (_direction = 4) {
+      let _x = _x + _speed;
+    }
+
+    if (_y < 1) {
+      let _alive = false;
+    }
+    if ((_y + _segment_size) > 254) {
+      let _alive = false;
+    }
+    if (_x < 1) {
+      let _alive = false;
+    }
+    if ((_x + _segment_size) > 510) {
+      let _alive = false;
+    }
+
+    //    if (_alive) { 
+      do draw();
+      //    }
+    
+    return;
+  }
+
+  // erase_snake
+  method void erase() { 
+    do Screen.setColor(false); // white
+    do Screen.drawRectangle(_x, _y, _x + _segment_size, _y + _segment_size);
+
+    return;
+  }
+
+  // draw
+  method void draw() { 
+    do Screen.setColor(true); // black
+    do Screen.drawRectangle(_x, _y, _x + _segment_size, _y + _segment_size);
+
+    return;
+  }
+
+  method boolean is_dead() {
+    return ~_alive;
+  }
+
+  method void debug()  {
+    do Output.moveCursor(1, 0);
+    do Output.printString("x = ");
+    do Output.printInt(_x);
+    do Output.printString(", y = ");
+    do Output.printInt(_y);
+
+    return;
+  }
+}

@@ -1,0 +1,8 @@
+class Util {
+  function void debug(String msg) { 
+    do Output.moveCursor(0, 0);
+    do Output.printString(msg);
+
+    return;
+  }
+}

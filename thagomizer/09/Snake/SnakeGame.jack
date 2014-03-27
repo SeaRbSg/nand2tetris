@@ -1,0 +1,63 @@
+class SnakeGame {
+
+  // The snake
+  field Snake snake;
+
+  // TODO: Other stuff
+
+
+  constructor SnakeGame new() {
+    let snake = Snake.new(256, 128);
+
+    return this;
+  }
+
+  method void dispose() {
+    do snake.dispose();
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method void run() {
+    var char key;
+    var boolean exit;
+    var boolean dead_snake;
+
+    let exit = false;
+    let dead_snake = false;
+
+    while (~exit) {
+      let key = Keyboard.keyPressed();
+
+      // Key processing loop
+
+      if (key = 81) {
+        let exit = true;
+      }
+      if (key = 131) {
+        do snake.set_direction(1); // up
+      }
+      if (key = 133) {
+        do snake.set_direction(2); // down
+      }
+      if (key = 130) {
+        do snake.set_direction(3); // left
+      }
+      if (key = 132) {
+        do snake.set_direction(4); // right
+      }
+
+      do snake.update();
+
+      let dead_snake = snake.is_dead();
+      if (dead_snake) {
+        let exit = true;
+        do Output.moveCursor(10, 10);
+        do Output.printString("You Lose :-(");
+      }
+    }
+
+    return;
+  }
+
+}
