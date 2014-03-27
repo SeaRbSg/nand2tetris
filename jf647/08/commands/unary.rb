@@ -1,7 +1,7 @@
 module VM
 
     class UnaryCommand < Command
-        def to_asm(numops, calc)
+        def to_asm(calc)
             asm = []
             # pop stack elems
             asm << VM::Helper.load_into_d

@@ -1,22 +1,24 @@
 require 'rltk'
 
 module VM
-    
+
     class Parser < RLTK::Parser
-    
+
         class Environment < Environment
             attr_accessor :ns
         end
-    
+
         p(:vmline) do
-            c('op')                         { |o| o }
+            c('op COMMENT?')                { |o,_| o }
             c('COMMENT')                    { |_| Comment.new }
             c('')                           { Blank.new }
         end
-    
+
         p(:op) do
             c('PUSH segname NUMBER')        { |_,seg,val| PushCommand.new(seg, val, @ns) }
             c('POP segname NUMBER')         { |_,seg,val| PopCommand.new(seg, val, @ns) }
+            c('LABEL SYMBOL')               { |_,s| LabelCommand.new(s) }
+            c('IFGOTO SYMBOL')              { |_,s| IfGotoCommand.new(s) }
             c('ADD')                        { |_| AddCommand.new }
             c('SUB')                        { |_| SubCommand.new }
             c('EQ')                         { |_| EqualsCommand.new }
@@ -27,7 +29,7 @@ module VM
             c('OR')                         { |_| OrCommand.new }
             c('NOT')                        { |_| NotCommand.new }
         end
-        
+
         p(:segname) do
             c('SEG_ARGUMENT')               { |_| :argument }
             c('SEG_LOCAL')                  { |_| :local }
@@ -39,9 +41,9 @@ module VM
             c('SEG_POINTER')                { |_| :pointer }
             c('SEG_TEMP')                   { |_| :temp }
         end
-    
+
         finalize :explain => ENV.key?('DUMP_PARSER')
-        
+
     end
 
 end

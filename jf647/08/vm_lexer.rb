@@ -9,7 +9,7 @@ module VM
 
         # ignore comments to end of line
         rule(/\/\/.*/)              { :COMMENT }
-        
+
         # core commands
         rule(/push/)                { :PUSH }
         rule(/pop/)                 { :POP }
@@ -28,7 +28,7 @@ module VM
         rule(/and/)                 { :AND }
         rule(/or/)                  { :OR }
         rule(/not/)                 { :NOT }
-        
+
         # segment names
         rule(/argument/)            { :SEG_ARGUMENT }
         rule(/local/)               { :SEG_LOCAL }
@@ -38,13 +38,13 @@ module VM
         rule(/that/)                { :SEG_THAT }
         rule(/pointer/)             { :SEG_POINTER }
         rule(/temp/)                { :SEG_TEMP }
-        
+
         # symbols
-        rule(/[a-zA-Z_\.\:][\w\.\:]*/)  { :SYMBOL }
-        
+        rule(/[a-zA-Z_\.\:][\w\.\:]*/)  { |s| [ :SYMBOL, s.to_sym ] }
+
         # numeric
         rule(/\d+/)                 { |t| [ :NUMBER, t.to_i ] }
-       
+
     end
-    
+
 end
