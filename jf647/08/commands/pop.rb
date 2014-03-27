@@ -30,7 +30,6 @@ module VM
                     asm << 'A=M'
                 when :temp, :pointer
                     # *(base[segment]+offset), base is constant
-                    # pop stack to R13
                     asm << VM::Helper.pop_d
                     asm << "@R#{VM::Helper::SEGBASE[@segname]+@offset}"
                 when :static

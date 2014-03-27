@@ -20,6 +20,8 @@ module VM
             c('LABEL SYMBOL')               { |_,s| LabelCommand.new(s) }
             c('IFGOTO SYMBOL')              { |_,s| IfGotoCommand.new(s) }
             c('GOTO SYMBOL')                { |_,s| GotoCommand.new(s) }
+            c('FUNCTION SYMBOL NUMBER')     { |_,s,n| FunctionCommand.new(s,n) }
+            c('RETURN')                     { |_| ReturnCommand.new }
             c('ADD')                        { |_| AddCommand.new }
             c('SUB')                        { |_| SubCommand.new }
             c('EQ')                         { |_| EqualsCommand.new }

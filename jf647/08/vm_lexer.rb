@@ -40,7 +40,7 @@ module VM
         rule(/temp/)                { :SEG_TEMP }
 
         # symbols
-        rule(/[a-zA-Z_\.\:][\w\.\:]*/)  { |s| [ :SYMBOL, s.to_sym ] }
+        rule(/[a-zA-Z_\.:_][\w\.:_]*/)  { |s| [ :SYMBOL, s.to_sym ] }
 
         # numeric
         rule(/\d+/)                 { |t| [ :NUMBER, t.to_i ] }
