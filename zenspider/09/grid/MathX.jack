@@ -1,0 +1,7 @@
+// -*- c -*-
+
+class MathX {
+  function int mod(int a, int n) {
+    return a - Math.multiply(n, Math.divide(a, n));
+  }
+}

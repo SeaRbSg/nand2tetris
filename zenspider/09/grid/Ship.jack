@@ -1,0 +1,117 @@
+// -*- c -*-
+
+class Ship {
+  static Array xs, ys;
+
+  field int x, y;
+  field int dx1, dy1, dx2, dy2; // ship corners
+  field int angle, magnitude;
+
+  function void init() {
+    let xs = Trig.xs();
+    let ys = Trig.ys();
+
+    return;
+  }
+
+  constructor Ship new(int a, int b) {
+    let x = a;
+    let y = b;
+    let angle = 90;
+    let magnitude = 0;
+
+    do update_corners();
+
+    return this;
+  }
+
+  method void debug() {
+    do Grid.debugX(0, "x = ", x);
+    do Grid.debugX(1, "y = ", y);
+    do Grid.debugX(2, "a = ", angle);
+    do Grid.debugX(3, "s = ", magnitude);
+
+    return;
+  }
+
+  method void update() {
+    var int key, dirty;
+
+    if (magnitude > 0) {
+      do erase();
+      do move();
+    }
+
+    let dirty = 0;
+    let key = Keyboard.keyPressed();
+
+    if (key) {
+      if (key = 131) { // up
+        let dirty = 1;
+        let magnitude = Math.min(5, magnitude + 1);
+      }
+      if (key = 133) { // down
+        let dirty = 1;
+        let magnitude = Math.max(0, magnitude - 1);
+      }
+
+      if (key = 130) { // left
+        let dirty = 1;
+        let angle = MathX.mod(angle + 5, 360);
+        do erase();
+        do update_corners();
+      }
+      if (key = 132) { // right
+        let dirty = 1;
+        let angle = MathX.mod(angle - 5, 360);
+        do erase();
+        do update_corners();
+      }
+    }
+
+    return;
+  }
+
+  method void update_corners () {
+    var Array xy;
+
+    let xy = Array.new(2);
+
+    do Trig.calculate_xy(0, 0, angle + 165, 5, xy);
+    let dx1 = xy[0];
+    let dy1 = xy[1];
+
+    do Trig.calculate_xy(0, 0, angle + 205, 5, xy);
+    let dx2 = xy[0];
+    let dy2 = xy[1];
+
+    do Memory.deAlloc(xy);
+
+    return;
+  }
+
+  method void erase() {
+    do Screen.setColor(false);
+    do draw();
+    do Screen.setColor(true);
+
+    return;
+  }
+
+  method void move() {
+    var int u;
+
+    let u = Trig.segment(angle);
+    let x = MathX.mod(x + Math.multiply(magnitude, xs[u]), 512);
+    let y = MathX.mod(y + Math.multiply(magnitude, ys[u]), 256); // y goes down
+
+    return;
+  }
+
+  method void draw() {
+    do Screen.drawLine(x, y, x+dx1, y+dy1);
+    do Screen.drawLine(x, y, x+dx2, y+dy2);
+    do Screen.drawLine(x+dx1, y+dy1, x+dx2, y+dy2);
+    return;
+  }
+}
