@@ -38,48 +38,42 @@ module VM
             asm << 'D=M'
             asm << '@R14'
             asm << 'M=D'
-            # set *ARG to the top of the stack
+            # set *ARG to the value on the top of the stack
             asm << VM::Helper.load_into_d
             asm << '@ARG'
             asm << 'A=M'
             asm << 'M=D'
             # set SP to ARG+1
+            asm << '@ARG'
+            asm << 'D=M+1'
             asm << '@SP'
-            asm << 'M=D+1'
-            # set THAT to the value of FRAME-1
-            asm << '@R14'
+            asm << 'M=D'
+            # set THAT to *(FRAME-1)
+            asm << '@R13'
             asm << 'D=M'
             asm << '@1'
             asm << 'A=D-A'
             asm << 'D=M'
             asm << '@THAT'
             asm << 'M=D'
-            # set THIS to the value of FRAME-1
-            asm << '@R14'
+            # set THIS to *(FRAME-2)
+            asm << '@R13'
             asm << 'D=M'
             asm << '@2'
             asm << 'A=D-A'
             asm << 'D=M'
             asm << '@THIS'
             asm << 'M=D'
-            # set THIS to the value of FRAME-1
-            asm << '@R14'
-            asm << 'D=M'
-            asm << '@2'
-            asm << 'A=D-A'
-            asm << 'D=M'
-            asm << '@THIS'
-            asm << 'M=D'
-            # set ARG to the value of FRAME-3
-            asm << '@R14'
+            # set ARG to *(FRAME-3)
+            asm << '@R13'
             asm << 'D=M'
             asm << '@3'
             asm << 'A=D-A'
             asm << 'D=M'
-            asm << '@THIS'
+            asm << '@ARG'
             asm << 'M=D'
-            # set LCL to the value of FRAME-4
-            asm << '@R14'
+            # set LCL to *(FRAME-4)
+            asm << '@R13'
             asm << 'D=M'
             asm << '@4'
             asm << 'A=D-A'
