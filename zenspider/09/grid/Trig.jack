@@ -13,31 +13,41 @@ class Trig {
   }
 
   function void init() {
-    let segments = 16;
-    let xs = Array.new(20);
+    let segments = 24;
+    let xs = Array.new(30);
 
-    let xs[ 0] =   4; // ys[ 0] =   0;
-    let xs[ 1] =   3; // ys[ 1] =  -1;
-    let xs[ 2] =   2; // ys[ 2] =  -2;
-    let xs[ 3] =   1; // ys[ 3] =  -3;
-    let xs[ 4] =   0; // ys[ 4] =  -4;
-    let xs[ 5] =  -1; // ys[ 5] =  -3;
-    let xs[ 6] =  -2; // ys[ 6] =  -2;
-    let xs[ 7] =  -3; // ys[ 7] =  -1;
-    let xs[ 8] =  -4; // ys[ 8] =   0;
-    let xs[ 9] =  -3; // ys[ 9] =   1;
-    let xs[10] =  -2; // ys[10] =   2;
-    let xs[11] =  -1; // ys[11] =   3;
-    let xs[12] =   0; // ys[12] =   4;
-    let xs[13] =   1; // ys[13] =   3;
-    let xs[14] =   2; // ys[14] =   2;
-    let xs[15] =   3; // ys[15] =   1;
-    let xs[16] = xs[  0];
-    let xs[17] = xs[  1];
-    let xs[18] = xs[  2];
-    let xs[19] = xs[  3];
+    let xs[ 0] =   5; // ys[ 0] =   0;
+    let xs[ 1] =   4; // ys[ 1] =  -1;
+    let xs[ 2] =   4; // ys[ 2] =  -2;
+    let xs[ 3] =   3; // ys[ 3] =  -3;
+    let xs[ 4] =   2; // ys[ 4] =  -4;
+    let xs[ 5] =   1; // ys[ 5] =  -4;
+    let xs[ 6] =   0; // ys[ 6] =  -5;
+    let xs[ 7] =  -1; // ys[ 7] =  -4;
+    let xs[ 8] =  -2; // ys[ 8] =  -4;
+    let xs[ 9] =  -3; // ys[ 9] =  -3;
+    let xs[10] =  -4; // ys[10] =  -2;
+    let xs[11] =  -4; // ys[11] =  -1;
+    let xs[12] =  -5; // ys[12] =   0;
+    let xs[13] =  -4; // ys[13] =   1;
+    let xs[14] =  -4; // ys[14] =   2;
+    let xs[15] =  -3; // ys[15] =   3;
+    let xs[16] =  -2; // ys[16] =   4;
+    let xs[17] =  -1; // ys[17] =   4;
+    let xs[18] =   0; // ys[18] =   5;
+    let xs[19] =   1; // ys[19] =   4;
+    let xs[20] =   2; // ys[20] =   4;
+    let xs[21] =   3; // ys[21] =   3;
+    let xs[22] =   4; // ys[22] =   2;
+    let xs[23] =   4; // ys[23] =   1;
+    let xs[24] = xs[  0];
+    let xs[25] = xs[  1];
+    let xs[26] = xs[  2];
+    let xs[27] = xs[  3];
+    let xs[28] = xs[  4];
+    let xs[29] = xs[  5];
 
-    let ys = xs + 4;
+    let ys = xs + 6;
 
     return;
   }
