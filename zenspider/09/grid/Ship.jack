@@ -57,14 +57,18 @@ class Ship {
 
       if (key = 130) { // left
         let dirty = 1;
-        let angle = MathX.mod(angle + 5, 360);
-        do erase();
+        let angle = MathX.mod(angle + 375, 360);
+        if (~magnitude) {
+          do erase();
+        }
         do update_corners();
       }
       if (key = 132) { // right
         let dirty = 1;
-        let angle = MathX.mod(angle - 5, 360);
-        do erase();
+        let angle = MathX.mod(angle + 345, 360);
+        if (~magnitude) {
+          do erase();
+        }
         do update_corners();
       }
     }
@@ -102,16 +106,24 @@ class Ship {
     var int u;
 
     let u = Trig.segment(angle);
-    let x = MathX.mod(x + Math.multiply(magnitude, xs[u]), 512);
-    let y = MathX.mod(y + Math.multiply(magnitude, ys[u]), 256); // y goes down
+    let x = MathX.mod(512 + x + Math.multiply(magnitude, xs[u]), 512);
+    let y = MathX.mod(256 + y + Math.multiply(magnitude, ys[u]), 256);
 
     return;
   }
 
   method void draw() {
-    do Screen.drawLine(x, y, x+dx1, y+dy1);
-    do Screen.drawLine(x, y, x+dx2, y+dy2);
-    do Screen.drawLine(x+dx1, y+dy1, x+dx2, y+dy2);
+    var int x1, y1, x2, y2;
+
+    let x1 = MathX.mod(512 + x + dx1, 512);
+    let y1 = MathX.mod(256 + y + dy1, 256);
+    let x2 = MathX.mod(512 + x + dx2, 512);
+    let y2 = MathX.mod(256 + y + dy2, 256);
+
+    do Screen.drawLine(x, y, x1, y1);
+    do Screen.drawLine(x, y, x2, y2);
+    do Screen.drawLine(x1, y1, x2, y2);
+
     return;
   }
 }

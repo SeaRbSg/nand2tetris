@@ -9,7 +9,7 @@ class Trig {
   function Array ys()       { return ys;       }
 
   function int segment(int angle) {
-    return Math.divide(Math.multiply(MathX.mod(angle+8, 360), segments), 360);
+    return Math.divide(Math.multiply(MathX.mod(angle + 360, 360), segments), 360);
   }
 
   function void init() {
@@ -56,8 +56,8 @@ class Trig {
     var int u;
 
     let u = Trig.segment(a);
-    let xy[0] = MathX.mod(x + Math.multiply(l, xs[u]), 512);
-    let xy[1] = MathX.mod(y + Math.multiply(l, ys[u]), 256);
+    let xy[0] = MathX.mod(512 + x + Math.multiply(l, xs[u]), 512);
+    let xy[1] = MathX.mod(256 + y + Math.multiply(l, ys[u]), 256);
 
     return;
   }
