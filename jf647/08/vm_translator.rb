@@ -20,7 +20,7 @@ module VM
                         raise "unexpected parse result '#{node.class}'"
                     end
                 rescue => ex
-                    raise "failed to parse line #{num+1} '#{line}': #{ex}"
+                    raise "failed to parse #{infname} line #{num+1} '#{line}': #{ex}"
                 end
             end
         end
