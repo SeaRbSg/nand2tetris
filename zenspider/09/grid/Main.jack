@@ -3,7 +3,6 @@
 class Main {
   function void main() {
     do Main.init();
-    do Grid.grid();
     do Grid.go();
 
     return;

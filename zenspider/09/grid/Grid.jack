@@ -20,31 +20,12 @@ class Grid {
     return;
   }
 
-  function void grid() {
-    var int x, y;
-
-    let y = 0;
-    while (y < 256) {
-      do Screen.drawLine(0, y, 511, y);
-      let y = y + 32;
-    }
-
-    let x = 0;
-    while (x < 512) {
-      do Screen.drawLine(x, 0, x, 255);
-      let x = x + 32;
-    }
-
-    return;
-  }
-
   function void go() {
     var int a, au, x, y, dx, dy;
 
     let ship = Ship.new(110, 110);
 
     while (true) {
-      /* do Grid.grid(); */
       do ship.update();
       do ship.draw();
       do Grid.debug();
