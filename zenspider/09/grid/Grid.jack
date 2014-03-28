@@ -11,6 +11,9 @@ class Grid {
     do Output.moveCursor(l, 0);
     do Output.printString(s);
     do Output.printInt(i);
+    do Output.printChar(32);
+    do Output.printChar(32);
+    do Output.printChar(32);
     do s.dispose();
     return;
   }
@@ -27,10 +30,10 @@ class Grid {
 
     while (true) {
       do ship.update();
-      do ship.draw();
       do Grid.debug();
+      do ship.draw();
 
-      do Sys.wait(100);
+      do Sys.wait(50);
     }
 
     return;
