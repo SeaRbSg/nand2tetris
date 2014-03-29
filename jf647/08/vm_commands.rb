@@ -1,4 +1,6 @@
 require 'vm_helper'
+require 'vm_bootstrap'
+require 'vm_labelseq'
 require 'commands/label'
 require 'commands/control'
 require 'commands/function'

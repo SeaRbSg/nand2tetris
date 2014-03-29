@@ -16,11 +16,16 @@ if infname.file?
     infnames = [ infname ]
     outfname = infname.parent + "#{infname.basename(infname.extname)}.asm"
 else
-    outfname = "#{infname.basename}.asm"
+    outfname = infname + "#{infname.basename}.asm"
     infnames = Pathname.glob "#{infname}/*.vm"
 end
 
 File.open(outfname, 'w') do |f|
+    unless ENV.key?('NO_BOOTSTRAP')
+        bs = VM::Bootstrap.new
+        f.puts "// #{bs.descr}"
+        f.puts bs.to_asm
+    end
     infnames.each do |infname|
         ns = infname.basename(infname.extname)
         ast = VM::Translator.new.translate(infname, ns) do |op|

@@ -2,14 +2,14 @@ module VM
 
     class LabelCommand < Command
 
-        value :sym, Symbol
+        value :label, Symbol
 
         def descr
-            "label #{@sym}"
+            "label #{@label}"
         end
 
         def to_asm
-            "(#{@sym})"
+            "(#{@label})"
         end
 
     end
