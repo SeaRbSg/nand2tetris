@@ -4,7 +4,7 @@ class Ship {
   static Array xs, ys;
 
   field int x, y;
-  field int dx1, dy1, dx2, dy2; // ship corners
+  field int p1x, p1y, p2x, p2y; // ship corners
   field int angle, magnitude;
 
   function void init() {
@@ -76,18 +76,18 @@ class Ship {
     return;
   }
 
-  method void update_corners () {
+  method void update_corners() {
     var Array xy;
 
     let xy = Array.new(2);
 
     do Trig.calculate_xy(0, 0, angle + 165, 5, xy);
-    let dx1 = xy[0];
-    let dy1 = xy[1];
+    let p1x = xy[0];
+    let p1y = xy[1];
 
     do Trig.calculate_xy(0, 0, angle + 205, 5, xy);
-    let dx2 = xy[0];
-    let dy2 = xy[1];
+    let p2x = xy[0];
+    let p2y = xy[1];
 
     do Memory.deAlloc(xy);
 
@@ -115,10 +115,10 @@ class Ship {
   method void draw() {
     var int x1, y1, x2, y2;
 
-    let x1 = MathX.mod(512 + x + dx1, 512);
-    let y1 = MathX.mod(256 + y + dy1, 256);
-    let x2 = MathX.mod(512 + x + dx2, 512);
-    let y2 = MathX.mod(256 + y + dy2, 256);
+    let x1 = MathX.mod(512 + x + p1x, 512);
+    let y1 = MathX.mod(256 + y + p1y, 256);
+    let x2 = MathX.mod(512 + x + p2x, 512);
+    let y2 = MathX.mod(256 + y + p2y, 256);
 
     do Screen.drawLine(x, y, x1, y1);
     do Screen.drawLine(x, y, x2, y2);
