@@ -55,14 +55,14 @@ class Ship {
 
         let xy = Array.new(2);
         do Trig.lookup_xy(angle, xy);
-        let dx = dx + Math.divide(xy[0], 2);
-        let dy = dy + Math.divide(xy[1], 2);
+        let dx = dx + xy[0];
+        let dy = dy + xy[1];
         do Memory.deAlloc(xy);
       }
 
       if (key = 133) { // down
-        if (dx) { if (dx > 0) { let dx = dx - 1; } else { let dx = dx + 1; } }
-        if (dy) { if (dy > 0) { let dy = dy - 1; } else { let dy = dy + 1; } }
+        if (dx) { let dx = Math.divide(dx, 2); }
+        if (dy) { let dy = Math.divide(dy, 2); }
       }
 
       if (key = 130) { // left
