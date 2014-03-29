@@ -4,8 +4,9 @@ class Ship {
   static Array xs, ys;
 
   field int x, y;
+  field int dx, dy;
   field int p1x, p1y, p2x, p2y; // ship corners
-  field int angle, magnitude;
+  field int angle;
 
   function void init() {
     let xs = Trig.xs();
@@ -18,7 +19,8 @@ class Ship {
     let x = a;
     let y = b;
     let angle = 90;
-    let magnitude = 0;
+    let dx = 0;
+    let dy = 0;
 
     do update_corners();
 
@@ -29,15 +31,17 @@ class Ship {
     do Grid.debugX(0, "x = ", x);
     do Grid.debugX(1, "y = ", y);
     do Grid.debugX(2, "a = ", angle);
-    do Grid.debugX(3, "s = ", magnitude);
+    do Grid.debugX(3, "dx = ", dx);
+    do Grid.debugX(4, "dy = ", dy);
 
     return;
   }
 
   method void update() {
     var int key, dirty;
+    var Array xy;
 
-    if (magnitude > 0) {
+    if (dx | dy) {
       do erase();
       do move();
     }
@@ -48,25 +52,32 @@ class Ship {
     if (key) {
       if (key = 131) { // up
         let dirty = 1;
-        let magnitude = Math.min(5, magnitude + 1);
+
+        let xy = Array.new(2);
+        do Trig.lookup_xy(angle, xy);
+        let dx = dx + Math.divide(xy[0], 2);
+        let dy = dy + Math.divide(xy[1], 2);
+        do Memory.deAlloc(xy);
       }
+
       if (key = 133) { // down
-        let dirty = 1;
-        let magnitude = Math.max(0, magnitude - 1);
+        if (dx) { if (dx > 0) { let dx = dx - 1; } else { let dx = dx + 1; } }
+        if (dy) { if (dy > 0) { let dy = dy - 1; } else { let dy = dy + 1; } }
       }
 
       if (key = 130) { // left
         let dirty = 1;
         let angle = MathX.mod(angle + 375, 360);
-        if (~magnitude) {
+        if (~(dx | dy)) {
           do erase();
         }
         do update_corners();
       }
+
       if (key = 132) { // right
         let dirty = 1;
         let angle = MathX.mod(angle + 345, 360);
-        if (~magnitude) {
+        if (~(dx | dy)) {
           do erase();
         }
         do update_corners();
@@ -105,9 +116,8 @@ class Ship {
   method void move() {
     var int u;
 
-    let u = Trig.segment(angle);
-    let x = MathX.mod(512 + x + Math.multiply(magnitude, xs[u]), 512);
-    let y = MathX.mod(256 + y + Math.multiply(magnitude, ys[u]), 256);
+    let x = MathX.mod(512 + x + dx, 512);
+    let y = MathX.mod(256 + y + dy, 256);
 
     return;
   }

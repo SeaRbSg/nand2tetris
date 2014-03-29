@@ -52,6 +52,16 @@ class Trig {
     return;
   }
 
+  function void lookup_xy(int a, Array xy) {
+    var int u;
+
+    let u = Trig.segment(a);
+    let xy[0] = xs[u];
+    let xy[1] = ys[u];
+
+    return;
+  }
+
   function void calculate_xy(int x, int y, int a, int l, Array xy) {
     var int u;
 
