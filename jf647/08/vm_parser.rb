@@ -21,9 +21,7 @@ module VM
             c('IFGOTO SYMBOL')              { |_,s| IfGotoCommand.new(s) }
             c('GOTO SYMBOL')                { |_,s| GotoCommand.new(s) }
             c('FUNCTION SYMBOL NUMBER')     { |_,s,n| FunctionCommand.new(s,n) }
-            c('CALL SYMBOL NUMBER')         do |_,s,n|
-                CallCommand.new(s,n, VM::LabelSeq.instance.seq)
-            end
+            c('CALL SYMBOL NUMBER')         { |_,s,n| CallCommand.new(s,n) }
             c('RETURN')                     { |_| ReturnCommand.new }
             c('ADD')                        { |_| AddCommand.new }
             c('SUB')                        { |_| SubCommand.new }

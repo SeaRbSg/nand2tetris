@@ -23,20 +23,20 @@ module VM
 
         value :name, Symbol
         value :numloc, Fixnum
-        value :label_seq, Fixnum
+
+        def initialize(a,b)
+            super
+            @return_label = "return-#{VM::LabelSeq.instance.seq}".to_sym
+        end
 
         def descr
             "call function #{@name} with #{@numloc} local variables"
         end
 
-        def return_label
-            "return-#{@label_seq}".to_sym
-        end
-
         def to_asm
             asm = []
             # push return address
-            asm << "@#{return_label}"
+            asm << "@#{@return_label}"
             asm << "D=A"
             asm << VM::Helper.push_d
             # push LCL, ARG, THIS, THAT
@@ -62,7 +62,7 @@ module VM
             # goto the function
             asm << GotoCommand.new(@name)
             # declare a label that return will send us to
-            asm << LabelCommand.new(return_label)
+            asm << LabelCommand.new(@return_label)
             return asm.map{|e| e.is_a?(Command) ? e.to_asm : e }.flatten
         end
     end

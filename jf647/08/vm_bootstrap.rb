@@ -12,7 +12,7 @@ module VM
             asm << 'D=A'
             asm << '@SP'
             asm << 'M=D'
-            asm << VM::CallCommand.new('Sys.init'.to_sym, 0, VM::LabelSeq.instance.seq)
+            asm << VM::CallCommand.new('Sys.init'.to_sym, 0)
             return asm.map{|e| e.is_a?(Command) ? e.to_asm : e }.flatten
         end
     end
