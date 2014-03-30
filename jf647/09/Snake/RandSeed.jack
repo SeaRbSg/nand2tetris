@@ -1,0 +1,27 @@
+class RandSeed {
+
+    function int getSeed() {
+
+        var int seed;
+        var int key;
+
+        let seed = 0;
+        let key = 0;
+
+        do Output.printString("press a key to start");
+        do Output.println();
+
+        while(~key) {
+            while (key = 0) {
+                let seed = seed + 1;
+                let key = Keyboard.keyPressed();
+            }
+        }
+
+        do Screen.clearScreen();
+
+        return seed;
+
+    }
+
+}

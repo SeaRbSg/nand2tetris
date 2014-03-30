@@ -1,0 +1,65 @@
+class SnakeGame {
+
+    // the Snake
+    field Snake snake;
+
+    // the game grid
+    field SnakeGrid grid;
+
+    // the score
+    field int score;
+
+    // whether the games is paused or not
+    field boolean paused;
+
+    // the game cycle
+    field int cycle;
+
+    // how long to wait between cycles
+    field int delay;
+
+    // creates a new SnakeGame
+    constructor SnakeGame new() {
+
+        // use the delay in the user pressing a key to seed our PRNG
+        do Random.setSeed(RandSeed.getSeed());
+
+        let grid = SnakeGrid.new(256, 512);
+        let snake = Snake.new(grid.sizeX() / 2, grid.sizeY() / 2, 5, 2);
+        let score = 0;
+        let paused = false;
+        let cycle = 0;
+        let delay = 1000;
+
+        return this;
+
+    }
+
+    // disposes of a SnakeGame
+    method void dispose() {
+
+        do snake.dispose();
+        do grid.dispose();
+        do Memory.deAlloc(this);
+
+        return;
+
+    }
+
+    // run the game
+    method void run() {
+
+        do Output.printString("delay is ");
+        do Output.printInt(delay);
+        do Output.println();
+        do Output.printString("food is at ");
+        do Output.printInt(grid.foodX());
+        do Output.printString(", ");
+        do Output.printInt(grid.foodY());
+        do Output.println();
+
+        return;
+
+    }
+
+}

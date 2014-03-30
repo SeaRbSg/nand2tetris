@@ -1,0 +1,51 @@
+// the Snake game grid.  Hack's screen is 256x512 pixels,
+// but a single pixel is too fine for a user to control, so we use
+// 4x4 pixel blocks, turning the screen into a 64x128 grid
+
+class SnakeGrid {
+
+    // the size of the grid
+    field int x, y;
+
+    // the XY position of the food pellet
+    field int foodX;
+    field int foodY;
+
+    // creates a new SnakeGrid given a pixel size
+    constructor SnakeGrid new(int Ax, int Ay) {
+
+        let x = Ax / 4;
+        let y = Ay / 4;
+
+        // determine the position of the food pellet
+        let foodX = Random.randRange(x);
+        let foodY = Random.randRange(y);
+
+        return this;
+
+    }
+
+    // disposes of a SnakeGrid
+    method void dispose() {
+
+        do Memory.deAlloc(this);
+
+        return;
+
+    }
+
+    // reader methods
+    method int sizeX() {
+        return x;
+    }
+    method int sizeY() {
+        return y;
+    }
+    method int foodX() {
+        return foodX;
+    }
+    method int foodY() {
+        return foodY;
+    }
+
+}

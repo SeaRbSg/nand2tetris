@@ -1,0 +1,49 @@
+class Snake {
+
+    // the XY position of the snake's head
+    field int x, y;
+
+    // the length of the snake
+    field int length;
+
+    // how much the snake grows by when it eats a pellet
+    field int growby;
+
+    // how much the snake has left to grow
+    field int togrow;
+
+    // the direction the snake is/was moving
+    // 0=none,1=up,2=down,3=left,4=right
+    field int dir;
+    field int lastdir;
+
+    // the history of the snake's movements
+    field Array histX, histY;
+
+    // creates a new Snake
+    constructor Snake new(int Ax, int Ay, int Alen, int Agrowby) {
+
+        let x = Ax;
+        let y = Ay;
+        let length = Alen;
+        let growby = Agrowby;
+
+        let togrow = 0;
+        let dir = 4;
+        let lastdir = 4;
+        let histX = Array.new(2048);
+        let histY = Array.new(2048);
+
+        return this;
+
+    }
+
+    // disposes of a Snake
+    method void dispose() {
+
+        do Memory.deAlloc(this);
+        return;
+
+    }
+
+}
