@@ -1,25 +1,26 @@
-// the Snake game grid.  Hack's screen is 256x512 pixels,
+// the Snake game grid.  Hack's screen is 512x256 pixels,
 // but a single pixel is too fine for a user to control, so we use
-// 4x4 pixel blocks, turning the screen into a 64x128 grid
+// 4x4 pixel blocks, turning the screen into a 128x64 grid
 
 class SnakeGrid {
 
     // the size of the grid
-    field int x, y;
+    field int sizeX, sizeY;
 
     // the XY position of the food pellet
-    field int foodX;
-    field int foodY;
+    field int foodX, foodY;
+
+    // a two-dimensional array that tells us where the snake is
+    field Array grid;
 
     // creates a new SnakeGrid given a pixel size
     constructor SnakeGrid new(int Ax, int Ay) {
 
-        let x = Ax / 4;
-        let y = Ay / 4;
+        let sizeX = Ax / 4;
+        let sizeY = Ay / 4;
 
-        // determine the position of the food pellet
-        let foodX = Random.randRange(x);
-        let foodY = Random.randRange(y);
+        // initialize the grid
+        do initGrid();
 
         return this;
 
@@ -34,18 +35,92 @@ class SnakeGrid {
 
     }
 
+    // selects a position for and draws a food pellet
+    method void placeFood() {
+
+        var boolean found;
+        var int randX, randY;
+
+        // don't place the food on top of a snake piece
+        let found = false;
+        while( ~found ) {
+            let randX = Random.randRange(sizeX);
+            let randY = Random.randRange(sizeY);
+            if( ~ checkOccupied(randX, randY) ) {
+                let found = true;
+            }
+
+        }
+        let foodX = randX;
+        let foodY = randY;
+        do Screen.setColor(true);
+        do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
+
+        return;
+
+    }
+
+    // initializes the grid
+    method void initGrid() {
+
+        var int curX, curY;
+        var Array xGrid;
+
+        let grid = Array.new(sizeX);
+        let curX = 0;
+
+        while( curX < sizeX ) {
+            let xGrid = Array.new(sizeY);
+            let curY = 0;
+            while( curY < sizeY ) {
+                let xGrid[curY] = false;
+                let curY = curY + 1;
+            }
+            let grid[curX] = xGrid;
+            let curX = curX + 1;
+        }
+
+        return;
+
+    }
+
     // reader methods
     method int sizeX() {
-        return x;
+        return sizeX;
     }
     method int sizeY() {
-        return y;
+        return sizeY;
     }
     method int foodX() {
         return foodX;
     }
     method int foodY() {
         return foodY;
+    }
+
+    // grid access methods
+    method void setOccupied(int x, int y) {
+        var Array xGrid;
+        let xGrid = grid[x];
+        let xGrid[y] = true;
+        return;
+    }
+    method boolean checkOccupied(int x, int y) {
+        var Array xGrid;
+        let xGrid = grid[x];
+        if( xGrid[y] ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    // draws a bit of the snake
+    method void drawSnakeBit(int x, int y) {
+        do Screen.setColor(true);
+        do Screen.drawRectangle( x*4, y*4, (x*4)+4, (y*4)+4 );
+        return;
     }
 
 }

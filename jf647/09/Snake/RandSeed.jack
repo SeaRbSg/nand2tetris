@@ -12,10 +12,11 @@ class RandSeed {
         do Output.println();
 
         while(~key) {
-            while (key = 0) {
-                let seed = seed + 1;
-                let key = Keyboard.keyPressed();
+            let seed = seed + 1;
+            if( seed = 32767 ) {
+                let seed = 0;
             }
+            let key = Keyboard.keyPressed();
         }
 
         do Screen.clearScreen();

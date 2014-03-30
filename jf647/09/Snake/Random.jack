@@ -28,9 +28,9 @@ class Random {
         while (mask < range) {
             let mask = mask * 2 + 1;
         }
-        let ret = (Random.rand() / (32767/range)) & mask;
+        let ret = Random.rand() & mask;
         while (ret > range) {
-            let ret = (Random.rand() / (32767/range)) & mask;
+            let ret = Random.rand() & mask;
         }
         return ret;
     }

@@ -24,12 +24,14 @@ class SnakeGame {
         // use the delay in the user pressing a key to seed our PRNG
         do Random.setSeed(RandSeed.getSeed());
 
-        let grid = SnakeGrid.new(256, 512);
-        let snake = Snake.new(grid.sizeX() / 2, grid.sizeY() / 2, 5, 2);
+        let grid = SnakeGrid.new(512, 256);
+        let snake = Snake.new(this, grid.sizeX() / 2, grid.sizeY() / 2, 5, 2);
         let score = 0;
         let paused = false;
         let cycle = 0;
         let delay = 1000;
+
+        do grid.placeFood();
 
         return this;
 
@@ -49,17 +51,22 @@ class SnakeGame {
     // run the game
     method void run() {
 
-        do Output.printString("delay is ");
-        do Output.printInt(delay);
-        do Output.println();
-        do Output.printString("food is at ");
-        do Output.printInt(grid.foodX());
-        do Output.printString(", ");
-        do Output.printInt(grid.foodY());
-        do Output.println();
-
         return;
 
+    }
+
+    // increment the cycle count by 1
+    method int nextCycle() {
+        let cycle = cycle + 1;
+        return cycle;
+    }
+
+    // reader methods
+    method SnakeGrid getGrid() {
+        return grid;
+    }
+    method int getCycle() {
+        return cycle;
     }
 
 }

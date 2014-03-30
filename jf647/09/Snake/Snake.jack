@@ -1,7 +1,10 @@
 class Snake {
 
+    // the game the snake is playing in
+    field SnakeGame game;
+
     // the XY position of the snake's head
-    field int x, y;
+    field int posX, posY;
 
     // the length of the snake
     field int length;
@@ -14,17 +17,18 @@ class Snake {
 
     // the direction the snake is/was moving
     // 0=none,1=up,2=down,3=left,4=right
-    field int dir;
-    field int lastdir;
+    field int dir, lastdir;
 
     // the history of the snake's movements
     field Array histX, histY;
 
     // creates a new Snake
-    constructor Snake new(int Ax, int Ay, int Alen, int Agrowby) {
+    // args are X/Y position of head, length and how much to grow by
+    constructor Snake new(SnakeGame Agame, int Ax, int Ay, int Alen, int Agrowby) {
 
-        let x = Ax;
-        let y = Ay;
+        let game = Agame;
+        let posX = Ax;
+        let posY = Ay;
         let length = Alen;
         let growby = Agrowby;
 
@@ -34,6 +38,9 @@ class Snake {
         let histX = Array.new(2048);
         let histY = Array.new(2048);
 
+        // draw the snake's initial postion
+        do drawSnake();
+
         return this;
 
     }
@@ -41,7 +48,34 @@ class Snake {
     // disposes of a Snake
     method void dispose() {
 
+        do histX.dispose();
+        do histY.dispose();
         do Memory.deAlloc(this);
+        return;
+
+    }
+
+    // draws a full snake
+    method void drawSnake() {
+
+        var int curX, curY;
+        var int curCycle;
+        var SnakeGrid grid;
+
+        let curX = posX - length;
+        let curY = posY;
+        let grid = game.getGrid();
+
+        let curCycle = game.getCycle();
+        while( curX < posX ) {
+            let histX[curCycle] = curX;
+            let histY[curCycle] = curY;
+            do grid.setOccupied(curX, curY);
+            do grid.drawSnakeBit(curX, curY);
+            let curCycle = game.nextCycle();
+            let curX = curX + 1;
+        }
+
         return;
 
     }
