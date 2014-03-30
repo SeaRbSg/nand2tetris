@@ -1,8 +1,14 @@
-// the Snake game grid.  Hack's screen is 512x256 pixels,
-// but a single pixel is too fine for a user to control, so we use
-// 4x4 pixel blocks, turning the screen into a 128x64 grid
+// the Snake game grid.  Hack's screen is 512x256 pixels, but a single
+// pixel is too fine for a user to control, so we use 4x4 pixel blocks,
+// turning the screen into a 128x64 grid we also need a status line.  The
+// Hack screen can have 23x64 characters of text, so each line takes a
+// bit over 11 pixels.  We reserve the bottom 16 pixels, leaving 512x240
+// for game use
 
 class SnakeGrid {
+
+    // the game the snake is playing in
+    field SnakeGame game;
 
     // the size of the grid
     field int sizeX, sizeY;
@@ -14,10 +20,11 @@ class SnakeGrid {
     field Array grid;
 
     // creates a new SnakeGrid given a pixel size
-    constructor SnakeGrid new(int Ax, int Ay) {
+    constructor SnakeGrid new(SnakeGame Agame, int Ax, int Ay) {
 
+        let game = Agame;
         let sizeX = Ax / 4;
-        let sizeY = Ay / 4;
+        let sizeY = (Ay-16) / 4;
 
         // initialize the grid
         do initGrid();
@@ -29,6 +36,15 @@ class SnakeGrid {
     // disposes of a SnakeGrid
     method void dispose() {
 
+        var int curX;
+        var Array xGrid;
+
+        let curX = 0;
+        while( curX < sizeX ) {
+            let xGrid = grid[curX];
+            do xGrid.dispose();
+            let curX = curX + 1;
+        }
         do Memory.deAlloc(this);
 
         return;
@@ -53,11 +69,18 @@ class SnakeGrid {
         }
         let foodX = randX;
         let foodY = randY;
+
+        return;
+
+    }
+
+    // draws the food pellet
+    method void drawFood() {
+
         do Screen.setColor(true);
         do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
 
         return;
-
     }
 
     // initializes the grid
@@ -80,6 +103,11 @@ class SnakeGrid {
             let curX = curX + 1;
         }
 
+        // draw the horizontal line dividing the game
+        // area from the status line
+        do Screen.setColor(true);
+        do Screen.drawLine(0, (sizeY*4)+1, (sizeX*4-1), (sizeY*4)+1);
+
         return;
 
     }
@@ -99,10 +127,10 @@ class SnakeGrid {
     }
 
     // grid access methods
-    method void setOccupied(int x, int y) {
+    method void setOccupied(int x, int y, boolean occupied) {
         var Array xGrid;
         let xGrid = grid[x];
-        let xGrid[y] = true;
+        let xGrid[y] = occupied;
         return;
     }
     method boolean checkOccupied(int x, int y) {
@@ -115,12 +143,126 @@ class SnakeGrid {
             return false;
         }
     }
+    method boolean checkFood(int x, int y) {
 
-    // draws a bit of the snake
+        if( x = foodX ) {
+            if( y = foodY ) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    // debug: puts the cycle, and current X/Y on the status line
+    method void debugPosition(int x, int y) {
+        do Output.moveCursor(22, 21);
+        do Output.printInt(game.getCycle());
+        do Output.moveCursor(22, 42);
+        do Output.printInt(x);
+        do Output.moveCursor(22, 46);
+        do Output.printInt(y);
+        return;
+    }
+
+    // draws a block and marks that block as occupied
     method void drawSnakeBit(int x, int y) {
         do Screen.setColor(true);
         do Screen.drawRectangle( x*4, y*4, (x*4)+4, (y*4)+4 );
+        do setOccupied(x, y, true);
         return;
     }
+
+    // clears a block and marks that block as not occupied
+    method void clearSnakeBit(int x, int y) {
+        do Screen.setColor(false);
+        do Screen.drawRectangle( x*4, y*4, (x*4)+4, (y*4)+4 );
+        do setOccupied(x, y, false);
+        return;
+    }
+
+    // draws the status line
+    // Level: 0___ [PAUSED] #__ Score: 0_______  x__ y__  Length: 0___
+    // 0           12       21  25               42  46   52
+    method void drawStatus() {
+
+        var Snake snake;
+        var String tString;
+
+        do Output.moveCursor(22, 0);
+        let tString = "Level: ";
+        do Output.printString(tString);
+        do tString.dispose();
+        do Output.printInt(game.getLevel());
+        do Output.moveCursor(22, 25);
+        let tString = "Score: ";
+        do Output.printString(tString);
+        do tString.dispose();
+        do Output.printInt(game.getScore());
+        do Output.moveCursor(22, 52);
+        let tString = "Length: ";
+        do Output.printString(tString);
+        do tString.dispose();
+        let snake = game.getSnake();
+        do Output.printInt(snake.getLength());
+        if(game.getPaused()) {
+            do drawPaused();
+        }
+        else {
+            do clearPaused();
+        }
+
+        return;
+
+    }
+    method void drawPaused() {
+
+        var String tString;
+
+        do Output.moveCursor(22, 12);
+        let tString = "[PAUSED] ";
+        do Output.printString(tString);
+        do tString.dispose();
+        return;
+
+    }
+    method void clearPaused() {
+
+        var String tString;
+
+        do Output.moveCursor(22, 12);
+        let tString = "         ";
+        do Output.printString(tString);
+        do tString.dispose();
+
+        return;
+
+    }
+    method void drawDone() {
+
+        var String tString;
+
+        do Output.moveCursor(22, 12);
+        let tString = " [DONE]  ";
+        do Output.printString(tString);
+        do tString.dispose();
+
+        return;
+
+    }
+    method void drawCrashed() {
+
+        var String tString;
+
+        do Output.moveCursor(22, 12);
+        let tString = "*CRASHED*";
+        do Output.printString(tString);
+        do tString.dispose();
+
+        return;
+
+    }
+
 
 }
