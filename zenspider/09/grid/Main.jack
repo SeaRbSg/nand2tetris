@@ -12,6 +12,7 @@ class Main {
     do Trig.init();
     do Grid.init();
     do Ship.init();
+    do MathX.init();
 
     return;
   }
