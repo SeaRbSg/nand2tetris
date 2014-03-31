@@ -33,7 +33,7 @@ class Pew {
     if (x = 511) { let x = x - 1; }
     if (y = 255) { let y = y - 1; }
 
-    return count > 300;
+    return count > 50;
   }
 
   method void draw() {
