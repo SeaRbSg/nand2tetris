@@ -565,6 +565,13 @@ PARAGRAPH
 #Args: functionName (string), numArgs (int)
 #Returns: -
 #Function: Writes assembly code that effects the call command.
+  def writecall output
+file = <<PARAGRAPH
+// Write Return
+
+PARAGRAPH
+    File.open(output, "a") { |f| f.write file }
+  end
 
 #Method: writeReturn
 #Args: -
@@ -627,6 +634,9 @@ AM=M-1
 D=M
 @RET
 M=D
+//Put return address
+@RET
+D;JMP
 PARAGRAPH
     File.open(output, "a") { |f| f.write file }
   end

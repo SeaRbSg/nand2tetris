@@ -1,5 +1,7 @@
 require './parser'
 
+#Dir.entries(folder)
+#Sys.vm
 filename = ARGV[0]
 output = filename.gsub("vm","asm")
 
