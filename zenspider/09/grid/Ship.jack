@@ -7,6 +7,8 @@ class Ship {
   field int dx, dy;
   field int p1x, p1y, p2x, p2y; // ship corners
   field int angle;
+  field Array pews;
+  field int count;
 
   function void init() {
     let xs = Trig.xs();
@@ -16,11 +18,21 @@ class Ship {
   }
 
   constructor Ship new(int a, int b) {
+    var int i;
+
     let x = a;
     let y = b;
     let angle = 90;
     let dx = 0;
     let dy = 0;
+    let pews = Array.new(10);
+    let count = 0;
+
+    let i = 0;
+    while (i < 10) {
+      let pews[i] = 0;
+      let i = i + 1;
+    }
 
     do update_corners();
 
@@ -65,6 +77,10 @@ class Ship {
         if (dy) { let dy = Math.divide(dy, 2); }
       }
 
+      if (key = 32) { // space
+        do shoot();
+      }
+
       if (key = 130) { // left
         let dirty = 1;
         let angle = MathX.mod(angle + 375, 360);
@@ -83,6 +99,8 @@ class Ship {
         do update_corners();
       }
     }
+
+    do update_pews();
 
     return;
   }
@@ -133,6 +151,62 @@ class Ship {
     do Screen.drawLine(x, y, x1, y1);
     do Screen.drawLine(x, y, x2, y2);
     do Screen.drawLine(x1, y1, x2, y2);
+
+    do draw_pews();
+
+    return;
+  }
+
+  method void update_pews() {
+    var int i;
+    var Pew pew;
+    var int delete;
+
+    let i = 0;
+    while (i < 10) {
+      let pew = pews[i];
+      if (pew) {
+        let delete = pew.update();
+        if (delete) {
+          do pew.dealloc();
+          let pew = 0;
+        }
+      }
+
+      let i = i + 1;
+    }
+
+    return;
+  }
+
+  method void shoot() {
+    var Pew pew;
+    var Array xy;
+
+    let xy = Array.new(2);
+    do Trig.lookup_xy(angle, xy);
+
+    let pews[count] = Pew.new(x, y, dx + xy[0] + xy[0], dy + xy[1] + xy[1]);
+    let count = MathX.mod(count + 1, 10);
+
+    do Memory.deAlloc(xy);
+
+    return;
+  }
+
+  method void draw_pews() {
+    var int i;
+    var Pew pew;
+
+    let i = 0;
+    while (i < 10) {
+      let pew = pews[i];
+      if (pew) {
+        do pew.draw();
+      }
+
+      let i = i + 1;
+    }
 
     return;
   }

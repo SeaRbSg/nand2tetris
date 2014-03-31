@@ -1,0 +1,55 @@
+// -*- c -*-
+
+class Pew {
+  field int x, y;
+  field int dx, dy;
+  field int count;
+
+  constructor Pew new(int _x, int _y, int _dx, int _dy) {
+    let x = _x;
+    let y = _y;
+    let dx = _dx;
+    let dy = _dy;
+    let count = 0;
+
+    return this;
+  }
+
+  method void dealloc() {
+    do erase();
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method int update() {
+    do erase();
+
+    let count = count + 1;
+    let x = MathX.mod(x + dx + 512, 512);
+    let y = MathX.mod(y + dy + 256, 256);
+
+    if (x = 0) { let x = x + 1; }
+    if (y = 0) { let y = y + 1; }
+    if (x = 511) { let x = x - 1; }
+    if (y = 255) { let y = y - 1; }
+
+    return count > 300;
+  }
+
+  method void draw() {
+    /* do Grid.debugX(6, "x = ", x); */
+    /* do Grid.debugX(7, "y = ", y); */
+
+    do Screen.drawCircle(x, y, 1);
+
+    return;
+  }
+
+  method void erase() {
+    do Screen.setColor(false);
+    do draw();
+    do Screen.setColor(true);
+
+    return;
+  }
+}
