@@ -53,41 +53,74 @@ not
 pop local 1
 label IF_FALSE0
 push local 0
-push constant 131
+push constant 139
 eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push constant 1
+call Screen.clearScreen 0
+pop temp 0
+push constant 0
 pop this 1
 label IF_FALSE1
 push local 0
-push constant 133
+push constant 69
 eq
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
-push constant 2
+call Screen.clearScreen 0
+pop temp 0
+push constant 0
 pop this 1
 label IF_FALSE2
 push local 0
-push constant 130
+push constant 101
 eq
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
-push constant 3
+call Screen.clearScreen 0
+pop temp 0
+push constant 0
 pop this 1
 label IF_FALSE3
 push local 0
-push constant 132
+push constant 131
 eq
 if-goto IF_TRUE4
 goto IF_FALSE4
 label IF_TRUE4
-push constant 4
+push constant 1
 pop this 1
 label IF_FALSE4
+push local 0
+push constant 133
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 2
+pop this 1
+label IF_FALSE5
+push local 0
+push constant 130
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 3
+pop this 1
+label IF_FALSE6
+push local 0
+push constant 132
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 4
+pop this 1
+label IF_FALSE7
 label WHILE_EXP2
 push local 0
 push constant 0
@@ -110,46 +143,55 @@ function DotGame.moveDot 0
 push argument 0
 pop pointer 0
 push this 1
-push constant 1
+push constant 0
 eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push this 0
-call Dot.moveUp 1
+call Screen.clearScreen 0
 pop temp 0
 label IF_FALSE0
 push this 1
-push constant 2
+push constant 1
 eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
 push this 0
-call Dot.moveDown 1
+call Dot.moveUp 1
 pop temp 0
 label IF_FALSE1
 push this 1
-push constant 3
+push constant 2
 eq
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
 push this 0
-call Dot.moveLeft 1
+call Dot.moveDown 1
 pop temp 0
 label IF_FALSE2
 push this 1
-push constant 4
+push constant 3
 eq
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
 push this 0
-call Dot.moveRight 1
+call Dot.moveLeft 1
 pop temp 0
 label IF_FALSE3
-push constant 50
+push this 1
+push constant 4
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 0
+call Dot.moveRight 1
+pop temp 0
+label IF_FALSE4
+push constant 30
 call Sys.wait 1
 pop temp 0
 push constant 0

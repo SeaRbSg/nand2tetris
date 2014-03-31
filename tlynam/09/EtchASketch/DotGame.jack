@@ -3,6 +3,7 @@
  * In this game you can move a black dot around the screen and write a continuous line.
  * In the beginning, the dot is located at the top-left corner
  * of the screen. The arrow keys are used to move the dot.
+ * Pressing the E key or delete key will erase the contents of the screen.
  * The 'q' key is used to quit the game.
  */
 class DotGame {
@@ -45,6 +46,18 @@ class DotGame {
             if (key = 81) {
                 let exit = true;
             }
+            if (key = 139) {
+                do Screen.clearScreen();
+                let direction = 0;
+            }
+            if (key = 69) {
+                do Screen.clearScreen();
+                let direction = 0;
+            }
+            if (key = 101) {
+                do Screen.clearScreen();
+                let direction = 0;
+            }
             if (key = 131) {
                 let direction = 1;
             }
@@ -70,6 +83,9 @@ class DotGame {
 
     /** Moves the dot by 2 pixels in the current direction. */
     method void moveDot() {
+        if (direction = 0) {
+            do Screen.clearScreen();
+        }    
         if (direction = 1) {
             do dot.moveUp();
         }
@@ -83,7 +99,7 @@ class DotGame {
             do dot.moveRight();
         }
 
-        do Sys.wait(50); // Delays the next movement.
+        do Sys.wait(30); // Delays the next movement.
         return;
     }
 }
