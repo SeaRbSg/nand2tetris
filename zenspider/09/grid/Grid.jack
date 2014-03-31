@@ -26,7 +26,7 @@ class Grid {
   function void go() {
     var int a, au, x, y, dx, dy;
 
-    let ship = Ship.new(110, 110);
+    let ship = Ship.new(256, 128);
 
     while (true) {
       do ship.update();
