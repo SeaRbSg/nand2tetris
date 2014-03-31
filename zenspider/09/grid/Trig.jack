@@ -61,14 +61,4 @@ class Trig {
 
     return;
   }
-
-  function void calculate_xy(int x, int y, int a, int l, Array xy) {
-    var int u;
-
-    let u = Trig.segment(a);
-    let xy[0] = MathX.mod(512 + x + Math.multiply(l, xs[u]), 512);
-    let xy[1] = MathX.mod(256 + y + Math.multiply(l, ys[u]), 256);
-
-    return;
-  }
 }
