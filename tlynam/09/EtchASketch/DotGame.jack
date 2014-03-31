@@ -1,0 +1,89 @@
+/**
+ * Implements the dot game.
+ * In this game you can move a black dot around the screen and write a continuous line.
+ * In the beginning, the dot is located at the top-left corner
+ * of the screen. The arrow keys are used to move the dot.
+ * The 'q' key is used to quit the game.
+ */
+class DotGame {
+
+    // The dot
+    field Dot dot;
+
+    // The dot's movement direction
+    field int direction; // 0=none,1=up,2=down,3=left,4=right
+
+    /** Constructs a new Dot Game. */
+    constructor DotGame new() {
+        let dot = Dot.new(0, 0, 30);
+        let direction = 0;
+
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do dot.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Starts the game. Handles inputs from the user that control
+     *  the dot's movement, direction and size. */
+    method void run() {
+        var char key;
+        var boolean exit;
+
+        let exit = false;
+
+        while (~exit) {
+            // waits for a key to be pressed.
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+
+            if (key = 81) {
+                let exit = true;
+            }
+            if (key = 131) {
+                let direction = 1;
+            }
+            if (key = 133) {
+                let direction = 2;
+            }
+            if (key = 130) {
+                let direction = 3;
+            }
+            if (key = 132) {
+                let direction = 4;
+            }
+
+            // waits for the key to be released.
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                do moveDot();
+            }
+        }
+            
+        return;
+  }
+
+    /** Moves the dot by 2 pixels in the current direction. */
+    method void moveDot() {
+        if (direction = 1) {
+            do dot.moveUp();
+        }
+        if (direction = 2) {
+            do dot.moveDown();
+        }
+        if (direction = 3) {
+            do dot.moveLeft();
+        }
+        if (direction = 4) {
+            do dot.moveRight();
+        }
+
+        do Sys.wait(50); // Delays the next movement.
+        return;
+    }
+}

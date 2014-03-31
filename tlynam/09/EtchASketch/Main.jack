@@ -1,0 +1,16 @@
+/**
+ * The Main class initializes a new EtchASketch game and starts it.
+ */
+class Main {
+
+    /** Initializes a new EtchASketch game and starts it. */    
+    function void main() {
+        var DotGame game;
+
+        let game = DotGame.new();
+        do game.run();
+  do game.dispose();
+
+        return;
+    }
+}

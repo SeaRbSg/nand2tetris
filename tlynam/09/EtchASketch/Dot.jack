@@ -1,0 +1,86 @@
+/**
+ * Implements a graphic dot. A graphic dot has a screen location.
+ It also has methods for drawing and moving on the 
+ * screen.
+ */
+class Dot {
+
+    // Location on the screen
+    field int x, y;
+
+    // The size of the dot
+    field int size;
+
+    /** Constructs a new dot with a given location */
+    constructor Dot new(int Ax, int Ay, int Asize) {
+        let x = Ax;
+        let y = Ay;
+        let size = Asize;
+
+        do draw();
+
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Draws the dot on the screen. */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + 1, y + 1);
+        return;
+    }
+
+    /** Moves up by 2 pixels. */
+    method void moveUp() {
+        if (y > 1) {
+            // do Screen.setColor(false);
+            do Screen.drawRectangle(x, (y + 1) - 1, x + 1, y + 1);
+            let y = y - 1;
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x, y, x + 1, y + 1);
+        }
+        return;
+    }
+
+    /** Moves down by 2 pixels. */
+    method void moveDown() {
+        if ((y + 1) < 254) {
+            // do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + 1, y + 1);
+            let y = y + 1;
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x, (y + 1) - 1, x + 1, y + 1);
+        }
+        return;
+    }
+
+    /** Moves left by 2 pixels. */
+    method void moveLeft() {
+        if (x > 1) {
+            // do Screen.setColor(false);
+            do Screen.drawRectangle((x + 1) - 1, y, x + 1, y + 1);
+            let x = x - 1;
+            do Screen.setColor(true);
+            do Screen.drawRectangle(x, y, x + 1, y + 1);
+        }
+        return;
+    }
+
+    /** Moves right by 2 pixels. */
+    method void moveRight() {
+        if ((x + 1) < 510) {
+            // do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + 1, y + 1);
+            let x = x + 1;
+            do Screen.setColor(true);
+            do Screen.drawRectangle((x + 1) - 1, y, x + 1, y + 1);
+        }
+        return;
+    }
+
+}
