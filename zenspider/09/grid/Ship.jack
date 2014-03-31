@@ -169,6 +169,7 @@ class Ship {
         let delete = pew.update();
         if (delete) {
           do pew.dealloc();
+          let pews[i] = 0;
           let pew = 0;
         }
       }
@@ -185,6 +186,11 @@ class Ship {
 
     let xy = Array.new(2);
     do Trig.lookup_xy(angle, xy);
+
+    let pew = pews[count];
+    if (pew) {
+      do pew.dealloc();
+    }
 
     let pews[count] = Pew.new(x, y, dx + xy[0] + xy[0], dy + xy[1] + xy[1]);
     let count = MathX.mod(count + 1, 10);
