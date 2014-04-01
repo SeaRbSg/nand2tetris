@@ -26,7 +26,7 @@ class Point {
   }
 
   method Point prev() { 
-    return _next;
+    return _prev;
   }
 
   method void setPrev(Point prev) {
@@ -34,52 +34,12 @@ class Point {
     return;
   }
 
-
   method int get_x() {
     return _x;
   }
 
-  method void set_x(int x) {
-    let _x = x;
-    return;
-  }
-
-  method void move_x(int dx) {
-    let _x = _x + dx;
-    return;
-  }
-
   method int get_y() {
     return _y;
-  }
-
-  method void set_y(int y) {
-    let _y = y;
-    return;
-  }
-
-  method void move_y(int dy) {
-    let _y = _y + dy;
-    return;
-  }
-
-  method void get_x_y(int x, int y) {
-    let x = _x;
-    let y = _y;
-    return;
-  }
-
-  method void set_x_y(int x, int y) {
-    let _x = x;
-    let _y = y;
-    return;
-  }
-
-  method void move_x_y(int dx, int dy) { 
-    do move_x(dx);
-    do move_y(dy);
-
-    return;
   }
 
   method void draw(int size) {
@@ -94,7 +54,7 @@ class Point {
     let s1 = "x = ";
     let s2 = ", y = ";
 
-    do Output.moveCursor(1, 0);
+    //    do Output.moveCursor(1, 0);
     do Output.printString(s1);
     do Output.printInt(_x);
     do Output.printString(s2);

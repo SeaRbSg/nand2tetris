@@ -15,7 +15,7 @@ class Snake {
   // Global Init
   function void init() {
     let _segment_size = 10;
-    let _speed = 2;
+    let _speed = 10;
     let _max_length = 32;
     return;
   }
@@ -53,6 +53,7 @@ class Snake {
     var int new_head_y;
     var Point new_head;
     var Point new_tail;
+    var Point t;
 
     if (_direction) {
       do erase();
@@ -69,8 +70,6 @@ class Snake {
     // down
     if (_direction = 2) {
       let new_head_y = new_head_y + _speed;
-
-      do _head.move_y(_speed);
     }
 
     // left
@@ -83,24 +82,22 @@ class Snake {
       let new_head_x = new_head_x + _speed;
     }
 
+    // Add an element to the start of the linked list
     let new_head = Point.new(new_head_x, new_head_y);
-
     do new_head.setNext(_head);
     do _head.setPrev(new_head);
     let _head = new_head;
 
+    // Remove an element from the tail of the list
     let new_tail = _tail.prev();
-    //    do _tail.dispose();
-    let _tail = new_tail;
     do new_tail.setNext(null);
-   
-    do _head.debug();
+    let _tail = new_tail;
 
     do draw();
         
     do check_edges();
 
-    do Sys.wait(30);
+    do Sys.wait(500);
 
     return;
   }
