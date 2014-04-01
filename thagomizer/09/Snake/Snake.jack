@@ -3,27 +3,34 @@ class Snake {
   // Statics
   static int _segment_size;
   static int _speed;
+  static int _max_length;
 
   // Fields 
   field Point _head;
-  field Array _snake;
+  field Point _tail;
+  field int _current_length;
   field boolean _alive;
   field int _direction; // 1 - up, 2 - down, 3 - left, 4 - right
 
-
   // Global Init
   function void init() {
-    let _segment_size = 30;
+    let _segment_size = 10;
     let _speed = 2;
+    let _max_length = 32;
     return;
   }
 
   // Constructor & Dispose
-  constructor Snake new(point head_location) {
-    let _head = head_location;
+  constructor Snake new() {
+    var Point head;
+    let _head = Point.new(256, 128);
+    let _tail = Point.new(246, 128);
+
+    do _head.setNext(_tail);
+    do _tail.setPrev(_head);
+
+    let _current_length = 2;
     let _alive = true;
-    let _snake = Array.new(2);
-    let _snake[0] = _head;
 
     do draw();
 
@@ -31,7 +38,6 @@ class Snake {
   }
   
   method void dispose() {
-    do _snake.dispose();
     do Memory.deAlloc(this);
     return;
   }
@@ -43,30 +49,63 @@ class Snake {
   }
 
   method void update() {
+    var int new_head_x;
+    var int new_head_y;
+    var Point new_head;
+    var Point new_tail;
+
     if (_direction) {
       do erase();
     }
 
+    let new_head_x = _head.get_x();
+    let new_head_y = _head.get_y();
+
     // up
     if (_direction = 1) {
-      do _head.move_y((-1) * _speed);
+      let new_head_y = new_head_y - _speed;
     }
 
     // down
     if (_direction = 2) {
+      let new_head_y = new_head_y + _speed;
+
       do _head.move_y(_speed);
     }
 
     // left
     if (_direction = 3) {
-      do _head.move_x((-1) * _speed);
+      let new_head_x = new_head_x - _speed;
     }
 
     // right
     if (_direction = 4) {
-      do _head.move_x(_speed);
+      let new_head_x = new_head_x + _speed;
     }
 
+    let new_head = Point.new(new_head_x, new_head_y);
+
+    do new_head.setNext(_head);
+    do _head.setPrev(new_head);
+    let _head = new_head;
+
+    let new_tail = _tail.prev();
+    //    do _tail.dispose();
+    let _tail = new_tail;
+    do new_tail.setNext(null);
+   
+    do _head.debug();
+
+    do draw();
+        
+    do check_edges();
+
+    do Sys.wait(30);
+
+    return;
+  }
+
+  method void check_edges() {
     if (_head.get_y() < 1) {
       let _alive = false;
     }
@@ -80,23 +119,35 @@ class Snake {
       let _alive = false;
     }
 
-    do draw();
-        
-    do Sys.wait(5);
-
     return;
-  }
+  } 
 
   method void erase() { 
+    var Point seg;
+
     do Screen.setColor(false); // white
-    do _head.draw(_segment_size);
+
+    let seg = _head;
+
+    while (~(seg = null)) { 
+      do seg.draw(_segment_size);
+      let seg = seg.next();
+    }
 
     return;
   }
 
   method void draw() { 
+    var Point seg;
+
     do Screen.setColor(true); // black
-    do _head.draw(_segment_size);
+
+    let seg = _head;
+
+    while (~(seg = null)) { 
+      do seg.draw(_segment_size);
+      let seg = seg.next();
+    }
 
     return;
   }

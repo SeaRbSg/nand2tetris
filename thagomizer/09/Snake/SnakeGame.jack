@@ -2,11 +2,15 @@ class SnakeGame {
 
   field Snake snake;
 
-  constructor SnakeGame new() {
-    var Point head;
-    let head = Point.new(256, 128);
-    let snake = Snake.new(head);
+  static String lose_msg;
 
+  function void init() {
+    let lose_msg = "You Lose :-(";
+    return;
+  }
+
+  constructor SnakeGame new() {
+    let snake = Snake.new();
     return this;
   }
 
@@ -49,7 +53,7 @@ class SnakeGame {
       if (dead_snake) {
         let exit = true;
         do Output.moveCursor(10, 10);
-        do Output.printString("You Lose :-(");
+        do Output.printString(lose_msg);
       }
     }
 

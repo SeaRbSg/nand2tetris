@@ -1,0 +1,109 @@
+class Point { 
+  field int _x, _y;
+  field Point _next;
+  field Point _prev;
+
+  constructor Point new(int x, int y) {
+    let _x = x;
+    let _y = y;
+    let _next = null;
+    let _prev = null;
+    return this;
+  }
+
+  method void dispose() { 
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method Point next() { 
+    return _next;
+  }
+
+  method void setNext(Point next) {
+    let _next = next;
+    return; 
+  }
+
+  method Point prev() { 
+    return _next;
+  }
+
+  method void setPrev(Point prev) {
+    let _prev = prev;
+    return;
+  }
+
+
+  method int get_x() {
+    return _x;
+  }
+
+  method void set_x(int x) {
+    let _x = x;
+    return;
+  }
+
+  method void move_x(int dx) {
+    let _x = _x + dx;
+    return;
+  }
+
+  method int get_y() {
+    return _y;
+  }
+
+  method void set_y(int y) {
+    let _y = y;
+    return;
+  }
+
+  method void move_y(int dy) {
+    let _y = _y + dy;
+    return;
+  }
+
+  method void get_x_y(int x, int y) {
+    let x = _x;
+    let y = _y;
+    return;
+  }
+
+  method void set_x_y(int x, int y) {
+    let _x = x;
+    let _y = y;
+    return;
+  }
+
+  method void move_x_y(int dx, int dy) { 
+    do move_x(dx);
+    do move_y(dy);
+
+    return;
+  }
+
+  method void draw(int size) {
+    do Screen.drawRectangle(_x, _y, _x + size, _y + size);
+    return;
+  }
+
+  method void debug()  {
+    var String s1;
+    var String s2;
+    
+    let s1 = "x = ";
+    let s2 = ", y = ";
+
+    do Output.moveCursor(1, 0);
+    do Output.printString(s1);
+    do Output.printInt(_x);
+    do Output.printString(s2);
+    do Output.printInt(_y);
+
+    do s1.dispose();
+    do s2.dispose();
+
+    return;
+  }
+
+}

@@ -6,6 +6,7 @@ class Main {
     var SnakeGame game;
 
     do Snake.init();
+    do SnakeGame.init();
 
     let game = SnakeGame.new();
     do game.run();
