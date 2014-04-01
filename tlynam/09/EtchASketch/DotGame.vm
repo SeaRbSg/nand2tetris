@@ -148,8 +148,6 @@ eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-call Screen.clearScreen 0
-pop temp 0
 label IF_FALSE0
 push this 1
 push constant 1

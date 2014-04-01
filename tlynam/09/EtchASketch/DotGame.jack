@@ -81,11 +81,9 @@ class DotGame {
         return;
   }
 
-    /** Moves the dot by 2 pixels in the current direction. */
+    /** Moves the dot by 2 pixels in the current direction and clears screen if direction = 0. */
     method void moveDot() {
-        if (direction = 0) {
-            do Screen.clearScreen();
-        }    
+        if (direction = 0) {}    
         if (direction = 1) {
             do dot.moveUp();
         }
