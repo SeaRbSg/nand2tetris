@@ -1,0 +1,60 @@
+class Box {
+  field int power;
+  field int x0;
+  field int y0;
+  field int text_x;
+  field int text_y;
+
+  constructor Box new(int x, int y, int txt_x, int txt_y) {
+    let x0 = x;
+    let y0 = y;
+    let text_x = txt_x;
+    let text_y = txt_y;
+    let power = 0;
+    return this;
+  }
+
+  method void draw() {
+    var int x1, y1;
+
+    /*
+    do Output.printString("draw()");
+    do Output.printInt(x0);
+    do Output.printInt(y0);
+    do Output.printInt(text_x);
+    do Output.printInt(text_y);
+    do Output.println();
+    */
+
+    let x1 = x0 + 50;
+    let y1 = y0 + 50;
+
+    do Screen.drawLine(x0, y0, x1, y0);
+    do Screen.drawLine(x0, y0, x0, y1);
+    do Screen.drawLine(x1, y0, x1, y1);
+    do Screen.drawLine(x0, y1, x1, y1);
+
+    do Output.moveCursor(text_x, text_y);
+    do Output.printInt(value());
+
+    return;
+  }
+
+  method int value() {
+    var int val, i;
+
+    let i = 1;
+    let val = 2;
+    while (i < power) {
+      let val = Math.multiply(val, 2);
+      let i = i + 1;
+    }
+
+    return val;
+  }
+
+  method void setPower(int p) {
+    let power = p;
+    return;
+  }
+}

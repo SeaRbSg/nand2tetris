@@ -1,0 +1,75 @@
+class Game {
+  field Array board;
+  field int size;
+  field Array text_x;
+  field Array text_y;
+  
+  constructor Game new() {
+    var Array row;
+    var int i, j, x, y;
+    var Box b;
+
+    let size = 4;
+    let board = Array.new(size);
+
+    let text_x = Array.new(size);
+    let text_x[0] = 3;
+    let text_x[1] = 8;
+    let text_x[2] = 14;
+    let text_x[3] = 19;
+
+    let text_y = Array.new(size);
+    let text_y[0] = 3;
+    let text_y[1] = 10;
+    let text_y[2] = 17;
+    let text_y[3] = 25;
+
+    let i = 0;
+    while (i < size) {
+      let row = Array.new(size);
+      let y = (10 * (i+1)) + (i * 50);
+
+      let j = 0;
+      while (j < size) {
+        let x = (10 * (j+1)) + (j * 50);
+        let b = Box.new(x, y, text_x[i], text_y[j]);
+        do b.setPower(11);
+        let row[j] = b;
+
+        let j = j + 1;
+      }
+
+      let board[i] = row;
+      let i = i + 1;
+    }
+
+    return this;
+  }
+
+  method void start() {
+    do draw();
+    return;
+  }
+
+  method void draw() {
+    var Array row;
+    var int i, j;
+    var Box b;
+
+    let i = 0;
+    while (i < size) {
+      let j = 0;
+      while (j < size) {
+        let row = board[i];
+        let b = row[j];
+        do b.draw();
+
+        let j = j + 1;
+      }
+
+      let i = i + 1;
+    }
+
+    return;
+  }
+}
