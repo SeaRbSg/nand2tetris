@@ -1,13 +1,11 @@
 class SnakeGame {
 
-  // The snake
   field Snake snake;
 
-  // TODO: Other stuff
-
-
   constructor SnakeGame new() {
-    let snake = Snake.new(256, 128);
+    var Point head;
+    let head = Point.new(256, 128);
+    let snake = Snake.new(head);
 
     return this;
   }
@@ -28,8 +26,6 @@ class SnakeGame {
 
     while (~exit) {
       let key = Keyboard.keyPressed();
-
-      // Key processing loop
 
       if (key = 81) {
         let exit = true;

@@ -5,6 +5,8 @@ class Main {
   function void main() {
     var SnakeGame game;
 
+    do Snake.init();
+
     let game = SnakeGame.new();
     do game.run();
     do game.dispose();

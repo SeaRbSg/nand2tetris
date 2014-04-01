@@ -2,7 +2,9 @@
 * DONE Make snake die when it hits walls
 * TODO Make snake grow
 * TODO Make snake grow when it eats food
+* TODO Refactor to be not dumb
 * TODO Fix flickering
-
+  - Don't erase if I'm not moving
+  - Only erase the trailing edge not the whole rect
 
 
