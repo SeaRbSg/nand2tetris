@@ -22,7 +22,6 @@ class Snake {
 
   // Constructor & Dispose
   constructor Snake new() {
-    var Point head;
     let _head = Point.new(256, 128);
     let _tail = Point.new(246, 128);
 
@@ -49,49 +48,11 @@ class Snake {
   }
 
   method void update() {
-    var int new_head_x;
-    var int new_head_y;
-    var Point new_head;
-    var Point new_tail;
-    var Point t;
+    do erase();
 
-    if (_direction) {
-      do erase();
-    }
+    do grow();
 
-    let new_head_x = _head.get_x();
-    let new_head_y = _head.get_y();
-
-    // up
-    if (_direction = 1) {
-      let new_head_y = new_head_y - _speed;
-    }
-
-    // down
-    if (_direction = 2) {
-      let new_head_y = new_head_y + _speed;
-    }
-
-    // left
-    if (_direction = 3) {
-      let new_head_x = new_head_x - _speed;
-    }
-
-    // right
-    if (_direction = 4) {
-      let new_head_x = new_head_x + _speed;
-    }
-
-    // Add an element to the start of the linked list
-    let new_head = Point.new(new_head_x, new_head_y);
-    do new_head.setNext(_head);
-    do _head.setPrev(new_head);
-    let _head = new_head;
-
-    // Remove an element from the tail of the list
-    let new_tail = _tail.prev();
-    do new_tail.setNext(null);
-    let _tail = new_tail;
+    do remove_tail();
 
     do draw();
         
@@ -130,6 +91,54 @@ class Snake {
       do seg.draw(_segment_size);
       let seg = seg.next();
     }
+
+    return;
+  }
+
+  method void grow() { 
+    var int new_head_x;
+    var int new_head_y;
+    var Point new_head;
+
+    let new_head_x = _head.get_x();
+    let new_head_y = _head.get_y();
+
+    // up
+    if (_direction = 1) {
+      let new_head_y = new_head_y - _speed;
+    }
+
+    // down
+    if (_direction = 2) {
+      let new_head_y = new_head_y + _speed;
+    }
+
+    // left
+    if (_direction = 3) {
+      let new_head_x = new_head_x - _speed;
+    }
+
+    // right
+    if (_direction = 4) {
+      let new_head_x = new_head_x + _speed;
+    }
+
+    // Add an element to the start of the linked list
+    let new_head = Point.new(new_head_x, new_head_y);
+    do new_head.setNext(_head);
+    do _head.setPrev(new_head);
+    let _head = new_head;
+
+    return;
+  }
+
+  method void remove_tail() {
+    var Point new_tail;
+
+    // Remove an element from the tail of the list
+    let new_tail = _tail.prev();
+    do new_tail.setNext(null);
+    let _tail = new_tail;
 
     return;
   }
