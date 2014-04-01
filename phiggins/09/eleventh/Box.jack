@@ -1,13 +1,12 @@
 class Box {
   field int power;
-  field int x0;
-  field int y0;
-  field int text_x;
-  field int text_y;
+  field int x0, x1, y0, y1, text_x, text_y;
 
   constructor Box new(int x, int y, int txt_x, int txt_y) {
     let x0 = x;
     let y0 = y;
+    let x1 = x0 + 50;
+    let y1 = y0 + 50;
     let text_x = txt_x;
     let text_y = txt_y;
     let power = 0;
@@ -15,8 +14,6 @@ class Box {
   }
 
   method void draw() {
-    var int x1, y1;
-
     /*
     do Output.printString("draw()");
     do Output.printInt(x0);
@@ -26,21 +23,18 @@ class Box {
     do Output.println();
     */
 
-    let x1 = x0 + 50;
-    let y1 = y0 + 50;
-
     do Screen.drawLine(x0, y0, x1, y0);
     do Screen.drawLine(x0, y0, x0, y1);
     do Screen.drawLine(x1, y0, x1, y1);
     do Screen.drawLine(x0, y1, x1, y1);
 
     do Output.moveCursor(text_x, text_y);
-    do Output.printInt(value());
+    do Output.printInt(pow());
 
     return;
   }
 
-  method int value() {
+  method int pow() {
     var int val, i;
 
     let i = 1;

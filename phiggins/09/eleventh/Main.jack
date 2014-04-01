@@ -1,9 +1,31 @@
 class Main {
+  static int debug_row;
+
   function void main() {
     var Game game;
+    let debug_row = 0;
     let game = Game.new();
     do game.start();
 
+    return;
+  }
+
+  function void debug(String msg) {
+    var String blank;
+    let blank = "                    ";
+    do Output.moveCursor(debug_row, 35);
+    do Output.printString(blank);
+    do blank.dispose();
+
+    do Output.moveCursor(debug_row, 35);
+    do Output.printString(msg);
+
+    let debug_row = debug_row + 1;
+    if (debug_row > 20) {
+      let debug_row = 0;
+    }
+
+    do msg.dispose(); // Thx Ryan!
     return;
   }
 }

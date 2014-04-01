@@ -46,11 +46,6 @@ class Game {
     return this;
   }
 
-  method void start() {
-    do draw();
-    return;
-  }
-
   method void draw() {
     var Array row;
     var int i, j;
@@ -70,6 +65,81 @@ class Game {
       let i = i + 1;
     }
 
+    return;
+  }
+
+  method boolean lost() {
+    return false;
+  }
+
+  method boolean won() {
+    return false;
+  }
+
+  method boolean incomplete() {
+    var boolean t;
+    let t = (~lost()) & (~won());
+    //let t = false;
+
+    return t;
+  }
+
+  method void moveLeft() {
+    do Main.debug("Left");
+    return;
+  }
+
+  method void moveUp() {
+    do Main.debug("Up");
+    return;
+  }
+
+  method void moveRight() {
+    do Main.debug("Right");
+    return;
+  }
+
+  method void moveDown() {
+    do Main.debug("Down");
+    return;
+  }
+
+  method void move() {
+    var char key;
+
+    let key = 0;
+
+    while (~key) {
+      let key = Keyboard.keyPressed();
+
+      if (key = 130) {
+        do moveLeft();
+      }
+      if (key = 131) {
+        do moveUp();
+      }
+      if (key = 132) {
+        do moveRight();
+      }
+      if (key = 133) {
+        do moveDown();
+      }
+
+      if (key < 130 | key > 133) {
+        let key = 0;
+      }
+    }
+
+    return;
+  }
+
+  method void start() {
+    while(incomplete()) {
+      do Main.debug("Press an arrow key.");
+      do draw();
+      do move();
+    }
+    do Main.debug("Game over");
     return;
   }
 }
