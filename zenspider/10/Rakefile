@@ -13,7 +13,7 @@ task :lexer_test do
      Square/Square.jack
   ].each do |input|
     expected = input.sub(/\.jack$/, "T.xml")
-    sh "racket jack.rkt #{input} | ./normalize.rb > wtf.xml"
+    sh "racket jack-lexer.rkt #{input} | ./normalize.rb > wtf.xml"
     sh "cd ..; rake diff F='#{d}/wtf.xml' F2='#{d}/#{expected}'"
   end
 
