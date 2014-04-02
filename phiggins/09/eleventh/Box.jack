@@ -29,8 +29,8 @@ class Box {
     do Screen.drawLine(x0, y1, x1, y1);
 
     do Output.moveCursor(text_x, text_y);
-    do Output.printInt(pow());
-
+    //do Output.printInt(pow());
+    do Output.printInt(power);
     return;
   }
 
@@ -50,5 +50,9 @@ class Box {
   method void setPower(int p) {
     let power = p;
     return;
+  }
+
+  method int getPower() {
+    return power;
   }
 }
