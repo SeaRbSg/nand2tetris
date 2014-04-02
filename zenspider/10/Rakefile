@@ -1,0 +1,10 @@
+task :default => :go
+
+task :go do
+  d = "zenspider/10"
+
+  sh "racket jack.rkt ArrayTest/Main.jack | ./normalize.rb > wtf.xml"
+  sh "cd ..; rake diff F='#{d}/wtf.xml' F2='#{d}/ArrayTest/MainT.xml'"
+
+  rm_f "wtf.xml"
+end

@@ -55,5 +55,8 @@
   (cons 'tokens
         (jack-parser (lambda () (jack-lexer ip)))))
 
-(define array-test (jack (open-input-file "ArrayTest/Main.jack")))
-(display-xml/content (xexpr->xml array-test))
+(module+ main
+  (for ([path (current-command-line-arguments)])
+    (define xexpr (jack (open-input-file path)))
+    (display-xml/content (xexpr->xml xexpr)))
+  (newline))
