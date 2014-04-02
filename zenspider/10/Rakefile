@@ -1,10 +1,21 @@
-task :default => :go
+task :default => :lexer_test
 
-task :go do
+task :lexer_test do
   d = "zenspider/10"
 
-  sh "racket jack.rkt ArrayTest/Main.jack | ./normalize.rb > wtf.xml"
-  sh "cd ..; rake diff F='#{d}/wtf.xml' F2='#{d}/ArrayTest/MainT.xml'"
+  %w[
+     ArrayTest/Main.jack
+     ExpressionlessSquare/Main.jack
+     ExpressionlessSquare/SquareGame.jack
+     ExpressionlessSquare/Square.jack
+     Square/Main.jack
+     Square/SquareGame.jack
+     Square/Square.jack
+  ].each do |input|
+    expected = input.sub(/\.jack$/, "T.xml")
+    sh "racket jack.rkt #{input} | ./normalize.rb > wtf.xml"
+    sh "cd ..; rake diff F='#{d}/wtf.xml' F2='#{d}/#{expected}'"
+  end
 
   rm_f "wtf.xml"
 end
