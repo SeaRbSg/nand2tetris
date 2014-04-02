@@ -33,8 +33,9 @@ else
 end
 
 def run cmd
-  f = File.expand_path ENV["F"] if ENV["F"]
-  sh "./tools/#{cmd}.sh #{f}"
+  f1 = File.expand_path ENV["F"] if ENV["F"]
+  f2 = File.expand_path ENV["F2"] if ENV["F2"]
+  sh "./tools/#{cmd}.sh #{f1} #{f2}"
 end
 
 desc "Run the hardware simulator; Opt: use F=<username/.../f.tst> to run a test"
@@ -60,4 +61,9 @@ end
 desc "Run the Jack compiler; Opt: use F=<username/.../f.jack> to compile."
 task :jack do
   run "JackCompiler"
+end
+
+desc "Run the Jack compiler; Opt: use F=<username/.../f.jack> to diff."
+task :diff do
+  run "TextComparer"
 end
