@@ -1,6 +1,7 @@
 class SnakeGame {
 
   field Snake snake;
+  field Array food;
 
   static String lose_msg;
 

@@ -129,6 +129,8 @@ class Snake {
     do _head.setPrev(new_head);
     let _head = new_head;
 
+    let _current_length = _current_length + 1;
+
     return;
   }
 
@@ -139,6 +141,8 @@ class Snake {
     let new_tail = _tail.prev();
     do new_tail.setNext(null);
     let _tail = new_tail;
+
+    let _current_length = _current_length - 1;
 
     return;
   }
