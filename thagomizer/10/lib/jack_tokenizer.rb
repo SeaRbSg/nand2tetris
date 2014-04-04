@@ -1,5 +1,5 @@
 require 'strscan'
-require 'pp'
+require 'nokogiri'
 
 Token = Struct.new(:type, :token)
 
@@ -10,14 +10,20 @@ class JackTokenizer
 
   INT_CONST      = /\d+/
 
-  STR_CONST      = /"^[\"\n]*"/
+  STR_CONST      = /"(.*?)"/
 
   IDENTIFIER     = /[a-zA-Z_]\w*/
 
   SINGLE_COMMENT = /\/\/.*$/
   MULTI_COMMENT = /\/\*.*?\*\//m
 
-  attr_accessor :input, :scanner, :tokens, :current_token
+  attr_accessor :scanner, :current_token
+  attr_reader :input
+
+  def initialize
+    @tokens = []
+  end
+
 
   def self.from_string(string)
     tokenizer = JackTokenizer.new
@@ -27,7 +33,7 @@ class JackTokenizer
 
   def self.from_file(path)
     tokenizer = JackTokenizer.new
-    tokenizer.input = File.read p
+    tokenizer.input = File.read path
     tokenizer
   end
 
@@ -53,16 +59,17 @@ class JackTokenizer
       @current_token = Token.new(:keyword, @scanner.matched)
     when @scanner.scan(SYMBOLS)
       @current_token = Token.new(:symbol, @scanner.matched)
-    when @scanner.scan(INT_CONST)
-      @current_token = Token.new(:integer_constant, @scanner.matched)
     when @scanner.scan(STR_CONST)
-      @current_token = Token.new(:string_constant, @scanner.matched)
+      @current_token = Token.new(:string_constant,
+                                 @scanner.matched.gsub('"',''))
+    when @scanner.scan(INT_CONST)
+      @current_token = Token.new(:integer_constant, @scanner.matched.to_i)
     when @scanner.scan(IDENTIFIER)
-      @current_token = Token.new(:identifer, @scanner.matched)
-    when @scanner.scan(/\w|\n/)
+      @current_token = Token.new(:identifier, @scanner.matched)
+    when @scanner.scan(/\s/m)
       # no-op
     else
-      raise "NO SUCH TOKEN #{@scanner.peek(5)}"
+      raise "NO SUCH TOKEN #{@scanner.peek(30)}"
     end
 
 
