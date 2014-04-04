@@ -49,6 +49,8 @@ class JackTokenizer
   end
 
   def advance
+    return unless has_more_commands?
+
     @current_token = nil
 
     case
@@ -71,7 +73,6 @@ class JackTokenizer
     else
       raise "NO SUCH TOKEN #{@scanner.peek(30)}"
     end
-
 
     advance unless @current_token
   end
