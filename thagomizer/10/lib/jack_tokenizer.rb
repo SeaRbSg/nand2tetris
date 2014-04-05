@@ -1,5 +1,4 @@
 require 'strscan'
-require 'nokogiri'
 
 Token = Struct.new(:type, :token)
 
