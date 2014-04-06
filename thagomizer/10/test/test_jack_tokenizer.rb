@@ -26,7 +26,7 @@ class TestJackTokenizer < Minitest::Test
 
     @tokenizer.advance
 
-    assert_equal "class", @tokenizer.current_token.token
+    assert_equal "class", @tokenizer.current_token.value
   end
 
   def test_advance_with_comments
@@ -34,39 +34,39 @@ class TestJackTokenizer < Minitest::Test
 
     @tokenizer.advance
 
-    assert_equal "class", @tokenizer.current_token.token
+    assert_equal "class", @tokenizer.current_token.value
   end
 
   def test_detection_of_string_constants
     @tokenizer.input = 'Keyboard.readInt("HOW MANY NUMBERS? ");'
 
     @tokenizer.advance
-    assert_equal "Keyboard", @tokenizer.current_token.token
+    assert_equal "Keyboard", @tokenizer.current_token.value
     assert_equal :identifier, @tokenizer.current_token.type
 
     @tokenizer.advance
-    assert_equal ".", @tokenizer.current_token.token
+    assert_equal ".", @tokenizer.current_token.value
     assert_equal :symbol, @tokenizer.current_token.type
 
 
     @tokenizer.advance
-    assert_equal "readInt", @tokenizer.current_token.token
+    assert_equal "readInt", @tokenizer.current_token.value
     assert_equal :identifier, @tokenizer.current_token.type
 
     @tokenizer.advance
-    assert_equal "(", @tokenizer.current_token.token
+    assert_equal "(", @tokenizer.current_token.value
     assert_equal :symbol, @tokenizer.current_token.type
 
     @tokenizer.advance
-    assert_equal "HOW MANY NUMBERS? ", @tokenizer.current_token.token
+    assert_equal "HOW MANY NUMBERS? ", @tokenizer.current_token.value
     assert_equal :string_constant, @tokenizer.current_token.type
 
     @tokenizer.advance
-    assert_equal ")", @tokenizer.current_token.token
+    assert_equal ")", @tokenizer.current_token.value
     assert_equal :symbol, @tokenizer.current_token.type
 
     @tokenizer.advance
-    assert_equal ";", @tokenizer.current_token.token
+    assert_equal ";", @tokenizer.current_token.value
     assert_equal :symbol, @tokenizer.current_token.type
   end
 
