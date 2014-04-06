@@ -152,6 +152,45 @@ class TestCompilationEngine < Minitest::Test
     assert_equal expected, @ce.compile_term
   end
 
+  def test_compile_term_subroutine_call
+    @ce.tokens = [Token.new(:identifier, "Keyboard"),
+                  Token.new(:symbol, "."),
+                  Token.new(:identifier, "readInt"),
+                  Token.new(:symbol, "("),
+                  Token.new(:string_constant, "HOW MANY NUMBERS? "),
+                  Token.new(:symbol, ")"),]
+
+    expected = <<-eos
+<term>
+ <identifier>Keyboard</identifier>
+ <symbol>.</symbol>
+ <identifier>readInt</identifier>
+ <symbol>(</symbol>
+ <expressionList>
+  <expression>
+   <term>
+    <stringConstant>HOW MANY NUMBERS? </stringConstant>
+   </term>
+  </expression>
+ </expressionList>
+ <symbol>)</symbol>
+</term>
+    eos
+
+    assert_equal expected, @ce.compile_term
+  end
+
+  def test_subroutine_call?
+    @ce.tokens = [Token.new(:identifier, "Keyboard"),
+                  Token.new(:symbol, "."),
+                  Token.new(:identifier, "readInt"),
+                  Token.new(:symbol, "("),
+                  Token.new(:stringConstant, "HOW MANY NUMBERS? "),
+                  Token.new(:symbol, ")"),]
+
+    assert @ce.subroutine_call?
+  end
+
 
   def test_compile_expression_no_op
     @ce.tokens = [Token.new(:string_constant, "Ax"),]

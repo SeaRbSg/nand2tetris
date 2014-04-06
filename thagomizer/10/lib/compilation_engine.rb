@@ -26,6 +26,10 @@ class CompilationEngine
     end
   end
 
+  def output_next_token
+    output_token @tokens.shift
+  end
+
   def compile_var_dec
     @builder.varDec do
       begin
@@ -69,20 +73,22 @@ class CompilationEngine
     @builder.term do
       case
       when integer_constant? || string_constant? || keyword_constant?
-        output_token @tokens.shift
+        output_next_token
+      when subroutine_call?
+        compile_subroutine_call
       when var_name?
-        output_token @tokens.shift
+        output_next_token
         if !@tokens.empty? && peek_val == "["
-          output_token @tokens.shift
+          output_next_token
           compile_expression
-          output_token @tokens.shift
+          output_next_token
         end
       when peek_val == "("
-        output_token @tokens.shift
+        output_next_token
         compile_expression
-        output_token @tokens.shift
+        output_next_token
       when unary_op?
-        output_token @tokens.shift
+        output_next_token
         compile_term
       else
         raise "UNKNOWN TERM"
@@ -96,7 +102,7 @@ class CompilationEngine
       while term?
         compile_term
         if op?
-          output_token @tokens.shift
+          output_next_token
         else
           break # no symbol so no more of the while loop
         end
@@ -109,7 +115,7 @@ class CompilationEngine
       while term?
         compile_expression
         if peek_val == ","
-          output_token @tokens.shift
+          output_next_token
         else
           break # no comma so no more of the while loop
         end
@@ -119,32 +125,32 @@ class CompilationEngine
 
   def compile_subroutine_call
     return unless peek_type == :identifier
-    output_token @tokens.shift
+    output_next_token
     if peek_val == "."
-      output_token @tokens.shift
+      output_next_token
       raise "Invalid subroutine name" unless peek_type == :identifier
-      output_token @tokens.shift
+      output_next_token
     end
-    output_token @tokens.shift               # (
+    output_next_token               # (
     compile_expression_list
-    output_token @tokens.shift               # )
+    output_next_token               # )
   end
 
   def compile_return
     return unless peek_val == "return"
     @builder.returnStatement do
-      output_token @tokens.shift             # return
+      output_next_token             # return
       compile_expression
-      output_token @tokens.shift             # ;
+      output_next_token             # ;
     end
   end
 
   def compile_do
     return unless peek_val == "do"
     @builder.doStatement do
-      output_token @tokens.shift             # do
+      output_next_token             # do
       compile_subroutine_call
-      output_token @tokens.shift             # ;
+      output_next_token             # ;
     end
   end
 
@@ -152,47 +158,47 @@ class CompilationEngine
     return unless peek_val == "let"
 
     @builder.letStatement do
-      output_token @tokens.shift             # let
-      output_token @tokens.shift             # varName (identifier)
+      output_next_token             # let
+      output_next_token             # varName (identifier)
       if peek_val == "["
-        output_token @tokens.shift           # [
+        output_next_token           # [
         compile_expression
-        output_token @tokens.shift           # ]
+        output_next_token           # ]
       end
-      output_token @tokens.shift             # =
+      output_next_token             # =
       compile_expression
-      output_token @tokens.shift             # ;
+      output_next_token             # ;
     end
   end
 
   def compile_while
     return unless peek_val == "while"
     @builder.whileStatement do
-      output_token @tokens.shift             # while
-      output_token @tokens.shift             # (
+      output_next_token             # while
+      output_next_token             # (
       compile_expression
-      output_token @tokens.shift             # )
-      output_token @tokens.shift             # {
+      output_next_token             # )
+      output_next_token             # {
       compile_statements
-      output_token @tokens.shift             # }
+      output_next_token             # }
     end
   end
 
   def compile_if
     return unless peek_val == "if"
     @builder.ifStatement do
-      output_token @tokens.shift             # if
-      output_token @tokens.shift             # (
+      output_next_token             # if
+      output_next_token             # (
       compile_expression
-      output_token @tokens.shift             # )
-      output_token @tokens.shift             # {
+      output_next_token             # )
+      output_next_token             # {
       compile_statements
-      output_token @tokens.shift             # }
+      output_next_token             # }
       if peek_val == "else"
-        output_token @tokens.shift             # else
-        output_token @tokens.shift             # {
+        output_next_token             # else
+        output_next_token             # {
         compile_statements
-        output_token @tokens.shift             # }
+        output_next_token             # }
       end
     end
   end
@@ -221,10 +227,10 @@ class CompilationEngine
   def compile_parameter_list
     @builder.parameterList do
       while(type?) do
-        output_token @tokens.shift   # type
-        output_token @tokens.shift   # varName
+        output_next_token   # type
+        output_next_token   # varName
         if peek_val == ","   # ,
-          output_token @tokens.shift
+          output_next_token
         else
           break  # No, comma don't iterate
         end
@@ -236,22 +242,22 @@ class CompilationEngine
     raise "Not a subroutine starting token #{peek}" unless subroutine?
     @builder.subroutineDec do
       # constructor | function | method
-      output_token @tokens.shift
+      output_next_token
 
       # void | type
       raise "Not a valid return type #{peek}" unless return_type?
-      output_token @tokens.shift
+      output_next_token
 
       raise "Not a valid subroutine name #{peek}" unless subroutine_name?
-      output_token @tokens.shift
+      output_next_token
 
       raise "Expected (, got #{peek}" unless peek_val == "("
-      output_token @tokens.shift
+      output_next_token
 
       compile_parameter_list
 
       raise "Expected ), got #{peek}" unless peek_val == ")"
-      output_token @tokens.shift
+      output_next_token
 
       compile_subroutine_body
     end
@@ -260,27 +266,27 @@ class CompilationEngine
   def compile_subroutine_body
     raise "Expected {, got #{peek}" unless peek_val == "{"
     @builder.subroutineBody do
-      output_token @tokens.shift     # {
+      output_next_token     # {
 
       compile_var_decs
 
       compile_statements
 
       raise "Expected }, got #{peek}" unless peek_val == "}"
-      output_token @tokens.shift
+      output_next_token
     end
   end
 
   def compile_class
     raise "Expected class, got #{peek}" unless peek_val == "class"
     @builder.class do
-      output_token @tokens.shift    # class
+      output_next_token    # class
 
       raise "Expected className, got #{peek}" unless class_name?
-      output_token @tokens.shift    # className
+      output_next_token    # className
 
       raise "Expected {, got #{peek}" unless peek_val == "{"
-      output_token @tokens.shift    # {
+      output_next_token    # {
 
       compile_class_var_decs
 
@@ -289,7 +295,7 @@ class CompilationEngine
       end
 
       raise "Expected }, got #{peek}" unless peek_val == "}"
-      output_token @tokens.shift    # }
+      output_next_token    # }
     end
   end
 
@@ -341,6 +347,7 @@ class CompilationEngine
       string_constant? ||
       keyword_constant? ||
       var_name? ||
+      subroutine_call? ||
       peek_val == "(" ||
       unary_op?
   end
@@ -367,6 +374,13 @@ class CompilationEngine
     return false if @tokens.empty?
     return true if peek_type == :keyword && peek_val == "void"
     return true if type?
+  end
+
+  def subroutine_call?
+    return false unless subroutine_name?
+    second_token = @tokens[1]
+
+    return second_token.value == "." || second_token.value == "("
   end
 
   def peek_val
