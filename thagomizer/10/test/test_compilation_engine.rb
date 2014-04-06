@@ -663,6 +663,33 @@ class TestCompilationEngine < Minitest::Test
     assert_equal expected, @ce.compile_if
   end
 
+  def test_compile_parameter_list
+    @ce.tokens = [Token.new(:keyword, "int"),
+                  Token.new(:identifier, "Ax"),
+                  Token.new(:symbol, ","),
+                  Token.new(:keyword, "int"),
+                  Token.new(:identifier, "Ay"),
+                  Token.new(:symbol, ","),
+                  Token.new(:keyword, "int"),
+                  Token.new(:identifier, "Asize"),
+                  Token.new(:symbol, ")"),]
+
+    expected = <<-eos
+<parameterList>
+ <keyword>int</keyword>
+ <identifier>Ax</identifier>
+ <symbol>,</symbol>
+ <keyword>int</keyword>
+ <identifier>Ay</identifier>
+ <symbol>,</symbol>
+ <keyword>int</keyword>
+ <identifier>Asize</identifier>
+</parameterList>
+    eos
+
+    assert_equal expected, @ce.compile_parameter_list
+  end
+
   def test_keyword_constant?
     @ce.tokens = [Token.new(:keyword, "true")]
     assert @ce.keyword_constant?
@@ -743,18 +770,65 @@ class TestCompilationEngine < Minitest::Test
     assert @ce.statement?
 
     @ce.tokens = [Token.new(:symbol, "~")]
-    refute @ce.op?
+    refute @ce.statement?
 
     @ce.tokens = [Token.new(:keyword, "class")]
-    refute @ce.op?
+    refute @ce.statement?
 
     @ce.tokens = []
-    refute @ce.op?
+    refute @ce.statement?
+  end
+
+  def test_type?
+    @ce.tokens = [Token.new(:keyword, "int")]
+    assert @ce.type?
+
+    @ce.tokens = [Token.new(:keyword, "char")]
+    assert @ce.type?
+
+    @ce.tokens = [Token.new(:keyword, "boolean")]
+    assert @ce.type?
+
+    @ce.tokens = [Token.new(:identifier, "Square")]
+    assert @ce.type?
+
+    @ce.tokens = [Token.new(:keyword, "return")]
+    refute @ce.type?
+
+    @ce.tokens = [Token.new(:symbol, "~")]
+    refute @ce.type?
+
+    @ce.tokens = [Token.new(:keyword, "class")]
+    refute @ce.type?
+
+    @ce.tokens = []
+    refute @ce.type?
+  end
+
+  def test_subroutine?
+    @ce.tokens = [Token.new(:keyword, "constructor")]
+    assert @ce.subroutine?
+
+    @ce.tokens = [Token.new(:keyword, "function")]
+    assert @ce.subroutine?
+
+    @ce.tokens = [Token.new(:keyword, "method")]
+    assert @ce.subroutine?
+
+    @ce.tokens = [Token.new(:keyword, "return")]
+    refute @ce.subroutine?
+
+    @ce.tokens = [Token.new(:symbol, "~")]
+    refute @ce.subroutine?
+
+    @ce.tokens = [Token.new(:keyword, "class")]
+    refute @ce.subroutine?
+
+    @ce.tokens = []
+    refute @ce.subroutine?
   end
 
   # compile_class
   # compile_subroutine
-  # compile_parameter_list
-
 
 end
