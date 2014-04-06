@@ -14,23 +14,14 @@ class Box {
   }
 
   method void draw() {
-    /*
-    do Output.printString("draw()");
-    do Output.printInt(x0);
-    do Output.printInt(y0);
-    do Output.printInt(text_x);
-    do Output.printInt(text_y);
-    do Output.println();
-    */
-
     do Screen.drawLine(x0, y0, x1, y0);
     do Screen.drawLine(x0, y0, x0, y1);
     do Screen.drawLine(x1, y0, x1, y1);
     do Screen.drawLine(x0, y1, x1, y1);
 
     do Output.moveCursor(text_x, text_y);
-    //do Output.printInt(pow());
-    do Output.printInt(power);
+    do Output.printInt(pow());
+    //do Output.printInt(power);
     return;
   }
 
@@ -54,5 +45,31 @@ class Box {
 
   method int getPower() {
     return power;
+  }
+
+  method boolean isEmpty() {
+    return (power = 0);
+  }
+
+  method void swapWith(Box other) {
+    var int temp;
+    do Main.debug("swapWith");
+    let temp = power;
+    let power = other.getPower();
+    do other.setPower(temp);
+    return;
+  }
+
+  method void combineWith(Box other) {
+    do Main.debug("combineWith");
+    if (power = other.getPower()) {
+      let power = power * 2;
+      do other.setPower(0);
+    }
+
+    do Output.printInt(power);
+    do Output.printInt(other.getPower());
+
+    return;
   }
 }

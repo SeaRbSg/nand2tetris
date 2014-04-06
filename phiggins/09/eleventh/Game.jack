@@ -3,7 +3,7 @@ class Game {
   field int size;
   field Array text_x;
   field Array text_y;
-  
+
   constructor Game new() {
     var Array row;
     var int i, j, x, y;
@@ -33,7 +33,8 @@ class Game {
       while (j < size) {
         let x = (10 * (j+1)) + (j * 50);
         let b = Box.new(x, y, text_x[i], text_y[j]);
-        do b.setPower((i*4) + j);
+        //do b.setPower((i*4) + j);
+        do b.setPower(1);
         let row[j] = b;
 
         let j = j + 1;
@@ -77,34 +78,29 @@ class Game {
   }
 
   method void moveLeft() {
-    var Array row;
+    var Array r, temp;
     var int i, j;
-    var Box b, next;
+    var Box b;
+    var Row row;
 
     do Main.debug("Left");
+
+    let r = Array.new(size);
 
     let j = 0;
     while (j < size) {
       let i = 0;
       while (i < size) {
-        /*
-        do Output.printInt(i);
-        do Output.printString(",");
-        do Output.printInt(j);
-        do Output.println();
-        */
+        let temp = board[i];
+        let b = temp[j];
 
-        let row = board[i];
-        let b = row[j];
-
-        do Output.printInt(b.getPower());
-        /*
-        let row = board[i+1];
-        let next = row[j];
-        */
+        let r[i] = b;
 
         let i = i + 1;
       }
+
+      let row = Row.new(r, size);
+      do row.combine();
 
       let j = j + 1;
     }
@@ -123,13 +119,6 @@ class Game {
     while (i < size) {
       let j = 0;
       while (j < size) {
-        /*
-        do Output.printInt(i);
-        do Output.printString(",");
-        do Output.printInt(j);
-        do Output.println();
-        */
-
         let row = board[i];
         let b = row[j];
 
@@ -226,7 +215,7 @@ class Game {
     let key = 0;
 
     while (~key) {
-      let key = Keyboard.keyPressed();
+      let key = Keyboard.readChar();
 
       if (key = 130) {
         do moveLeft();
@@ -241,7 +230,7 @@ class Game {
         do moveDown();
       }
 
-      if (key < 130 | key > 133) {
+      if (key & (key < 130 | key > 133)) {
         let key = 0;
       }
     }
@@ -250,8 +239,8 @@ class Game {
   }
 
   method void start() {
+    do Main.debug("Press an arrow key to start.");
     while(true) {
-      do Main.debug("Press an arrow key.");
       do draw();
       do move();
 

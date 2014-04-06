@@ -12,7 +12,7 @@ class Main {
 
   function void debug(String msg) {
     var String blank;
-    let blank = "                    ";
+    let blank = "                         ";
     do Output.moveCursor(debug_row, 35);
     do Output.printString(blank);
     do blank.dispose();

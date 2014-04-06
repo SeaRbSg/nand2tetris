@@ -1,0 +1,66 @@
+class Row {
+  field Array row;
+  field int size;
+
+  constructor Row new(Array blocks, int _size) {
+    let row = blocks;
+    let size = _size;
+    return this;
+  }
+
+  method void combine() {
+    var Box current, next;
+    var int i;
+
+    do consolidate();
+
+    let i = 0;
+    while (i < (size - 1)) {
+      do Main.debug("i");
+      do Output.printInt(i);
+      let current = row[i];
+      let next = row[i+1];
+
+      do current.combineWith(next);
+      do consolidate();
+
+      let i = i + 1;
+    }
+
+    return;
+  }
+
+  method void consolidate() {
+    var Box current, prev;
+    var int i, j;
+
+    do Main.debug("consolidate()");
+
+    // Insertion sort on !isEmpty() vs isEmpty to move empty Boxes to end.
+    let i = 1;
+    while (i < size) {
+      /*
+      do Main.debug("i");
+      do Output.printInt(i);
+      */
+      let j = i;
+      let current = row[j];
+      let prev = row[j-1];
+
+      while (j > 0 & ~prev.isEmpty() & current.isEmpty()) {
+        /*
+        do Main.debug("j");
+        do Output.printInt(j);
+        */
+        do current.swapWith(prev);
+        let j = j - 1;
+        let current = row[j];
+        let prev = row[j-1];
+      }
+
+      let i = i + 1;
+    }
+
+    return;
+  }
+}
