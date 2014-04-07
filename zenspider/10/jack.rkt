@@ -90,12 +90,11 @@
     ;;; Program Structure:
 
     (classE [(CLASS className LBRACE classVarDec* subroutineDec* RBRACE)
-             (list 'class
-                   (list 'keyword "class")
-                   $2
-                   (list 'symbol "{")
-                   $5
-                   (list 'symbol "}"))])
+             (append (list 'class
+                           (list 'keyword "class")
+                           (list 'classVarDec $2)
+                           (list 'symbol "{"))
+                     $5)])
 
     (classVarDec [(cvarScope type varNames SEMI) (list 'classVarDec $1 $2 $3)])
 
@@ -108,21 +107,22 @@
                           $1
                           $2
                           $3
-                          'lparen
+                          (sym "(")
                           $5
-                          'rparen
+                          (sym ")")
                           $7)])
 
     (parameterList [(parameter COMMA parameterList) (cons $1 $3)]
                    [(parameter) (list $1)])
 
     (subroutineBody [(LBRACE varDec* statement* RBRACE)
-                     (list 'lbrace
-                           $2
-                           $3
-                           'rbrace)])
+                     (append (list 'subroutineBody)
+                             (sym-l "{")
+                             $2
+                             $3
+                             (sym-l "}"))])
 
-    (varDec [(VAR type varNames SEMI) (list 'varDec $2 $3)])
+    (varDec [(VAR type varNames SEMI) (append (list 'varDec $2) $3)])
 
     (className [(ID) (list 'identifier $1)])
 
@@ -149,7 +149,7 @@
                   (list 'ifStatement $3 $6 $10)])
 
     (whileStatement [(WHILE LPAREN expression RPAREN LBRACE statement* RBRACE)
-                     (list 'whileStatement $3 $6)])
+                     (append (list 'whileStatement) (list $3) $6)])
 
     (doStatement [(DO subroutineCall SEMI) (list 'doStatement $2)])
 
@@ -157,21 +157,23 @@
 
     ;;; Expressions:
 
-    (expression [(term*) $1])
+    (expression [(term*) (list 'expression (append (list 'term) $1))])
 
     (term [(NUM) $1]
           [(STR) $1]
           [(keywordConstant) $1]
-          [(varName) $1]
-          [(varName LBRACK expression RBRACK) (list $1 $3)]
+          [(varName) (list 'term $1)]
+          [(varName LBRACK expression RBRACK) (list 'term $1 (sym "[") $3 (sym "]"))]
           [(subroutineCall) $1]
           [(LPAREN expression RPAREN) $2]
           [(unaryOp term) (list $1 $2)])
 
-    (subroutineCall [(subroutineName LPAREN expression* RPAREN) (cons $1 $3)]
-                    [(classOrVar DOT subroutineName LPAREN expression* RPAREN) (list $1 $3 $5)])
+    (subroutineCall [(               subroutineName LPAREN expression* RPAREN)
+                     (append (list 'subroutineCall) (list $1) $3)]
+                    [(classOrVar DOT subroutineName LPAREN expression* RPAREN)
+                     (append (list 'subroutineCall2) (list $1) (list $3) $5)])
 
-    (op [(PLUS) '+] [(MINUS) '-] [(TIMES) '*] [(DIVIDE) '/] [(AND) '&] [(OR) '\|] [(LT) '<] [(GT) '>] [(EQ) '=])
+    (op [(PLUS) "+"] [(MINUS) "-"] [(TIMES) "*"] [(DIVIDE) "/"] [(AND) "&"] [(OR) "|"] [(LT) "<"] [(GT) ">"] [(EQ) "="])
 
     (unaryOp [(MINUS) '-] [(NOT) '~])
 
@@ -189,14 +191,14 @@
     (term* [(term+) $1]
            [() '()])
 
-    (term+ [(term op term*) (list $1 $2 $3)]
+    (term+ [(term op term*) (cons $1 (cons $2 $3))]
            [(term) (list $1)])
 
     (classVarDec* [(classVarDec classVarDec*) (cons $1 $2)]
                   [() '()])
 
     (optParameterList [(parameterList) $1]
-                      [() '()])
+                      [() '(parameterList)])
 
     (statement* [(statement statement*) (cons $1 $2)]
                 [() '()])
@@ -229,6 +231,9 @@
 
     (keywordConstant [(CLASS) "class"] [(CONSTRUCTOR) "constructor"] [(FUNCTION) "function"] [(METHOD) "method"] [(FIELD) "field"] [(STATIC) "static"] [(VAR) "var"] [(INT) "int"] [(CHAR) "char"] [(BOOLEAN) "boolean"] [(VOID) "void"] [(TRUE) "true"] [(FALSE) "false"] [(NULL) "null"] [(THIS) "this"] [(LET) "let"] [(DO) "do"] [(IF) "if"] [(ELSE) "else"] [(WHILE) "while"] [(RETURN) "return"]))))
 
+(define (sym s)   (list 'symbol s))
+(define (sym-l s) (list (sym s)))
+
 (define (jack ip)
   (port-count-lines! ip)
   (jack-parser (lambda () (jack-lexer ip))))
@@ -236,7 +241,7 @@
 (module+ main
   (for ([path (current-command-line-arguments)])
     (define xexpr (jack (open-input-file path)))
+    (pretty-print xexpr (current-error-port))
     (display-xml/content (xexpr->xml xexpr))
-    ;; (pretty-print xexpr)
     )
   (newline))
