@@ -136,7 +136,7 @@ if $0 == __FILE__
   puts [
     "<tokens>",
     Tokenizer.tokenize(File.read(input)).map {|type, token|
-      "  <%{type}> %{token} </%{type}>" % { type: type, token: token }
+      "<%{type}> %{token} </%{type}>" % { type: type, token: token }
     },
     "</tokens>",
   ].join("\n")
