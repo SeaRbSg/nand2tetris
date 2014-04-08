@@ -33,9 +33,10 @@ task :parser_test do
      Square/Square.jack
   ].each do |input|
     expected = input.sub(/\.jack$/, ".xml")
-    sh "racket jack.rkt #{input} | ./normalize.rb > wtf.xml"
-    sh "cd ..; rake diff F='#{d}/wtf.xml' F2='#{d}/#{expected}'"
+    sh %[racket normalize.rkt #{expected} | tr -d '"' > exp.xml]
+    sh %[racket jack.rkt #{input} | racket normalize.rkt - | tr -d '"' > wtf.xml]
+    sh "diff -bu exp.xml wtf.xml"
   end
 
-  rm_f "wtf.xml"
+  rm_f "wtf.xml", "exp.xml"
 end
