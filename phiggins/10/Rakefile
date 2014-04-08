@@ -1,0 +1,36 @@
+def filename(f) f + "/" + f.split("/").last end
+
+tests = %w[
+  ExpressionlessSquare
+]
+
+tests.each do |t|
+  token_xml_dir = File.join(t, "tokenized")
+  jack_files = Dir[File.join(t, "*.jack")]
+  token_xml_files = jack_files.map do |f|
+    File.join(token_xml_dir, File.basename(f, ".jack")) + ".xml"
+  end
+
+  directory token_xml_dir
+
+  jack_files.zip(token_xml_files).each do |jack, token_xml|
+    task token_xml => jack do
+      sh "ruby tokenizer.rb #{jack} > #{token_xml}"
+
+      compare = File.join(t, File.basename(jack, ".jack")) + "T.xml"
+      sh "../../tools/TextComparer.sh $(pwd)/#{compare} $(pwd)/#{token_xml}"
+    end
+  end
+
+  task t => [token_xml_dir, *token_xml_files]
+end
+
+task :default => :test
+
+task :test => tests
+
+task :clean => [:clean_token_xml]
+
+task :clean_token_xml do
+  tests.each {|t| rm_r File.join(t, "tokenized") rescue nil }
+end
