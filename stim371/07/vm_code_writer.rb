@@ -1,5 +1,6 @@
 class CodeWriter
   attr_accessor :file_name
+  @@next_label = 0
 
   def translate(cmd)
     case cmd.type
@@ -80,13 +81,13 @@ class CodeWriter
     when 'temp'
       <<-eoc
         #{decrement_and_pop}
-        @#{index + 3}
+        @#{index + 5}
         M=D
       eoc
     when 'pointer'
       <<-eoc
         #{decrement_and_pop}
-        @#{index + 5}
+        @#{index + 3}
         M=D
       eoc
     when 'static'
@@ -119,6 +120,11 @@ class CodeWriter
     eoc
   end
 
+  def next_label(note)
+    @@next_label += 1
+    "#{note}#{@@next_label}"
+  end
+
   def arithmetic_cmd(cmd)
     case cmd
 
@@ -144,11 +150,106 @@ class CodeWriter
         D=A-D
         #{increment_and_push}
       eoc
-    # when 
-
-    end
-      
-      
-      
+    when 'eq'
+      true_lbl = next_label('TRUE')
+      end_lbl = next_label('END')
+      <<-eoc
+        @SP
+        AM=M-1
+        D=M
+        @SP
+        AM=M-1
+        A=M
+        D=A-D
+        @#{true_lbl}
+        D;JEQ
+        D=0
+        #{increment_and_push}
+        @#{end_lbl}
+        0;JMP
+        (#{true_lbl})
+        D=-1
+        #{increment_and_push}
+        (#{end_lbl})
+      eoc
+    when 'lt'
+      true_lbl = next_label('TRUE')
+      end_lbl = next_label('END')
+      <<-eoc
+        @SP
+        AM=M-1
+        D=M
+        @SP
+        AM=M-1
+        A=M
+        D=A-D
+        @#{true_lbl}
+        D;JLT
+        D=0
+        #{increment_and_push}
+        @#{end_lbl}
+        0;JMP
+        (#{true_lbl})
+        D=-1
+        #{increment_and_push}
+        (#{end_lbl})
+      eoc
+    when 'gt'
+      true_lbl = next_label('TRUE')
+      end_lbl = next_label('END')
+      <<-eoc
+        @SP
+        AM=M-1
+        D=M
+        @SP
+        AM=M-1
+        A=M
+        D=A-D
+        @#{true_lbl}
+        D;JGT
+        D=0
+        #{increment_and_push}
+        @#{end_lbl}
+        0;JMP
+        (#{true_lbl})
+        D=-1
+        #{increment_and_push}
+        (#{end_lbl})
+      eoc
+    when 'and'
+      <<-eoc
+        @SP
+        AM=M-1
+        D=M
+        @SP
+        AM=M-1
+        A=M
+        D=D&A
+        #{increment_and_push}
+      eoc
+    when 'or'
+      <<-eoc
+        @SP
+        AM=M-1
+        D=M
+        @SP
+        AM=M-1
+        A=M
+        D=D|A
+        #{increment_and_push}
+      eoc
+    when 'neg'
+      <<-eoc
+        @SP
+        A=M-1
+        M=-M
+      eoc
+    when 'not'
+      <<-eoc
+        @SP
+        A=M-1
+        M=!M
+      eoc
+    end    
   end
 end

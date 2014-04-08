@@ -12,8 +12,8 @@ File.open(ARGV[0].gsub('vm','asm'), 'w') do |file|
       begin
         line = writer.translate(cmd)
         file << line.gsub(/^\s+/,'') unless cmd.nil?
-      rescue
-        raise "#{cmd.inspect}"
+      # rescue
+      #   raise "#{cmd.inspect}"
       end
     end
   end
