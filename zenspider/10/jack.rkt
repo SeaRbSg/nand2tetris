@@ -93,12 +93,15 @@
     (classVarDec [(cvarScope type varNames SEMI)
                   `(classVarDec ,$1 ,$2 ,@$3 ,(s ";"))])
 
-    (type [(INT) (k "int")] [(CHAR) (k "char")] [(BOOLEAN) (k "boolean")] [(className) $1])
+    (type [(INT) (k "int")] [(CHAR) (k "char")]
+          [(BOOLEAN) (k "boolean")] [(className) $1])
 
     (subroutineDec [(subroutineScope returnType subroutineName
                                      LPAREN parameter* RPAREN
                                      subroutineBody)
-                    `(subroutineDec ,(k $1) ,$2 ,$3 ,(s "(") (parameterList ,@$5) ,(s ")") ,$7)])
+                    `(subroutineDec ,(k $1) ,$2 ,$3
+                      ,(s "(") (parameterList ,@$5) ,(s ")")
+                      ,$7)])
 
     (subroutineBody [(LBRACE varDec* statement* RBRACE)
                      `(subroutineBody ,(s "{") ,@$2 (statements ,@$3) ,(s "}"))])
@@ -185,14 +188,8 @@
 
     ;;; Lists: (because LALR grammars suck)
 
-    (parameter* [(parameter+) $1]
-                [() '()])
-
-    (parameter+ [(type varName COMMA parameter*) `(,$1 ,$2 ,(s ",") ,@$4)]
-                [(type varName) `(,$1 ,$2)])
-
-    (expression? [(expression) $1]
-                 [() '()])
+    (classVarDec* [(classVarDec classVarDec*) (cons $1 $2)]
+                  [() '()])
 
     (expression* [(expression+) $1]
                  [() '()])
@@ -200,20 +197,26 @@
     (expression+ [(expression COMMA expression+) `(,$1 ,(s ",") ,@$3)]
                  [(expression) (list $1)])
 
-    (term* [(term+) $1]
-           [() '()])
+    (expression? [(expression) $1]
+                 [() '()])
 
-    (term+ [(term op term*) `(,$1 ,(s $2) ,@$3)]
-           [(term) (list $1)])
+    (parameter* [(parameter+) $1]
+                [() '()])
 
-    (classVarDec* [(classVarDec classVarDec*) (cons $1 $2)]
-                  [() '()])
+    (parameter+ [(type varName COMMA parameter*) `(,$1 ,$2 ,(s ",") ,@$4)]
+                [(type varName) `(,$1 ,$2)])
 
     (statement* [(statement statement*) (cons $1 $2)]
                 [() '()])
 
     (subroutineDec* [(subroutineDec subroutineDec*) (cons $1 $2)]
                     [() '()])
+
+    (term* [(term+) $1]
+           [() '()])
+
+    (term+ [(term op term*) `(,$1 ,(s $2) ,@$3)]
+           [(term) (list $1)])
 
     (varDec* [(varDec varDec*) (cons $1 $2)]
              [() '()])
@@ -229,14 +232,21 @@
     (cvarScope [(FIELD) (k "field")]
                [(STATIC) (k "static")])
 
+    (keywordConstant [(CLASS) "class"] [(CONSTRUCTOR) "constructor"]
+                     [(FUNCTION) "function"] [(METHOD) "method"]
+                     [(FIELD) "field"] [(STATIC) "static"] [(VAR) "var"]
+                     [(INT) "int"] [(CHAR) "char"] [(BOOLEAN) "boolean"]
+                     [(VOID) "void"] [(TRUE) "true"] [(FALSE) "false"]
+                     [(NULL) "null"] [(THIS) "this"] [(LET) "let"] [(DO) "do"]
+                     [(IF) "if"] [(ELSE) "else"] [(WHILE) "while"]
+                     [(RETURN) "return"]))))
+
     (returnType [(VOID) (k "void")]
                 [(type) $1])
 
     (subroutineScope [(CONSTRUCTOR) "constructor"]
                      [(FUNCTION)    "function"]
                      [(METHOD)      "method"])
-
-    (keywordConstant [(CLASS) "class"] [(CONSTRUCTOR) "constructor"] [(FUNCTION) "function"] [(METHOD) "method"] [(FIELD) "field"] [(STATIC) "static"] [(VAR) "var"] [(INT) "int"] [(CHAR) "char"] [(BOOLEAN) "boolean"] [(VOID) "void"] [(TRUE) "true"] [(FALSE) "false"] [(NULL) "null"] [(THIS) "this"] [(LET) "let"] [(DO) "do"] [(IF) "if"] [(ELSE) "else"] [(WHILE) "while"] [(RETURN) "return"]))))
 
 (define (s x) `(symbol ,x))
 (define (k x) `(keyword ,x))
