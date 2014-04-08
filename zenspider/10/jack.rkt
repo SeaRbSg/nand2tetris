@@ -1,6 +1,5 @@
 #lang racket/base
 
-(require racket/pretty)
 (require parser-tools/yacc
          parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
@@ -74,7 +73,6 @@
   (parser
    (start start)
    (end EOF)
-   (debug "grammar.debug.txt")
    (tokens jack-tokens jack-keywords jack-empty-tokens)
    (error (lambda (tok-ok? tok-name tok-value)
             (printf "error: ~s ~s ~s\n" tok-ok? tok-name tok-value)))
@@ -239,14 +237,14 @@
                      [(VOID) "void"] [(TRUE) "true"] [(FALSE) "false"]
                      [(NULL) "null"] [(THIS) "this"] [(LET) "let"] [(DO) "do"]
                      [(IF) "if"] [(ELSE) "else"] [(WHILE) "while"]
-                     [(RETURN) "return"]))))
+                     [(RETURN) "return"])
 
     (returnType [(VOID) (k "void")]
                 [(type) $1])
 
     (subroutineScope [(CONSTRUCTOR) "constructor"]
                      [(FUNCTION)    "function"]
-                     [(METHOD)      "method"])
+                     [(METHOD)      "method"]))))
 
 (define (s x) `(symbol ,x))
 (define (k x) `(keyword ,x))
@@ -258,6 +256,5 @@
 (module+ main
   (for ([path (current-command-line-arguments)])
     (define xexpr (jack (open-input-file path)))
-    (display-xml/content (xexpr->xml xexpr))
-    )
+    (display-xml/content (xexpr->xml xexpr)))
   (newline))
