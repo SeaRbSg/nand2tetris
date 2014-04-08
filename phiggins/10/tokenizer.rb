@@ -12,13 +12,25 @@ class Tokenizer
   end
 
   def initialize text
-    @text = text
+    @lexemes = text.split(/([\s"#{Regexp.escape(Symbol::SYMBOLS.join)}])/)
+    @tokens = []
   end
 
   def tokenize
-    @text.split(/([\s#{Regexp.escape(Symbol::SYMBOLS.join)}])/).map do |token|
-      TYPES.detect {|type| type.match? token }.new(token).to_token
-    end.compact
+    until @lexemes.empty?
+      lexeme = @lexemes.shift
+
+      if lexeme == '"'
+        split = @lexemes.index('"')
+        string, @lexemes = @lexemes[0...split].join, @lexemes[split+1..-1]
+        @tokens << Str.new(string).to_token
+      else
+        @tokens << TYPES.detect {|type| type.match? lexeme }.new(lexeme).to_token
+      end
+    end
+
+    @tokens.compact!
+    @tokens
   end
 
   class Blank

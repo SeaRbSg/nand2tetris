@@ -3,6 +3,7 @@ def filename(f) f + "/" + f.split("/").last end
 tests = %w[
   ExpressionlessSquare
   Square
+  ArrayTest
 ]
 
 tests.each do |t|
