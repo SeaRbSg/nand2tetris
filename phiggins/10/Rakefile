@@ -7,8 +7,10 @@ tests = %w[
 ]
 
 tests.each do |t|
-  token_xml_dir = File.join(t, "tokenized")
   jack_files = Dir[File.join(t, "*.jack")]
+
+  ### Token xmls
+  token_xml_dir = File.join(t, "tokenized")
   token_xml_files = jack_files.map do |f|
     File.join(token_xml_dir, File.basename(f, ".jack")) + ".xml"
   end
@@ -24,15 +26,35 @@ tests.each do |t|
     end
   end
 
-  task t => [token_xml_dir, *token_xml_files]
+  task "#{t}:tokenized" => [token_xml_dir, *token_xml_files]
+  ### Token xmls
+
+  ### Parsed xmls
+  parsed_xml_dir = File.join(t, "parsed")
+  parsed_xml_files = jack_files.map do |f|
+    File.join(parsed_xml_dir, File.basename(f, ".jack")) + ".xml"
+  end
+
+  directory parsed_xml_dir
+
+  jack_files.zip(parsed_xml_files).each do |jack, parsed_xml|
+    task parsed_xml => jack do
+      sh "ruby compiler.rb #{jack} > #{parsed_xml}"
+
+      compare = File.join(t, File.basename(jack, ".jack")) + ".xml"
+      sh "../../tools/TextComparer.sh $(pwd)/#{compare} $(pwd)/#{parsed_xml}"
+    end
+  end
+
+  task "#{t}:parsed" => [parsed_xml_dir, *parsed_xml_files]
+  ### Parsed xmls
 end
 
 task :default => :test
 
-task :test => tests
+task :test => [*tests.map {|t| "#{t}:tokenized" }, *tests.map {|t| "#{t}:parsed" }]
 
-task :clean => [:clean_token_xml]
-
-task :clean_token_xml do
+task :clean do
   tests.each {|t| rm_r File.join(t, "tokenized") rescue nil }
+  tests.each {|t| rm_r File.join(t, "parsed") rescue nil }
 end

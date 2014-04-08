@@ -1,6 +1,6 @@
 class Tokenizer
   def self.tokenize text
-    new(sanitize(text)).tokenize
+    new(sanitize(text)).tokens
   end
 
   def self.sanitize text
@@ -12,25 +12,27 @@ class Tokenizer
   end
 
   def initialize text
-    @lexemes = text.split(/([\s"#{Regexp.escape(Symbol::SYMBOLS.join)}])/)
-    @tokens = []
+    @text = text
   end
 
-  def tokenize
-    until @lexemes.empty?
-      lexeme = @lexemes.shift
+  def tokens
+    @tokens ||= begin
+      lexemes = @text.split(/([\s"#{Regexp.escape(Symbol::SYMBOLS.join)}])/)
+      tokens = []
+      until lexemes.empty?
+        lexeme = lexemes.shift
 
-      if lexeme == '"'
-        split = @lexemes.index('"')
-        string, @lexemes = @lexemes[0...split].join, @lexemes[split+1..-1]
-        @tokens << Str.new(string).to_token
-      else
-        @tokens << TYPES.detect {|type| type.match? lexeme }.new(lexeme).to_token
+        if lexeme == '"'
+          split = lexemes.index('"')
+          string, lexemes = lexemes[0...split].join, lexemes[split+1..-1]
+          tokens << Str.new(string).to_token
+        else
+          tokens << TYPES.detect {|type| type.match? lexeme }.new(lexeme).to_token
+        end
       end
-    end
 
-    @tokens.compact!
-    @tokens
+      tokens.compact
+    end
   end
 
   class Blank
@@ -117,14 +119,7 @@ class Tokenizer
     end
 
     def to_token
-      token = case @token
-      when '>' then '&gt;'
-      when '<' then '&lt;'
-      when '&' then '&amp;'
-      else ;        @token
-      end
-
-      [:symbol, token]
+      [:symbol, @token]
     end
   end
 
@@ -155,6 +150,15 @@ if $0 == __FILE__
   puts [
     "<tokens>",
     Tokenizer.tokenize(File.read(input)).map {|type, token|
+      if type == :symbol
+        token = case token
+        when '>' then '&gt;'
+        when '<' then '&lt;'
+        when '&' then '&amp;'
+        else ;        token
+        end
+      end
+
       "<%{type}> %{token} </%{type}>" % { type: type, token: token }
     },
     "</tokens>",
