@@ -5,7 +5,7 @@ class Tokenizer
 
   def self.sanitize text
     text.gsub(%r{//.*$}, "")
-      .gsub(%r{/\*.*\*/}m, "")
+      .gsub(%r{/\*.*?\*/}m, "")
       .split("\n")
       .reject {|l| l.strip.empty? }
       .join("\n")
@@ -50,7 +50,7 @@ class Tokenizer
 
   class Int
     def self.match? token
-      false
+      token =~ /\d+/
     end
 
     def initialize token
@@ -105,7 +105,14 @@ class Tokenizer
     end
 
     def to_token
-      [:symbol, @token]
+      token = case @token
+      when '>' then '&gt;'
+      when '<' then '&lt;'
+      when '&' then '&amp;'
+      else ;        @token
+      end
+
+      [:symbol, token]
     end
   end
 
