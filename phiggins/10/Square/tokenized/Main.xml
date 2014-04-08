@@ -15,7 +15,11 @@
 <keyword> let </keyword>
 <identifier> game </identifier>
 <symbol> = </symbol>
-<identifier> game </identifier>
+<identifier> SquareGame </identifier>
+<symbol> . </symbol>
+<identifier> new </identifier>
+<symbol> ( </symbol>
+<symbol> ) </symbol>
 <symbol> ; </symbol>
 <keyword> do </keyword>
 <identifier> game </identifier>
