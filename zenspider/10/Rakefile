@@ -38,5 +38,5 @@ task :parser_test do
     sh "diff -bu exp.xml wtf.xml"
   end
 
-  rm_f "wtf.xml", "exp.xml"
+  rm_f Dir["wtf.xml", "exp.xml"]
 end
