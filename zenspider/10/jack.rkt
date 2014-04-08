@@ -5,69 +5,7 @@
          (prefix-in : parser-tools/lex-sre))
 (require xml)
 
-(define-tokens jack-tokens (SYM NUM STR ID))
-(define-empty-tokens jack-keywords (CLASS CONSTRUCTOR FUNCTION METHOD FIELD STATIC VAR INT CHAR BOOLEAN VOID TRUE FALSE NULL THIS LET DO IF ELSE WHILE RETURN))
-(define-empty-tokens jack-empty-tokens (EOF LBRACE RBRACE LPAREN RPAREN LBRACK RBRACK DOT COMMA SEMI PLUS MINUS TIMES DIVIDE AND OR LT GT EQ NOT))
-
-(define jack-lexer
-  (lexer
-   [(eof) (token-EOF)]
-   [(:or #\tab #\space #\newline) ; skip by recursing to get next token
-    (jack-lexer input-port)]
-   [(:: "//" (:* (:~ #\newline)))
-    (jack-lexer input-port)]
-   [(:: "/*" (complement (:: any-string "*/" any-string)) "*/") ; ditto
-    (jack-lexer input-port)]
-
-   ["class"       'CLASS]
-   ["constructor" 'CONSTRUCTOR]
-   ["function"    'FUNCTION]
-   ["method"      'METHOD]
-   ["field"       'FIELD]
-   ["static"      'STATIC]
-   ["var"         'VAR]
-   ["int"         'INT]
-   ["char"        'CHAR]
-   ["boolean"     'BOOLEAN]
-   ["void"        'VOID]
-   ["true"        'TRUE]
-   ["false"       'FALSE]
-   ["null"        'NULL]
-   ["this"        'THIS]
-   ["let"         'LET]
-   ["do"          'DO]
-   ["if"          'IF]
-   ["else"        'ELSE]
-   ["while"       'WHILE]
-   ["return"      'RETURN]
-
-   ["{" 'LBRACE]
-   ["}" 'RBRACE]
-   ["(" 'LPAREN]
-   [")" 'RPAREN]
-   ["[" 'LBRACK]
-   ["]" 'RBRACK]
-   ["." 'DOT]
-   ["," 'COMMA]
-   [";" 'SEMI]
-   ["+" 'PLUS]
-   ["-" 'MINUS]
-   ["*" 'TIMES]
-   ["/" 'DIVIDE]
-   ["&" 'AND]
-   ["|" 'OR]
-   ["<" 'LT]
-   [">" 'GT]
-   ["=" 'EQ]
-   ["~" 'NOT]
-
-   [(:+ numeric)
-    ; TODO: verify size of int? or let parser do it?
-    (token-NUM lexeme)]
-   [(:: alphabetic (:* (:or alphabetic numeric)))
-    (token-ID lexeme)]
-   [(:: #\" (:* (:~ #\" #\newline)) #\" )
-    (token-STR lexeme)]))
+(require (file "jack-lexer.rkt"))
 
 (define jack-parser
   (parser

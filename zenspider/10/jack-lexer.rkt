@@ -1,5 +1,7 @@
 #lang racket/base
 
+(provide jack-lexer jack-tokens jack-keywords jack-empty-tokens)
+
 (require parser-tools/yacc
          parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
