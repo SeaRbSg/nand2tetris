@@ -8,7 +8,7 @@ class Compiler
   end
 
   def initialize tokens
-    @tokens = tokens
+    @tokens = TokenStream.new(tokens)
   end
 
   def compiled
@@ -18,100 +18,101 @@ class Compiler
   end
 
   def compile
-    me = [@tokens.shift, @tokens.shift, @tokens.shift] # class Foo {
+    me = [@tokens.consume(:class), @tokens.consume(:identifier), @tokens.consume('{')]
     me << compile_class_variable_declarations
     me << compile_subroutines
-    me << @tokens.shift # }
+    me << @tokens.consume('}')
     @compiled = [:class, me]
   end
 
   def compile_class_variable_declarations
     me = []
-    while peek.first == :keyword && %[static field].include?(peek.last)
+    while @tokens.peek? %w[static field]
       me << compile_class_variable_declaration
     end
     me
   end
 
   def compile_class_variable_declaration
-    # field int foo
-    me = [@tokens.shift, @tokens.shift, @tokens.shift]
+    types = %w[int char boolean identifier]
+    me = [@tokens.consume(%w[static field]), @tokens.consume(types), @tokens.consume(:identifier)]
 
-    while peek.first == :symbol && peek.last == ","
-      me << @tokens.shift # ,
-      me << @tokens.shift # varName
+    while @tokens.peek? ","
+      me << @tokens.consume(',')
+      me << @tokens.consume(:identifier)
     end
 
-    me << @tokens.shift # ;
+    me << @tokens.consume(';')
     [:classVarDec, me]
   end
 
   def compile_subroutines
     me = []
-    while peek.first == :keyword && %w[constructor function method].include?(peek.last)
+    while @tokens.peek? %w[constructor function method]
       me << compile_subroutine
     end
     me
   end
 
   def compile_subroutine
-    # function void main (
-    me = [@tokens.shift, @tokens.shift, @tokens.shift, @tokens.shift]
+    me = [@tokens.consume(%w[function constructor method]), @tokens.consume(%w[int char boolean identifier void]), @tokens.consume(:identifier), @tokens.consume('(')]
     me << compile_parameter_list
-    me << @tokens.shift # )
+    me << @tokens.consume(')')
     me << compile_subroutine_body
     [:subroutineDec, me]
   end
 
   def compile_parameter_list
+    types = %w[int char boolean]
+
     me = []
 
-    if ((peek.first == :keyword && %w[int char boolean].include?(peek.last)) || peek.first == :identifier)
-      me << @tokens.shift # type
-      me << @tokens.shift # varName
+    if @tokens.peek?(types) || @tokens.peek?(:identifier)
+      me << @tokens.consume(types)
+      me << @tokens.consume(:identifier)
     end
 
-    while peek.first == :symbol && peek.last == ','
-      me << @tokens.shift # ,
-      me << @tokens.shift # type
-      me << @tokens.shift # varName
+    while @tokens.peek? ','
+      me << @tokens.consume(',')
+      me << @tokens.consume(types)
+      me << @tokens.consume(:identifier)
     end
 
     [:parameterList, me]
   end
 
   def compile_subroutine_body
-    me = [@tokens.shift] # {
+    me = [@tokens.consume('{')]
     me << compile_variable_declarations
     me << compile_statements
-    me << @tokens.shift # }
+    me << @tokens.consume('}')
     [:subroutineBody, me]
   end
 
   def compile_variable_declarations
     me = []
-    while peek.first == :keyword && peek.last == "var"
+    while @tokens.peek? "var"
       me << compile_variable_declaration
     end
     me
   end
 
   def compile_variable_declaration
-    me = [@tokens.shift, @tokens.shift, @tokens.shift] # var int foo
+    me = [@tokens.consume(:var), @tokens.consume(%w[int char boolean identifier]), @tokens.consume(:identifier)]
 
-    while peek.first == :symbol && peek.last == ","
-      me << @tokens.shift # ,
-      me << @tokens.shift # varName
+    while @tokens.peek? ","
+      me << @tokens.consume(',')
+      me << @tokens.consume(:identifier)
     end
 
-    me << @tokens.shift # ;
+    me << @tokens.consume(';')
     [:varDec, me]
   end
 
   def compile_statements
     me = []
-    while peek.first == :keyword && %w[let if while do return].include?(peek.last)
-      me << case peek.last
+    while @tokens.peek? %w[let if while do return]
+      me << case @tokens.peek.last
         when 'let'    ; compile_let
         when 'if'     ; compile_if
         when 'while'  ; compile_while
@@ -123,81 +124,81 @@ class Compiler
   end
 
   def compile_let
-    me = [@tokens.shift, @tokens.shift] # let foo
+    me = [@tokens.consume(:let), @tokens.consume(:identifier)]
 
-    if peek.first == :symbol && peek.last == '['
-      me << @tokens.shift # [
+    if @tokens.peek? '['
+      me << @tokens.consume('[')
       me << compile_expression
-      me << @tokens.shift # ]
+      me << @tokens.consume(']')
     end
 
-    me << @tokens.shift # =
+    me << @tokens.consume('=')
     me << compile_expression
-    me << @tokens.shift # ;
+    me << @tokens.consume(';')
     [:letStatement, me]
   end
 
   def compile_if
-    me = [@tokens.shift, @tokens.shift] # if (
+    me = [@tokens.consume(:if), @tokens.consume('(')]
     me << compile_expression
-    me << @tokens.shift # )
-    me << @tokens.shift # {
+    me << @tokens.consume(')')
+    me << @tokens.consume('{')
     me << compile_statements
-    me << @tokens.shift # }
+    me << @tokens.consume('}')
 
-    if peek.first == :keyword && peek.last == 'else'
-      me << @tokens.shift # else
-      me << @tokens.shift # {
+    if @tokens.peek? 'else'
+      me << @tokens.consume('else')
+      me << @tokens.consume('{')
       me << compile_statements
-      me << @tokens.shift # }
+      me << @tokens.consume('}')
     end
 
     [:ifStatement, me]
   end
 
   def compile_while
-    me = [@tokens.shift, @tokens.shift] # while (
+    me = [@tokens.consume(:while), @tokens.consume('(')]
     me << compile_expression
-    me << @tokens.shift # )
-    me << @tokens.shift # {
+    me << @tokens.consume(')')
+    me << @tokens.consume('{')
     me << compile_statements
-    me << @tokens.shift # }
+    me << @tokens.consume('}')
     [:whileStatement, me]
   end
 
   def compile_do
-    me = [@tokens.shift] # do
+    me = [@tokens.consume(:do)]
     me << compile_subroutine_call
-    me << @tokens.shift # ;
+    me << @tokens.consume(';')
     [:doStatement, me]
   end
 
   def compile_return
-    me = [@tokens.shift] # return
+    me = [@tokens.consume(:return)]
     me << compile_expression
-    me << @tokens.shift # ;
+    me << @tokens.consume(';')
     [:returnStatement, me]
   end
 
   def compile_subroutine_call
-    me = [@tokens.shift] # subroutineName | className | varName
+    me = [@tokens.consume(:identifier)]
 
-    if peek.first == :symbol && peek.last == '.'
-      me << @tokens.shift # .
-      me << @tokens.shift # subroutineName
+    if @tokens.peek? '.'
+      me << @tokens.consume('.')
+      me << @tokens.consume(:identifier)
     end
 
-    me << @tokens.shift # (
+    me << @tokens.consume('(')
     me << compile_expression_list
-    me << @tokens.shift # )
+    me << @tokens.consume(')')
     me
   end
 
   def compile_expression_list
     me = [compile_expression]
 
-    while peek.first == :symbol && peek.last == ","
-      me << @tokens.shift # ,
+    while @tokens.peek? ","
+      me << @tokens.consume(',')
       me << compile_expression
     end
 
@@ -205,12 +206,13 @@ class Compiler
   end
 
   def compile_expression
+    ops = %w[+ - * / & | < > =]
     me = [compile_term].compact
 
     return if me.empty?
 
-    while peek.first == :symbol && %w[+ - * / & | < > =].include?(peek.last)
-      me << @tokens.shift # op
+    while @tokens.peek?(ops)
+      me << @tokens.consume(ops)
       me << compile_term
     end
 
@@ -218,32 +220,31 @@ class Compiler
   end
 
   def compile_term
+    unary_ops = %w[- ~]
     me = []
 
-    case peek.first
+    case @tokens.peek.first
     when :integerConstant, :stringConstant, :keyword
-      me << @tokens.shift
+      me << @tokens.consume([:integerConstant, :stringConstant, :keyword])
     when :symbol
-      if peek.last == '('
-        me << @tokens.shift # (
+      if @tokens.peek? '('
+        me << @tokens.consume('(')
         me << compile_expression
-        me << @tokens.shift # )
-      elsif peek.last == "-" || peek.last == "~"
-        me << @tokens.shift # unaryOp
+        me << @tokens.consume(')')
+      elsif @tokens.peek? unary_ops
+        me << @tokens.consume(unary_ops)
         me << compile_term
       end
     else
-      peek_peek = @tokens[1]
-
-      if peek_peek.first == :symbol && %w[( .].include?(peek_peek.last)
+      if @tokens.peek? %w[( .], 1
         me << compile_subroutine_call
-      elsif peek_peek.first == :symbol && peek_peek.last == '['
-        me << @tokens.shift # varName
-        me << @tokens.shift # [
+      elsif @tokens.peek? '[', 1
+        me << @tokens.consume(:identifier)
+        me << @tokens.consume('[')
         me << compile_expression
-        me << @tokens.shift # ]
+        me << @tokens.consume(']')
       else
-        me << @tokens.shift # varName
+        me << @tokens.consume(:identifier)
       end
     end
 
@@ -251,8 +252,40 @@ class Compiler
     [:term, me]
   end
 
-  def peek
-    @tokens.first
+  class TokenStream
+    def initialize tokens
+      @tokens = tokens
+    end
+
+    TOKENS = {}
+    Tokenizer::Symbol::SYMBOLS.each {|s| TOKENS[s] = Tokenizer::Symbol.new(s).to_token}
+    Tokenizer::Keyword::KEYWORDS.each {|s| TOKENS[s] = Tokenizer::Keyword.new(s).to_token}
+
+    def consume tokens=nil
+      tokens = Array(tokens)
+      unless tokens.empty?
+        raise_error(tokens) unless peek?(tokens)
+      end
+
+      @tokens.shift
+    end
+
+    def peek? tokens, lookahead=0
+      Array(tokens).map(&:to_s).any? do |token|
+        @tokens[lookahead] == TOKENS[token] || @tokens[lookahead].first.to_s == token
+      end
+    end
+
+    def peek lookahead=0
+      @tokens[lookahead]
+    end
+
+    def raise_error tokens
+      tokens = Array(tokens).map {|t| "'#{t}'" }.join(" | ")
+      raise Error.new, "expected #{tokens}, found #{peek}"
+    end
+
+    class Error < StandardError ; end
   end
 end
 
