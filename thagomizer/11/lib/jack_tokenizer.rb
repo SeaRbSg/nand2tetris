@@ -1,5 +1,5 @@
 require 'strscan'
-require 'token'
+require_relative 'token'
 
 class JackTokenizer
   KEYWORDS = Regexp.union(%w(class constructor function method field static var int char boolean void true false null this let do if else while return))
@@ -21,7 +21,6 @@ class JackTokenizer
   def initialize
     @tokens = []
   end
-
 
   def self.from_string(string)
     tokenizer = JackTokenizer.new
@@ -73,5 +72,6 @@ class JackTokenizer
     end
 
     advance unless @current_token
+    @current_token
   end
 end
