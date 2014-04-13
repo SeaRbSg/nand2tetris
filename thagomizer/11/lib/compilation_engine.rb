@@ -62,6 +62,7 @@ class CompilationEngine
       token = @tokenizer.advance
       ast << output_token(token)
     end while (token.value != ";")
+
     ast
   end
 
@@ -80,7 +81,7 @@ class CompilationEngine
         (next_token.value == "field" || next_token.value == "static")
     end
 
-    ast
+    ast unless ast.empty?
   end
 
   def compile_term
@@ -112,7 +113,6 @@ class CompilationEngine
   end
 
   def compile_expression
-    return unless term?
     ast = [:expression]
     while term?
       ast << compile_term
@@ -169,6 +169,7 @@ class CompilationEngine
 
     raise_unless_value ";"
     ast << output_next_token               # ;
+
     ast
   end
 
@@ -352,7 +353,8 @@ class CompilationEngine
     raise_unless_value "{"
     ast << output_next_token     # {
 
-    ast << compile_var_decs
+    var_decs = compile_var_decs
+    ast += var_decs if var_decs
 
     ast << compile_statements
 
@@ -374,7 +376,8 @@ class CompilationEngine
     raise_unless_value "{"
     ast << output_next_token    # {
 
-    ast << compile_class_var_decs
+    var_decs = compile_class_var_decs
+    ast += var_decs if var_decs
 
     while(subroutine?)
       ast << compile_subroutine
@@ -383,7 +386,7 @@ class CompilationEngine
     raise_unless_value "}"
     ast << output_next_token    # }
 
-    ast
+    ast.compact
   end
 
   # ## FUNCTIONS FOR FIGURING OUT WHAT THE NEXT THING IS
@@ -465,7 +468,7 @@ class CompilationEngine
 
   def subroutine_call?
     return false unless subroutine_name?
-    second_token = @tokenizer.look_ahead(1)
+    second_token = @tokenizer.look_ahead
 
     return false unless second_token
     return second_token.value == "." || second_token.value == "("

@@ -3,6 +3,8 @@
 require_relative 'jack_tokenizer'
 require_relative 'compilation_engine'
 require 'pp'
+require 'builder'
+require 'json'
 
 class CompileToXML
   def self.run path
@@ -19,27 +21,44 @@ class CompileToXML
     paths.each do |p|
       tokenizer = JackTokenizer.from_file(p)
 
-      tokens = extract_tokens tokenizer
-      ce = CompilationEngine.new tokens
+      tokenizer.advance
 
-      ce.compile_class
+      ce = CompilationEngine.new tokenizer
 
-      File.open(p.gsub(".jack", ".mine.xml"), "w") do |f|
-        f.puts ce.output
+      ast = ce.compile_class
+
+      File.open(p.gsub(".jack", ".mine.xml2"), "w") do |f|
+        f.puts generate_xml(ast)
       end
     end
   end
 
-  def self.extract_tokens t
-    tokens = []
+  def self.generate_xml(ast)
+    output = ""
 
-    while t.has_more_commands?
-      t.advance
-      tokens << t.current_token
+    builder = Builder::XmlMarkup.new(:target => output, :indent => 2)
+
+    output_nodes(builder, ast)
+
+    output
+  end
+
+  def self.output_nodes(builder, ast)
+    return if ast.empty?
+
+    if ast.length == 2
+      builder.tag! ast[0], ast[1]
+    elsif ast.length == 1
+      builder.tag! ast[0]
+    else
+      builder.tag! ast[0] do
+        ast[1..-1].each do |node|
+          output_nodes(builder, node)
+        end
+      end
     end
-
-    tokens
   end
 end
+
 
 CompileToXML.run ARGV[0]

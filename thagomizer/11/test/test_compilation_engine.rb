@@ -822,7 +822,7 @@ class StubTokenizer
     @index < @tokens.length
   end
 
-  def look_ahead(index)
-    @tokens[@index + index]
+  def look_ahead
+    @tokens[@index + 1]
   end
 end

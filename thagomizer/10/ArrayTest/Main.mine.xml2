@@ -1,0 +1,186 @@
+<class>
+  <keyword>class</keyword>
+  <identifier>Main</identifier>
+  <symbol>{</symbol>
+  <subroutine_dec>
+    <keyword>function</keyword>
+    <keyword>void</keyword>
+    <identifier>main</identifier>
+    <symbol>(</symbol>
+    <parameter_list/>
+    <symbol>)</symbol>
+    <subroutine_body>
+      <symbol>{</symbol>
+      <var_dec>
+        <keyword>var</keyword>
+        <identifier>Array</identifier>
+        <identifier>a</identifier>
+        <symbol>;</symbol>
+      </var_dec>
+      <var_dec>
+        <keyword>var</keyword>
+        <keyword>int</keyword>
+        <identifier>length</identifier>
+        <symbol>;</symbol>
+      </var_dec>
+      <var_dec>
+        <keyword>var</keyword>
+        <keyword>int</keyword>
+        <identifier>i</identifier>
+        <symbol>,</symbol>
+        <identifier>sum</identifier>
+        <symbol>;</symbol>
+      </var_dec>
+      <statements>
+        <let_statement>
+          <keyword>let</keyword>
+          <identifier>length</identifier>
+          <symbol>=</symbol>
+          <expression>[:term, [:identifier, "Keyboard"], [:symbol, "."], [:identifier, "readInt"], [:symbol, "("], [:expression_list, [:expression, [:term, [:string_constant, "HOW MANY NUMBERS? "]]]], [:symbol, ")"]]</expression>
+          <symbol>;</symbol>
+        </let_statement>
+        <let_statement>
+          <keyword>let</keyword>
+          <identifier>a</identifier>
+          <symbol>=</symbol>
+          <expression>[:term, [:identifier, "Array"], [:symbol, "."], [:identifier, "new"], [:symbol, "("], [:expression_list, [:expression, [:term, [:identifier, "length"]]]], [:symbol, ")"]]</expression>
+          <symbol>;</symbol>
+        </let_statement>
+        <let_statement>
+          <keyword>let</keyword>
+          <identifier>i</identifier>
+          <symbol>=</symbol>
+          <expression>[:term, [:integer_constant, 0]]</expression>
+          <symbol>;</symbol>
+        </let_statement>
+        <while_statement>
+          <keyword>while</keyword>
+          <symbol>(</symbol>
+          <expression>
+            <term>[:identifier, "i"]</term>
+            <symbol>&lt;</symbol>
+            <term>[:identifier, "length"]</term>
+          </expression>
+          <symbol>)</symbol>
+          <symbol>{</symbol>
+          <statements>
+            <let_statement>
+              <keyword>let</keyword>
+              <identifier>a</identifier>
+              <symbol>[</symbol>
+              <expression>[:term, [:identifier, "i"]]</expression>
+              <symbol>]</symbol>
+              <symbol>=</symbol>
+              <expression>[:term, [:identifier, "Keyboard"], [:symbol, "."], [:identifier, "readInt"], [:symbol, "("], [:expression_list, [:expression, [:term, [:string_constant, "ENTER THE NEXT NUMBER: "]]]], [:symbol, ")"]]</expression>
+              <symbol>;</symbol>
+            </let_statement>
+            <let_statement>
+              <keyword>let</keyword>
+              <identifier>i</identifier>
+              <symbol>=</symbol>
+              <expression>
+                <term>[:identifier, "i"]</term>
+                <symbol>+</symbol>
+                <term>[:integer_constant, 1]</term>
+              </expression>
+              <symbol>;</symbol>
+            </let_statement>
+          </statements>
+          <symbol>}</symbol>
+        </while_statement>
+        <let_statement>
+          <keyword>let</keyword>
+          <identifier>i</identifier>
+          <symbol>=</symbol>
+          <expression>[:term, [:integer_constant, 0]]</expression>
+          <symbol>;</symbol>
+        </let_statement>
+        <let_statement>
+          <keyword>let</keyword>
+          <identifier>sum</identifier>
+          <symbol>=</symbol>
+          <expression>[:term, [:integer_constant, 0]]</expression>
+          <symbol>;</symbol>
+        </let_statement>
+        <while_statement>
+          <keyword>while</keyword>
+          <symbol>(</symbol>
+          <expression>
+            <term>[:identifier, "i"]</term>
+            <symbol>&lt;</symbol>
+            <term>[:identifier, "length"]</term>
+          </expression>
+          <symbol>)</symbol>
+          <symbol>{</symbol>
+          <statements>
+            <let_statement>
+              <keyword>let</keyword>
+              <identifier>sum</identifier>
+              <symbol>=</symbol>
+              <expression>
+                <term>[:identifier, "sum"]</term>
+                <symbol>+</symbol>
+                <term>
+                  <identifier>a</identifier>
+                  <symbol>[</symbol>
+                  <expression>[:term, [:identifier, "i"]]</expression>
+                  <symbol>]</symbol>
+                </term>
+              </expression>
+              <symbol>;</symbol>
+            </let_statement>
+            <let_statement>
+              <keyword>let</keyword>
+              <identifier>i</identifier>
+              <symbol>=</symbol>
+              <expression>
+                <term>[:identifier, "i"]</term>
+                <symbol>+</symbol>
+                <term>[:integer_constant, 1]</term>
+              </expression>
+              <symbol>;</symbol>
+            </let_statement>
+          </statements>
+          <symbol>}</symbol>
+        </while_statement>
+        <do_statement>
+          <keyword>do</keyword>
+          <identifier>Output</identifier>
+          <symbol>.</symbol>
+          <identifier>printString</identifier>
+          <symbol>(</symbol>
+          <expression_list>[:expression, [:term, [:string_constant, "THE AVERAGE IS: "]]]</expression_list>
+          <symbol>)</symbol>
+          <symbol>;</symbol>
+        </do_statement>
+        <do_statement>
+          <keyword>do</keyword>
+          <identifier>Output</identifier>
+          <symbol>.</symbol>
+          <identifier>printInt</identifier>
+          <symbol>(</symbol>
+          <expression_list>[:expression, [:term, [:identifier, "sum"]], [:symbol, "/"], [:term, [:identifier, "length"]]]</expression_list>
+          <symbol>)</symbol>
+          <symbol>;</symbol>
+        </do_statement>
+        <do_statement>
+          <keyword>do</keyword>
+          <identifier>Output</identifier>
+          <symbol>.</symbol>
+          <identifier>println</identifier>
+          <symbol>(</symbol>
+          <expression_list/>
+          <symbol>)</symbol>
+          <symbol>;</symbol>
+        </do_statement>
+        <return_statement>
+          <keyword>return</keyword>
+          <expression/>
+          <symbol>;</symbol>
+        </return_statement>
+      </statements>
+      <symbol>}</symbol>
+    </subroutine_body>
+  </subroutine_dec>
+  <symbol>}</symbol>
+</class>

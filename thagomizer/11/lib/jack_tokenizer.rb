@@ -74,4 +74,14 @@ class JackTokenizer
     advance unless @current_token
     @current_token
   end
+
+  def look_ahead
+    temp = @current_token
+    advance
+    next_token = @current_token
+    @scanner.unscan
+    @current_token = temp
+
+    next_token
+  end
 end
