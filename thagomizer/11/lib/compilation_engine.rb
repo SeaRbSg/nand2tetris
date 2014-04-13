@@ -1,308 +1,395 @@
-require 'builder'
-
 class CompilationEngine
-  attr_accessor :tokens, :output
+  attr_accessor :tokenizer
 
-  def initialize(tokens)
-    @tokens = tokens
-    @output = ""
-    @builder = Builder::XmlMarkup.new(:target => @output, :indent => 1)
+  def initialize(tokenizer = nil)
+    @tokenizer = tokenizer
   end
 
   def output_token token
     case token.type
     when :keyword
-      @builder.keyword token.value
+      [token.type, token.value]
     when :symbol
-      @builder.symbol token.value
+      [token.type, token.value]
     when :identifier
-      @builder.identifier token.value
+      [token.type, token.value]
     when :string_constant
-      @builder.stringConstant token.value
+      [token.type, token.value]
     when :integer_constant
-      @builder.integerConstant token.value
+      [token.type, token.value]
     else
       raise "Unknown token type #{token.type}"
     end
   end
 
   def output_next_token
-    output_token @tokens.shift
+    ast = output_token(@tokenizer.current_token)
+    @tokenizer.advance
+    ast
   end
 
   def compile_var_dec
-    @builder.varDec do
-      begin
-        token = @tokens.shift
-        output_token token
-      end while (token.value != ";")
-    end
+    ast = [:var_dec]
+
+    ast << output_token(@tokenizer.current_token)
+
+    begin
+      token = @tokenizer.advance
+      ast << output_token(token)
+    end while (token.value != ";")
+
+    ast
   end
 
   def compile_var_decs
-    next_var = peek_val == "var" && peek_type == :keyword
+    ast = []
+    next_var = current_val == "var" && current_type == :keyword
     while(next_var) do
-      compile_var_dec
-      next_var = peek_val == "var" && peek_type == :keyword
+      ast << compile_var_dec
+      @tokenizer.advance
+      next_var = current_val == "var" && current_type == :keyword
     end
+
+    ast
   end
 
   def compile_class_var_dec
-    @builder.classVarDec do
-      begin
-        token = @tokens.shift
-        output_token token
-      end while (token.value != ";")
-    end
+    ast = [:class_var_dec]
+
+    ast << output_token(@tokenizer.current_token)
+
+    begin
+      token = @tokenizer.advance
+      ast << output_token(token)
+    end while (token.value != ";")
+    ast
   end
 
   def compile_class_var_decs
-    next_token = peek
+    ast = []
+
+    next_token = current_token
     next_var = next_token.type == :keyword &&
       (next_token.value == "field" || next_token.value == "static")
 
     while(next_var) do
-      compile_class_var_dec
-      next_token = peek
+      ast << compile_class_var_dec
+      @tokenizer.advance
+      next_token = current_token
       next_var = next_token.type == :keyword &&
         (next_token.value == "field" || next_token.value == "static")
     end
+
+    ast
   end
 
   def compile_term
-    @builder.term do
-      case
-      when integer_constant? || string_constant? || keyword_constant?
-        output_next_token
-      when subroutine_call?
-        compile_subroutine_call
-      when var_name?
-        output_next_token
-        if !@tokens.empty? && peek_val == "["
-          output_next_token
-          compile_expression
-          output_next_token
-        end
-      when peek_val == "("
-        output_next_token
-        compile_expression
-        output_next_token
-      when unary_op?
-        output_next_token
-        compile_term
-      else
-        raise "UNKNOWN TERM"
+    ast = [:term]
+
+    case
+    when integer_constant? || string_constant? || keyword_constant?
+      ast << output_next_token
+    when subroutine_call?
+      ast += compile_subroutine_call
+    when var_name?
+      ast << output_next_token
+      if @tokenizer.has_more_commands? && current_val == "["
+        ast << output_next_token
+        ast << compile_expression
+        ast << output_next_token
       end
+    when current_val == "("
+      ast << output_next_token
+      ast << compile_expression
+      ast << output_next_token
+    when unary_op?
+      ast << output_next_token
+      ast << compile_term
+    else
+      raise "UNKNOWN TERM"
     end
+    ast
   end
 
   def compile_expression
     return unless term?
-    @builder.expression do
-      while term?
-        compile_term
-        if op?
-          output_next_token
-        else
-          break # no symbol so no more of the while loop
-        end
+    ast = [:expression]
+    while term?
+      ast << compile_term
+      if op?
+        ast << output_next_token
+      else
+        break # no symbol so no more of the while loop
       end
     end
+    ast
   end
 
   def compile_expression_list
-    @builder.expressionList do
-      while term?
-        compile_expression
-        if peek_val == ","
-          output_next_token
-        else
-          break # no comma so no more of the while loop
-        end
+    ast = [:expression_list]
+    while term?
+      ast << compile_expression
+      if current_val == ","
+        ast << output_next_token
+      else
+        break # no comma so no more of the while loop
       end
     end
+    ast
   end
 
   def compile_subroutine_call
-    return unless peek_type == :identifier
-    output_next_token
-    if peek_val == "."
-      output_next_token
-      raise "Invalid subroutine name" unless peek_type == :identifier
-      output_next_token
+    ast = []
+
+    raise_unless_type :identifier
+    ast << output_next_token
+    if current_val == "."
+      ast << output_next_token
+      raise "Invalid subroutine name" unless current_type == :identifier
+      ast << output_next_token
     end
-    output_next_token               # (
-    compile_expression_list
-    output_next_token               # )
+
+    raise_unless_value "("
+    ast << output_next_token               # (
+
+    ast << compile_expression_list
+
+    raise_unless_value ")"
+    ast << output_next_token               # )
+    ast
   end
 
   def compile_return
-    return unless peek_val == "return"
-    @builder.returnStatement do
-      output_next_token             # return
-      compile_expression
-      output_next_token             # ;
-    end
+    ast = [:return_statement]
+
+    raise_unless_value "return"
+    ast << output_next_token               # return
+
+    ast << compile_expression
+
+    raise_unless_value ";"
+    ast << output_next_token               # ;
+    ast
   end
 
   def compile_do
-    return unless peek_val == "do"
-    @builder.doStatement do
-      output_next_token             # do
-      compile_subroutine_call
-      output_next_token             # ;
-    end
+    ast = [:do_statement]
+
+    raise_unless_value "do"
+    ast << output_next_token
+
+    ast += compile_subroutine_call
+
+    raise_unless_value ";"
+    ast << output_next_token
+
+    ast
   end
 
   def compile_let
-    return unless peek_val == "let"
+    ast = [:let_statement]
 
-    @builder.letStatement do
-      output_next_token             # let
-      output_next_token             # varName (identifier)
-      if peek_val == "["
-        output_next_token           # [
-        compile_expression
-        output_next_token           # ]
-      end
-      output_next_token             # =
-      compile_expression
-      output_next_token             # ;
+    raise_unless_value "let"
+    ast << output_next_token             # let
+
+    raise_unless_type :identifier
+    ast << output_next_token             # varName (identifier)
+
+    if current_val == "["
+      ast << output_next_token           # [
+      ast << compile_expression
+
+      raise_unless_value "]"
+      ast << output_next_token           # ]
     end
+
+    raise_unless_value "="
+    ast << output_next_token             # =
+
+    ast << compile_expression
+
+    raise_unless_value ";"
+    ast << output_next_token             # ;
+
+    ast
   end
 
   def compile_while
-    return unless peek_val == "while"
-    @builder.whileStatement do
-      output_next_token             # while
-      output_next_token             # (
-      compile_expression
-      output_next_token             # )
-      output_next_token             # {
-      compile_statements
-      output_next_token             # }
-    end
+    ast = [:while_statement]
+
+    raise_unless_value "while"
+    ast << output_next_token             # while
+
+    raise_unless_value "("
+    ast << output_next_token             # (
+
+    ast << compile_expression
+
+    raise_unless_value ")"
+    ast << output_next_token             # )
+
+    raise_unless_value "{"
+    ast << output_next_token             # {
+
+    ast << compile_statements
+
+    raise_unless_value "}"
+    ast << output_next_token             # }
+    ast
   end
 
   def compile_if
-    return unless peek_val == "if"
-    @builder.ifStatement do
-      output_next_token             # if
-      output_next_token             # (
-      compile_expression
-      output_next_token             # )
-      output_next_token             # {
-      compile_statements
-      output_next_token             # }
-      if peek_val == "else"
-        output_next_token             # else
-        output_next_token             # {
-        compile_statements
-        output_next_token             # }
-      end
+    ast = [:if_statement]
+
+    raise_unless_value "if"
+    ast << output_next_token             # if
+
+    raise_unless_value "("
+    ast << output_next_token             # (
+
+    ast << compile_expression
+
+    raise_unless_value ")"
+    ast << output_next_token             # )
+
+    raise_unless_value "{"
+    ast << output_next_token             # {
+
+    ast << compile_statements
+
+    raise_unless_value "}"
+    ast << output_next_token             # }
+
+    if current_val == "else"
+      raise_unless_value "else"
+      ast << output_next_token             # else
+
+      raise_unless_value "{"
+      ast << output_next_token             # {
+
+      ast << compile_statements
+
+      raise_unless_value "}"
+      ast << output_next_token             # }
     end
+
+    ast
   end
 
   def compile_statements
-    @builder.statements do
-      while(statement?)
-        case peek_val
-        when "let"
-          compile_let
-        when "if"
-          compile_if
-        when "while"
-          compile_while
-        when "do"
-          compile_do
-        when "return"
-          compile_return
-        else
-          raise "Unknown statement type #{peek_val}"
-        end
-      end
+    ast = [:statements]
+
+    while(statement?)
+      ast << case current_val
+             when "let"
+               compile_let
+             when "if"
+               compile_if
+             when "while"
+               compile_while
+             when "do"
+               compile_do
+             when "return"
+               compile_return
+             else
+               raise "Unknown statement type #{current_val}"
+             end
     end
+
+    ast
   end
 
   def compile_parameter_list
-    @builder.parameterList do
-      while(type?) do
-        output_next_token   # type
-        output_next_token   # varName
-        if peek_val == ","   # ,
-          output_next_token
-        else
-          break  # No, comma don't iterate
-        end
+    ast = [:parameter_list]
+
+    while(type?) do
+      ast << output_next_token   # type
+
+      raise_unless_type :identifier
+      ast << output_next_token   # varName
+
+      if current_val == ","
+        ast << output_next_token
+      else
+        break  # No, comma don't iterate
       end
     end
+
+    ast
   end
 
   def compile_subroutine
-    raise "Not a subroutine starting token #{peek}" unless subroutine?
-    @builder.subroutineDec do
-      # constructor | function | method
-      output_next_token
+    ast = [:subroutine_dec]
 
-      # void | type
-      raise "Not a valid return type #{peek}" unless return_type?
-      output_next_token
+    raise "Not a subroutine starting token #{current_token}" unless subroutine?
 
-      raise "Not a valid subroutine name #{peek}" unless subroutine_name?
-      output_next_token
+    # constructor | function | method
+    ast <<  output_next_token
 
-      raise "Expected (, got #{peek}" unless peek_val == "("
-      output_next_token
+    # void | type
+    raise "Not a valid return type #{current_token}" unless return_type?
+    ast <<  output_next_token
 
-      compile_parameter_list
+    raise "Not a valid subroutine name #{current_token}" unless subroutine_name?
+    ast << output_next_token
 
-      raise "Expected ), got #{peek}" unless peek_val == ")"
-      output_next_token
+    raise_unless_value "("
+    ast << output_next_token
 
-      compile_subroutine_body
-    end
+    ast << compile_parameter_list
+
+    raise_unless_value ")"
+    ast << output_next_token
+
+    ast << compile_subroutine_body
+
+    ast
   end
 
   def compile_subroutine_body
-    raise "Expected {, got #{peek}" unless peek_val == "{"
-    @builder.subroutineBody do
-      output_next_token     # {
+    ast = [:subroutine_body]
 
-      compile_var_decs
+    raise_unless_value "{"
+    ast << output_next_token     # {
 
-      compile_statements
+    ast << compile_var_decs
 
-      raise "Expected }, got #{peek}" unless peek_val == "}"
-      output_next_token
-    end
+    ast << compile_statements
+
+    raise_unless_value "}"
+    ast << output_next_token
+
+    ast
   end
 
   def compile_class
-    raise "Expected class, got #{peek}" unless peek_val == "class"
-    @builder.class do
-      output_next_token    # class
+    ast = [:class]
 
-      raise "Expected className, got #{peek}" unless class_name?
-      output_next_token    # className
+    raise_unless_value "class"
+    ast << output_next_token    # class
 
-      raise "Expected {, got #{peek}" unless peek_val == "{"
-      output_next_token    # {
+    raise "Expected className, got #{current_token}" unless class_name?
+    ast << output_next_token    # className
 
-      compile_class_var_decs
+    raise_unless_value "{"
+    ast << output_next_token    # {
 
-      while(subroutine?)
-        compile_subroutine
-      end
+    ast << compile_class_var_decs
 
-      raise "Expected }, got #{peek}" unless peek_val == "}"
-      output_next_token    # }
+    while(subroutine?)
+      ast << compile_subroutine
     end
+
+    raise_unless_value "}"
+    ast << output_next_token    # }
+
+    ast
   end
 
-  ## FUNCTIONS FOR FIGURING OUT WHAT THE NEXT THING IS
+  # ## FUNCTIONS FOR FIGURING OUT WHAT THE NEXT THING IS
 
   def keyword_constant?
-    token = peek
+    token = current_token
     return false unless token
 
     token.value == "true" ||
@@ -312,86 +399,95 @@ class CompilationEngine
   end
 
   def integer_constant?
-    return false if @tokens.empty?
-    peek_type == :integer_constant
+    return false unless @tokenizer.has_more_commands?
+    current_type == :integer_constant
   end
 
   def string_constant?
-    return false if @tokens.empty?
-    peek_type == :string_constant
+    return false unless @tokenizer.has_more_commands?
+    current_type == :string_constant
   end
 
   def identifier?
-    return false if @tokens.empty?
-    peek_type == :identifier
+    return false unless @tokenizer.has_more_commands?
+    current_type == :identifier
   end
   alias :var_name?        :identifier?
   alias :subroutine_name? :identifier?
   alias :class_name?      :identifier?
 
   def unary_op?
-    token = peek
+    token = current_token
     return false unless token
 
     token.value == "-" || token.value == "~"
   end
 
   def op?
-    return false if @tokens.empty?
-    ["+", "-", "*", "/", "&", "|", "<", ">", "="].include?(peek_val)
+    return false unless @tokenizer.has_more_commands?
+    ["+", "-", "*", "/", "&", "|", "<", ">", "="].include?(current_val)
   end
 
   def term?
-    return false if @tokens.empty?
+    return false unless @tokenizer.has_more_commands?
     integer_constant? ||
       string_constant? ||
       keyword_constant? ||
       var_name? ||
       subroutine_call? ||
-      peek_val == "(" ||
+      current_val == "(" ||
       unary_op?
   end
 
   def statement?
-    return unless peek && peek_type == :keyword
-    %w[let if while do return].include?(peek_val)
+    return unless current_token && current_type == :keyword
+    %w[let if while do return].include?(current_val)
   end
 
   def type?
-    return false if @tokens.empty?
+    return false unless @tokenizer.has_more_commands?
     return true if class_name?
-    peek_type == :keyword &&
-      %w[int char boolean].include?(peek_val)
+    current_type == :keyword &&
+      %w[int char boolean].include?(current_val)
   end
 
   def subroutine?
-    return false if @tokens.empty?
-    peek_type == :keyword &&
-      %w[constructor method function].include?(peek_val)
+    return false unless @tokenizer.has_more_commands?
+    current_type == :keyword &&
+      %w[constructor method function].include?(current_val)
   end
 
   def return_type?
-    return false if @tokens.empty?
-    return true if peek_type == :keyword && peek_val == "void"
+    return false unless @tokenizer.has_more_commands?
+    return true if current_type == :keyword && current_val == "void"
     return true if type?
   end
 
   def subroutine_call?
     return false unless subroutine_name?
-    second_token = @tokens[1]
+    second_token = @tokenizer.look_ahead(1)
 
+    return false unless second_token
     return second_token.value == "." || second_token.value == "("
   end
 
-  def peek_val
-    peek.value
+  def current_val
+    current_token.value
   end
 
-  def peek_type
-    peek.type
+  def current_type
+    current_token.type
   end
 
-  def peek
-    @tokens[0]
+  def current_token
+    @tokenizer.current_token
+  end
+
+  def raise_unless_value(expected)
+    raise "Expected #{expected}, got #{current_token}" unless current_val == expected
+  end
+
+  def raise_unless_type(expected)
+    raise "Expected #{expected}, got #{current_token}" unless current_type == expected
   end
 end

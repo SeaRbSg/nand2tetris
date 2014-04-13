@@ -8,866 +8,821 @@ class TestCompilationEngine < Minitest::Test
   make_my_diffs_pretty!
 
   def setup
-    @ce = CompilationEngine.new([])
+    @ce = CompilationEngine.new()
+  end
+
+  def set_tokens(tokens)
+    @tokenizer    = StubTokenizer.new(tokens)
+    @ce.tokenizer = @tokenizer
+  end
+
+  def test_output_token
+
+    assert_equal [:keyword, "var"], @ce.output_token(Token.new(:keyword, "var"))
+    assert_equal [:symbol, "+"], @ce.output_token(Token.new(:symbol, "+"))
   end
 
   def test_compile_var_dec
-    @ce.tokens = [Token.new(:keyword, "var"),
-                  Token.new(:identifier, "SquareGame"),
-                  Token.new(:identifier, "game"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "let")]
 
-    expected = <<-eos
-<varDec>
- <keyword>var</keyword>
- <identifier>SquareGame</identifier>
- <identifier>game</identifier>
- <symbol>;</symbol>
-</varDec>
-    eos
+    set_tokens [Token.new(:keyword, "var"),
+                Token.new(:identifier, "SquareGame"),
+                Token.new(:identifier, "game"),
+                Token.new(:symbol, ";"),
+                Token.new(:keyword, "let")]
+
+    expected = [:var_dec,
+                [:keyword, "var"],
+                [:identifier, "SquareGame"],
+                [:identifier, "game"],
+                [:symbol, ";"]
+               ]
 
     assert_equal expected, @ce.compile_var_dec
   end
 
   def test_compile_multiple_var_dec
-    @ce.tokens = [Token.new(:keyword, "var"),
-                  Token.new(:keyword, "int"),
-                  Token.new(:identifier, "i"),
-                  Token.new(:symbol, ","),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "let")]
 
-    expected = <<-eos
-<varDec>
- <keyword>var</keyword>
- <keyword>int</keyword>
- <identifier>i</identifier>
- <symbol>,</symbol>
- <identifier>sum</identifier>
- <symbol>;</symbol>
-</varDec>
-    eos
+    set_tokens [Token.new(:keyword, "var"),
+                Token.new(:keyword, "int"),
+                Token.new(:identifier, "i"),
+                Token.new(:symbol, ","),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, ";"),
+                Token.new(:keyword, "let")]
+
+    expected = [:var_dec,
+                [:keyword, "var"],
+                [:keyword, "int"],
+                [:identifier, "i"],
+                [:symbol, ","],
+                [:identifier, "sum"],
+                [:symbol, ";"]
+               ]
 
     assert_equal expected, @ce.compile_var_dec
   end
 
   def test_compile_class_var_dec
-    @ce.tokens = [Token.new(:keyword, "field"),
-                  Token.new(:keyword, "int"),
-                  Token.new(:identifier, "x"),
-                  Token.new(:symbol, ","),
-                  Token.new(:identifier, "y"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "field")]
+    set_tokens [Token.new(:keyword, "field"),
+                Token.new(:keyword, "int"),
+                Token.new(:identifier, "x"),
+                Token.new(:symbol, ","),
+                Token.new(:identifier, "y"),
+                Token.new(:symbol, ";"),
+                Token.new(:keyword, "field")]
 
-    expected = <<-eos
-<classVarDec>
- <keyword>field</keyword>
- <keyword>int</keyword>
- <identifier>x</identifier>
- <symbol>,</symbol>
- <identifier>y</identifier>
- <symbol>;</symbol>
-</classVarDec>
-    eos
+    expected = [:class_var_dec,
+                [:keyword, "field"],
+                [:keyword, "int"],
+                [:identifier, "x"],
+                [:symbol, ","],
+                [:identifier, "y"],
+                [:symbol, ";"],
+               ]
 
     assert_equal expected, @ce.compile_class_var_dec
   end
 
   def test_compile_term_integer_constant
-    @ce.tokens = [Token.new(:integer_constant, "254"),]
 
-    expected = <<-eos
-<term>
- <integerConstant>254</integerConstant>
-</term>
-    eos
+    set_tokens [Token.new(:integer_constant, "254"),]
+
+    expected = [:term,
+                [:integer_constant, "254"]]
 
     assert_equal expected, @ce.compile_term
   end
 
   def test_compile_term_string_constant
-    @ce.tokens = [Token.new(:string_constant, "HIYA"),]
 
-    expected = <<-eos
-<term>
- <stringConstant>HIYA</stringConstant>
-</term>
-    eos
+    set_tokens [Token.new(:string_constant, "HIYA"),]
+
+    expected = [:term,
+                [:string_constant, "HIYA"]]
 
     assert_equal expected, @ce.compile_term
   end
 
   def test_compile_term_keyword_constant
-    @ce.tokens = [Token.new(:keyword, "this"),]
 
-    expected = <<-eos
-<term>
- <keyword>this</keyword>
-</term>
-    eos
+    set_tokens [Token.new(:keyword, "this"),]
+
+    expected = [:term,
+                [:keyword, "this"]]
 
     assert_equal expected, @ce.compile_term
   end
 
   def test_compile_term_var_name
-    @ce.tokens = [Token.new(:identifier, "Ax"),]
 
-    expected = <<-eos
-<term>
- <identifier>Ax</identifier>
-</term>
-    eos
+    set_tokens [Token.new(:identifier, "Ax"),]
+
+    expected = [:term,
+                [:identifier, "Ax"]]
 
     assert_equal expected, @ce.compile_term
   end
 
   def test_compile_term_var_name
-    @ce.tokens = [Token.new(:identifier, "Ax"),
-                  Token.new(:symbol, "["),
-                  Token.new(:identifier, "i"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "10"),
-                  Token.new(:symbol, "]"),]
+    set_tokens [Token.new(:identifier, "Ax"),
+                Token.new(:symbol, "["),
+                Token.new(:identifier, "i"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "10"),
+                Token.new(:symbol, "]"),]
 
-    expected = <<-eos
-<term>
- <identifier>Ax</identifier>
- <symbol>[</symbol>
- <expression>
-  <term>
-   <identifier>i</identifier>
-  </term>
-  <symbol>+</symbol>
-  <term>
-   <integerConstant>10</integerConstant>
-  </term>
- </expression>
- <symbol>]</symbol>
-</term>
-    eos
+    expected = [:term,
+                [:identifier, "Ax"],
+                [:symbol, "["],
+                [:expression,
+                 [:term,
+                  [:identifier, "i"],
+                 ],
+                 [:symbol, "+"],
+                 [:term,
+                  [:integer_constant, "10"]
+                 ],
+                ],
+                [:symbol, "]"],
+               ]
 
     assert_equal expected, @ce.compile_term
   end
 
   def test_compile_term_subroutine_call
-    @ce.tokens = [Token.new(:identifier, "Keyboard"),
-                  Token.new(:symbol, "."),
-                  Token.new(:identifier, "readInt"),
-                  Token.new(:symbol, "("),
-                  Token.new(:string_constant, "HOW MANY NUMBERS? "),
-                  Token.new(:symbol, ")"),]
+    set_tokens [Token.new(:identifier, "Keyboard"),
+                Token.new(:symbol, "."),
+                Token.new(:identifier, "readInt"),
+                Token.new(:symbol, "("),
+                Token.new(:string_constant, "HOW MANY NUMBERS? "),
+                Token.new(:symbol, ")"),]
 
-    expected = <<-eos
-<term>
- <identifier>Keyboard</identifier>
- <symbol>.</symbol>
- <identifier>readInt</identifier>
- <symbol>(</symbol>
- <expressionList>
-  <expression>
-   <term>
-    <stringConstant>HOW MANY NUMBERS? </stringConstant>
-   </term>
-  </expression>
- </expressionList>
- <symbol>)</symbol>
-</term>
-    eos
+    expected = [:term,
+                [:identifier, "Keyboard"],
+                [:symbol, "."],
+                [:identifier, "readInt"],
+                [:symbol, "("],
+                [:expression_list,
+                 [:expression,
+                  [:term,
+                   [:string_constant, "HOW MANY NUMBERS? "],
+                  ],
+                 ],
+                ],
+                [:symbol, ")"],
+               ]
 
     assert_equal expected, @ce.compile_term
   end
 
-  def test_subroutine_call?
-    @ce.tokens = [Token.new(:identifier, "Keyboard"),
-                  Token.new(:symbol, "."),
-                  Token.new(:identifier, "readInt"),
-                  Token.new(:symbol, "("),
-                  Token.new(:stringConstant, "HOW MANY NUMBERS? "),
-                  Token.new(:symbol, ")"),]
-
-    assert @ce.subroutine_call?
-  end
-
-
   def test_compile_expression_no_op
-    @ce.tokens = [Token.new(:string_constant, "Ax"),]
+    set_tokens [Token.new(:string_constant, "Ax"),]
 
-    expected = <<-eos
-<expression>
- <term>
-  <stringConstant>Ax</stringConstant>
- </term>
-</expression>
-    eos
+    expected = [:expression,
+                [:term,
+                 [:string_constant, "Ax"],
+                ]
+               ]
 
     assert_equal expected, @ce.compile_expression
   end
 
   def test_compile_expression_single_op
-    @ce.tokens = [Token.new(:integer_constant, "35"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "5"),]
+    set_tokens [Token.new(:integer_constant, "35"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "5"),]
 
-    expected = <<-eos
-<expression>
- <term>
-  <integerConstant>35</integerConstant>
- </term>
- <symbol>+</symbol>
- <term>
-  <integerConstant>5</integerConstant>
- </term>
-</expression>
-    eos
+    expected = [:expression,
+                [:term,
+                 [:integer_constant, "35"],
+                ],
+                [:symbol, "+"],
+                [:term,
+                 [:integer_constant, "5"],
+                ]
+               ]
 
     assert_equal expected, @ce.compile_expression
   end
 
   def test_compile_expression_many_op
-    @ce.tokens = [Token.new(:integer_constant, "35"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "5"),
-                  Token.new(:symbol, "-"),
-                  Token.new(:integer_constant, "10"),
-                  Token.new(:symbol, "*"),
-                  Token.new(:identifier, "abalone"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "let"),]
+    set_tokens [Token.new(:integer_constant, "35"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "5"),
+                Token.new(:symbol, "-"),
+                Token.new(:integer_constant, "10"),
+                Token.new(:symbol, "*"),
+                Token.new(:identifier, "abalone"),
+                Token.new(:symbol, ";"),
+                Token.new(:keyword, "let"),]
 
-    expected = <<-eos
-<expression>
- <term>
-  <integerConstant>35</integerConstant>
- </term>
- <symbol>+</symbol>
- <term>
-  <integerConstant>5</integerConstant>
- </term>
- <symbol>-</symbol>
- <term>
-  <integerConstant>10</integerConstant>
- </term>
- <symbol>*</symbol>
- <term>
-  <identifier>abalone</identifier>
- </term>
-</expression>
-    eos
-
-    assert_equal expected, @ce.compile_expression
-  end
-
-
-  def test_compile_expression_many_op
-    @ce.tokens = [Token.new(:integer_constant, "35"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "5"),
-                  Token.new(:symbol, "-"),
-                  Token.new(:integer_constant, "10"),
-                  Token.new(:symbol, "*"),
-                  Token.new(:identifier, "abalone"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "let"),]
-
-    expected = <<-eos
-<expression>
- <term>
-  <integerConstant>35</integerConstant>
- </term>
- <symbol>+</symbol>
- <term>
-  <integerConstant>5</integerConstant>
- </term>
- <symbol>-</symbol>
- <term>
-  <integerConstant>10</integerConstant>
- </term>
- <symbol>*</symbol>
- <term>
-  <identifier>abalone</identifier>
- </term>
-</expression>
-    eos
+    expected = [:expression,
+                [:term,
+                 [:integer_constant, "35"],
+                ],
+                [:symbol, "+"],
+                [:term,
+                 [:integer_constant, "5"],
+                ],
+                [:symbol, "-"],
+                [:term,
+                 [:integer_constant, "10"],
+                ],
+                [:symbol, "*"],
+                [:term,
+                 [:identifier, "abalone"],
+                ],
+               ]
 
     assert_equal expected, @ce.compile_expression
   end
 
   def test_expression_list
-    @ce.tokens = [Token.new(:identifier, "x"),
-                  Token.new(:symbol, ","),
-                  Token.new(:identifier, "y"),
-                  Token.new(:symbol, ","),
-                  Token.new(:identifier, "x"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "1"),
-                  Token.new(:symbol, ","),
-                  Token.new(:identifier, "y"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:identifier, "size"),
-                  Token.new(:symbol, ")")]
+    set_tokens [Token.new(:identifier, "x"),
+                Token.new(:symbol, ","),
+                Token.new(:identifier, "y"),
+                Token.new(:symbol, ","),
+                Token.new(:identifier, "x"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "1"),
+                Token.new(:symbol, ","),
+                Token.new(:identifier, "y"),
+                Token.new(:symbol, "+"),
+                Token.new(:identifier, "size"),
+                Token.new(:symbol, ")")]
 
-    expected = <<-eos
-<expressionList>
- <expression>
-  <term>
-   <identifier>x</identifier>
-  </term>
- </expression>
- <symbol>,</symbol>
- <expression>
-  <term>
-   <identifier>y</identifier>
-  </term>
- </expression>
- <symbol>,</symbol>
- <expression>
-  <term>
-   <identifier>x</identifier>
-  </term>
-  <symbol>+</symbol>
-  <term>
-   <integerConstant>1</integerConstant>
-  </term>
- </expression>
- <symbol>,</symbol>
- <expression>
-  <term>
-   <identifier>y</identifier>
-  </term>
-  <symbol>+</symbol>
-  <term>
-   <identifier>size</identifier>
-  </term>
- </expression>
-</expressionList>
-    eos
+    expected = [:expression_list,
+                [:expression,
+                 [:term,
+                  [:identifier, "x"],
+                 ],
+                ],
+                [:symbol, ","],
+                [:expression,
+                 [:term,
+                  [:identifier, "y"],
+                 ],
+                ],
+                [:symbol, ","],
+                [:expression,
+                 [:term,
+                  [:identifier, "x"],
+                 ],
+                 [:symbol, "+"],
+                 [:term,
+                  [:integer_constant, "1"],
+                 ],
+                ],
+                [:symbol, ","],
+                [:expression,
+                 [:term,
+                  [:identifier, "y"],
+                 ],
+                 [:symbol, "+"],
+                 [:term,
+                  [:identifier, "size"],
+                 ],
+                ],
+               ]
 
     assert_equal expected, @ce.compile_expression_list
   end
 
   def test_compile_local_subrountine
-    @ce.tokens = [Token.new(:identifier, "deAlloc"),
+    set_tokens [Token.new(:identifier, "deAlloc"),
                   Token.new(:symbol, "("),
                   Token.new(:keyword, "this"),
                   Token.new(:symbol, ")")]
-    expected = <<-eos
-<identifier>deAlloc</identifier>
-<symbol>(</symbol>
-<expressionList>
- <expression>
-  <term>
-   <keyword>this</keyword>
-  </term>
- </expression>
-</expressionList>
-<symbol>)</symbol>
-    eos
+    expected = [[:identifier, "deAlloc"],
+                [:symbol, "("],
+                [:expression_list,
+                 [:expression,
+                  [:term,
+                   [:keyword, "this"],
+                  ],
+                 ],
+                ],
+                [:symbol, ")"]]
 
     assert_equal expected, @ce.compile_subroutine_call
   end
 
   def test_compile_local_subrountine_with_dot
-    @ce.tokens = [Token.new(:identifier, "Memory"),
-                  Token.new(:symbol, "."),
-                  Token.new(:identifier, "deAlloc"),
-                  Token.new(:symbol, "("),
-                  Token.new(:keyword, "this"),
-                  Token.new(:symbol, ")")]
+    set_tokens [Token.new(:identifier, "Memory"),
+                Token.new(:symbol, "."),
+                Token.new(:identifier, "deAlloc"),
+                Token.new(:symbol, "("),
+                Token.new(:keyword, "this"),
+                Token.new(:symbol, ")")]
 
-    expected = <<-eos
-<identifier>Memory</identifier>
-<symbol>.</symbol>
-<identifier>deAlloc</identifier>
-<symbol>(</symbol>
-<expressionList>
- <expression>
-  <term>
-   <keyword>this</keyword>
-  </term>
- </expression>
-</expressionList>
-<symbol>)</symbol>
-    eos
+    expected = [[:identifier, "Memory"],
+                [:symbol, "."],
+                [:identifier, "deAlloc"],
+                [:symbol, "("],
+                [:expression_list,
+                 [:expression,
+                  [:term,
+                   [:keyword, "this"],
+                  ],
+                 ],
+                ],
+                [:symbol, ")"]]
 
     assert_equal expected, @ce.compile_subroutine_call
   end
 
-
   def test_compile_return
-    @ce.tokens = [Token.new(:keyword, "return"),
-                  Token.new(:identifier, "A"),
-                  Token.new(:symbol, "/"),
-                  Token.new(:integer_constant, "5"),
-                  Token.new(:symbol, ";")]
+    set_tokens [Token.new(:keyword, "return"),
+                Token.new(:identifier, "A"),
+                Token.new(:symbol, "/"),
+                Token.new(:integer_constant, "5"),
+                Token.new(:symbol, ";")]
 
-    expected = <<-eos
-<returnStatement>
- <keyword>return</keyword>
- <expression>
-  <term>
-   <identifier>A</identifier>
-  </term>
-  <symbol>/</symbol>
-  <term>
-   <integerConstant>5</integerConstant>
-  </term>
- </expression>
- <symbol>;</symbol>
-</returnStatement>
-    eos
+    expected = [:return_statement,
+                [:keyword, "return"],
+                [:expression,
+                 [:term,
+                  [:identifier, "A"],
+                 ],
+                 [:symbol, "/"],
+                 [:term,
+                  [:integer_constant, "5"],
+                 ],
+                ],
+                [:symbol, ";"],
+               ]
 
-    assert_equal expected, @ce.compile_return
+    actual = @ce.compile_return
+
+    assert_equal expected, actual
   end
 
   def test_compile_do
-    @ce.tokens = [Token.new(:keyword, "do"),
-                  Token.new(:identifier, "Memory"),
-                  Token.new(:symbol, "."),
-                  Token.new(:identifier, "deAlloc"),
-                  Token.new(:symbol, "("),
-                  Token.new(:keyword, "this"),
-                  Token.new(:symbol, ")"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "return"),
-                  Token.new(:symbol, ";"),]
+    set_tokens [Token.new(:keyword, "do"),
+                Token.new(:identifier, "Memory"),
+                Token.new(:symbol, "."),
+                Token.new(:identifier, "deAlloc"),
+                Token.new(:symbol, "("),
+                Token.new(:keyword, "this"),
+                Token.new(:symbol, ")"),
+                Token.new(:symbol, ";"),
+                Token.new(:keyword, "return"),
+                Token.new(:symbol, ";"),]
 
-    expected = <<-eos
-<doStatement>
- <keyword>do</keyword>
- <identifier>Memory</identifier>
- <symbol>.</symbol>
- <identifier>deAlloc</identifier>
- <symbol>(</symbol>
- <expressionList>
-  <expression>
-   <term>
-    <keyword>this</keyword>
-   </term>
-  </expression>
- </expressionList>
- <symbol>)</symbol>
- <symbol>;</symbol>
-</doStatement>
-    eos
-
+    expected = [:do_statement,
+                [:keyword, "do"],
+                [:identifier, "Memory"],
+                [:symbol, "."],
+                [:identifier, "deAlloc"],
+                [:symbol, "("],
+                [:expression_list,
+                 [:expression,
+                  [:term,
+                   [:keyword, "this"],
+                  ],
+                 ],
+                ],
+                [:symbol, ")"],
+                [:symbol, ";"],
+               ]
     assert_equal expected, @ce.compile_do
   end
 
   def test_compile_let
-    @ce.tokens = [Token.new(:keyword, "let"),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "="),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:identifier, "a"),
-                  Token.new(:symbol, "["),
-                  Token.new(:identifier, "i"),
-                  Token.new(:symbol, "]"),
-                  Token.new(:symbol, ";"),]
+    set_tokens [Token.new(:keyword, "let"),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "="),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "+"),
+                Token.new(:identifier, "a"),
+                Token.new(:symbol, "["),
+                Token.new(:identifier, "i"),
+                Token.new(:symbol, "]"),
+                Token.new(:symbol, ";"),]
 
-    expected = <<-eos
-<letStatement>
- <keyword>let</keyword>
- <identifier>sum</identifier>
- <symbol>=</symbol>
- <expression>
-  <term>
-   <identifier>sum</identifier>
-  </term>
-  <symbol>+</symbol>
-  <term>
-   <identifier>a</identifier>
-   <symbol>[</symbol>
-   <expression>
-    <term>
-     <identifier>i</identifier>
-    </term>
-   </expression>
-   <symbol>]</symbol>
-  </term>
- </expression>
- <symbol>;</symbol>
-</letStatement>
-    eos
+    expected = [:let_statement,
+                [:keyword, "let"],
+                [:identifier, "sum"],
+                [:symbol, "="],
+                [:expression,
+                 [:term,
+                  [:identifier, "sum"],
+                 ],
+                 [:symbol, "+"],
+                 [:term,
+                  [:identifier, "a"],
+                  [:symbol, "["],
+                  [:expression,
+                   [:term,
+                    [:identifier, "i"],
+                   ],
+                  ],
+                  [:symbol, "]"],
+                 ],
+                ],
+                [:symbol, ";"],
+               ]
 
     assert_equal expected, @ce.compile_let
   end
 
   def test_compile_statements
-    @ce.tokens = [Token.new(:keyword, "let"),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "="),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:identifier, "a"),
-                  Token.new(:symbol, "["),
-                  Token.new(:identifier, "i"),
-                  Token.new(:symbol, "]"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:keyword, "let"),
-                  Token.new(:identifier, "i"),
-                  Token.new(:symbol, "="),
-                  Token.new(:identifier, "i"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "1"),
-                  Token.new(:symbol, ";"),]
+    set_tokens [Token.new(:keyword, "let"),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "="),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "+"),
+                Token.new(:identifier, "a"),
+                Token.new(:symbol, "["),
+                Token.new(:identifier, "i"),
+                Token.new(:symbol, "]"),
+                Token.new(:symbol, ";"),
+                Token.new(:keyword, "let"),
+                Token.new(:identifier, "i"),
+                Token.new(:symbol, "="),
+                Token.new(:identifier, "i"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "1"),
+                Token.new(:symbol, ";"),]
 
-    expected = <<-eos
-<statements>
- <letStatement>
-  <keyword>let</keyword>
-  <identifier>sum</identifier>
-  <symbol>=</symbol>
-  <expression>
-   <term>
-    <identifier>sum</identifier>
-   </term>
-   <symbol>+</symbol>
-   <term>
-    <identifier>a</identifier>
-    <symbol>[</symbol>
-    <expression>
-     <term>
-      <identifier>i</identifier>
-     </term>
-    </expression>
-    <symbol>]</symbol>
-   </term>
-  </expression>
-  <symbol>;</symbol>
- </letStatement>
- <letStatement>
-  <keyword>let</keyword>
-  <identifier>i</identifier>
-  <symbol>=</symbol>
-  <expression>
-   <term>
-    <identifier>i</identifier>
-   </term>
-   <symbol>+</symbol>
-   <term>
-    <integerConstant>1</integerConstant>
-   </term>
-  </expression>
-  <symbol>;</symbol>
- </letStatement>
-</statements>
-    eos
+    expected = [:statements,
+                [:let_statement,
+                 [:keyword, "let"],
+                 [:identifier, "sum"],
+                 [:symbol, "="],
+                 [:expression,
+                  [:term,
+                   [:identifier, "sum"],
+                  ],
+                  [:symbol, "+"],
+                  [:term,
+                   [:identifier, "a"],
+                   [:symbol, "["],
+                   [:expression,
+                    [:term,
+                     [:identifier, "i"],
+                    ],
+                   ],
+                   [:symbol, "]"],
+                  ],
+                 ],
+                 [:symbol, ";"],
+                ],
+                [:let_statement,
+                 [:keyword, "let"],
+                 [:identifier, "i"],
+                 [:symbol, "="],
+                 [:expression,
+                  [:term,
+                   [:identifier, "i"],
+                  ],
+                  [:symbol, "+"],
+                  [:term,
+                   [:integer_constant, "1"]
+                  ],
+                 ],
+                 [:symbol, ";"],
+                ],
+               ]
 
     assert_equal expected, @ce.compile_statements
   end
 
   def test_compile_while
-    @ce.tokens = [Token.new(:keyword, "while"),
-                  Token.new(:symbol, "("),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "<"),
-                  Token.new(:integer_constant, "10"),
-                  Token.new(:symbol, ")"),
-                  Token.new(:symbol, "{"),
-                  Token.new(:keyword, "let"),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "="),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "1"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:symbol, "}"),]
+    set_tokens [Token.new(:keyword, "while"),
+                Token.new(:symbol, "("),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "<"),
+                Token.new(:integer_constant, "10"),
+                Token.new(:symbol, ")"),
+                Token.new(:symbol, "{"),
+                Token.new(:keyword, "let"),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "="),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "1"),
+                Token.new(:symbol, ";"),
+                Token.new(:symbol, "}"),]
 
-    expected = <<-eos
-<whileStatement>
- <keyword>while</keyword>
- <symbol>(</symbol>
- <expression>
-  <term>
-   <identifier>sum</identifier>
-  </term>
-  <symbol>&lt;</symbol>
-  <term>
-   <integerConstant>10</integerConstant>
-  </term>
- </expression>
- <symbol>)</symbol>
- <symbol>{</symbol>
- <statements>
-  <letStatement>
-   <keyword>let</keyword>
-   <identifier>sum</identifier>
-   <symbol>=</symbol>
-   <expression>
-    <term>
-     <identifier>sum</identifier>
-    </term>
-    <symbol>+</symbol>
-    <term>
-     <integerConstant>1</integerConstant>
-    </term>
-   </expression>
-   <symbol>;</symbol>
-  </letStatement>
- </statements>
- <symbol>}</symbol>
-</whileStatement>
-    eos
+    expected = [:while_statement,
+                [:keyword, "while"],
+                [:symbol, "("],
+                [:expression,
+                 [:term,
+                  [:identifier, "sum"],
+                 ],
+                 [:symbol, "<"],
+                 [:term,
+                  [:integer_constant, "10"],
+                 ],
+                ],
+                [:symbol, ")"],
+                [:symbol, "{"],
+                [:statements,
+                 [:let_statement,
+                  [:keyword, "let"],
+                  [:identifier, "sum"],
+                  [:symbol, "="],
+                  [:expression,
+                   [:term,
+                    [:identifier, "sum"],
+                   ],
+                   [:symbol, "+"],
+                   [:term,
+                    [:integer_constant, "1"],
+                   ],
+                  ],
+                  [:symbol, ";"],
+                 ],
+                ],
+                [:symbol, "}"],
+               ]
 
     assert_equal expected, @ce.compile_while
   end
 
   def test_compile_if
-    @ce.tokens = [Token.new(:keyword, "if"),
-                  Token.new(:symbol, "("),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "<"),
-                  Token.new(:integer_constant, "10"),
-                  Token.new(:symbol, ")"),
-                  Token.new(:symbol, "{"),
-                  Token.new(:keyword, "let"),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "="),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "1"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:symbol, "}"),
-                  Token.new(:keyword, "else"),
-                  Token.new(:symbol, "{"),
-                  Token.new(:keyword, "let"),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "="),
-                  Token.new(:identifier, "sum"),
-                  Token.new(:symbol, "+"),
-                  Token.new(:integer_constant, "1"),
-                  Token.new(:symbol, ";"),
-                  Token.new(:symbol, "}"),]
+    set_tokens [Token.new(:keyword, "if"),
+                Token.new(:symbol, "("),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "<"),
+                Token.new(:integer_constant, "10"),
+                Token.new(:symbol, ")"),
+                Token.new(:symbol, "{"),
+                Token.new(:keyword, "let"),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "="),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "1"),
+                Token.new(:symbol, ";"),
+                Token.new(:symbol, "}"),
+                Token.new(:keyword, "else"),
+                Token.new(:symbol, "{"),
+                Token.new(:keyword, "let"),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "="),
+                Token.new(:identifier, "sum"),
+                Token.new(:symbol, "+"),
+                Token.new(:integer_constant, "1"),
+                Token.new(:symbol, ";"),
+                Token.new(:symbol, "}"),]
 
-    expected = <<-eos
-<ifStatement>
- <keyword>if</keyword>
- <symbol>(</symbol>
- <expression>
-  <term>
-   <identifier>sum</identifier>
-  </term>
-  <symbol>&lt;</symbol>
-  <term>
-   <integerConstant>10</integerConstant>
-  </term>
- </expression>
- <symbol>)</symbol>
- <symbol>{</symbol>
- <statements>
-  <letStatement>
-   <keyword>let</keyword>
-   <identifier>sum</identifier>
-   <symbol>=</symbol>
-   <expression>
-    <term>
-     <identifier>sum</identifier>
-    </term>
-    <symbol>+</symbol>
-    <term>
-     <integerConstant>1</integerConstant>
-    </term>
-   </expression>
-   <symbol>;</symbol>
-  </letStatement>
- </statements>
- <symbol>}</symbol>
- <keyword>else</keyword>
- <symbol>{</symbol>
- <statements>
-  <letStatement>
-   <keyword>let</keyword>
-   <identifier>sum</identifier>
-   <symbol>=</symbol>
-   <expression>
-    <term>
-     <identifier>sum</identifier>
-    </term>
-    <symbol>+</symbol>
-    <term>
-     <integerConstant>1</integerConstant>
-    </term>
-   </expression>
-   <symbol>;</symbol>
-  </letStatement>
- </statements>
- <symbol>}</symbol>
-</ifStatement>
-    eos
+    expected = [:if_statement,
+                [:keyword, "if"],
+                [:symbol, "("],
+                [:expression,
+                 [:term,
+                  [:identifier, "sum"],
+                 ],
+                 [:symbol, "<"],
+                 [:term,
+                  [:integer_constant, "10"]
+                 ],
+                ],
+                [:symbol, ")"],
+                [:symbol, "{"],
+                [:statements,
+                 [:let_statement,
+                  [:keyword, "let"],
+                  [:identifier, "sum"],
+                  [:symbol, "="],
+                  [:expression,
+                   [:term,
+                    [:identifier, "sum"],
+                   ],
+                   [:symbol, "+"],
+                   [:term,
+                    [:integer_constant, "1"],
+                   ],
+                  ],
+                  [:symbol, ";"],
+                 ],
+                ],
+                [:symbol, "}"],
+                [:keyword, "else"],
+                [:symbol, "{"],
+                [:statements,
+                 [:let_statement,
+                  [:keyword, "let"],
+                  [:identifier, "sum"],
+                  [:symbol, "="],
+                  [:expression,
+                   [:term,
+                    [:identifier, "sum"],
+                   ],
+                   [:symbol, "+"],
+                   [:term,
+                    [:integer_constant, "1"],
+                   ],
+                  ],
+                  [:symbol, ";"],
+                 ],
+                ],
+                [:symbol, "}"],
+               ]
 
     assert_equal expected, @ce.compile_if
   end
 
   def test_compile_parameter_list
-    @ce.tokens = [Token.new(:keyword, "int"),
-                  Token.new(:identifier, "Ax"),
-                  Token.new(:symbol, ","),
-                  Token.new(:keyword, "int"),
-                  Token.new(:identifier, "Ay"),
-                  Token.new(:symbol, ","),
-                  Token.new(:keyword, "int"),
-                  Token.new(:identifier, "Asize"),
-                  Token.new(:symbol, ")"),]
+    set_tokens [Token.new(:keyword, "int"),
+                Token.new(:identifier, "Ax"),
+                Token.new(:symbol, ","),
+                Token.new(:keyword, "int"),
+                Token.new(:identifier, "Ay"),
+                Token.new(:symbol, ","),
+                Token.new(:keyword, "int"),
+                Token.new(:identifier, "Asize"),
+                Token.new(:symbol, ")"),]
 
-    expected = <<-eos
-<parameterList>
- <keyword>int</keyword>
- <identifier>Ax</identifier>
- <symbol>,</symbol>
- <keyword>int</keyword>
- <identifier>Ay</identifier>
- <symbol>,</symbol>
- <keyword>int</keyword>
- <identifier>Asize</identifier>
-</parameterList>
-    eos
+    expected = [:parameter_list,
+                [:keyword, "int"],
+                [:identifier, "Ax"],
+                [:symbol, ","],
+                [:keyword, "int"],
+                [:identifier, "Ay"],
+                [:symbol, ","],
+                [:keyword, "int"],
+                [:identifier, "Asize"],
+               ]
 
     assert_equal expected, @ce.compile_parameter_list
   end
 
   def test_keyword_constant?
-    @ce.tokens = [Token.new(:keyword, "true")]
+    set_tokens [Token.new(:keyword, "true")]
     assert @ce.keyword_constant?
 
-    @ce.tokens = [Token.new(:keyword, "false")]
+    set_tokens [Token.new(:keyword, "false")]
     assert @ce.keyword_constant?
 
-    @ce.tokens = [Token.new(:keyword, "null")]
+    set_tokens [Token.new(:keyword, "null")]
     assert @ce.keyword_constant?
 
-    @ce.tokens = [Token.new(:keyword, "this")]
+    set_tokens [Token.new(:keyword, "this")]
     assert @ce.keyword_constant?
 
-    @ce.tokens = [Token.new(:identifier, "Ax")]
+    set_tokens [Token.new(:identifier, "Ax")]
     refute @ce.keyword_constant?
 
-    @ce.tokens = [Token.new(:keyword, "class")]
+    set_tokens [Token.new(:keyword, "class")]
     refute @ce.keyword_constant?
   end
 
   def test_unary_op?
-    @ce.tokens = [Token.new(:symbol, "-")]
+    set_tokens [Token.new(:symbol, "-")]
     assert @ce.unary_op?
 
-    @ce.tokens = [Token.new(:symbol, "~")]
+    set_tokens [Token.new(:symbol, "~")]
     assert @ce.unary_op?
 
-    @ce.tokens = [Token.new(:symbol, "+")]
+    set_tokens [Token.new(:symbol, "+")]
     refute @ce.unary_op?
   end
 
   def test_op?
-    @ce.tokens = [Token.new(:symbol, "+")]
+    set_tokens [Token.new(:symbol, "+")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "-")]
+    set_tokens [Token.new(:symbol, "-")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "*")]
+    set_tokens [Token.new(:symbol, "*")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "/")]
+    set_tokens [Token.new(:symbol, "/")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "&")]
+    set_tokens [Token.new(:symbol, "&")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "|")]
+    set_tokens [Token.new(:symbol, "|")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "<")]
+    set_tokens [Token.new(:symbol, "<")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, ">")]
+    set_tokens [Token.new(:symbol, ">")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "=")]
+    set_tokens [Token.new(:symbol, "=")]
     assert @ce.op?
 
-    @ce.tokens = [Token.new(:symbol, "~")]
+    set_tokens [Token.new(:symbol, "~")]
     refute @ce.op?
   end
 
   def test_statement?
-    @ce.tokens = [Token.new(:keyword, "let")]
+    set_tokens [Token.new(:keyword, "let")]
     assert @ce.statement?
 
-    @ce.tokens = [Token.new(:keyword, "if")]
+    set_tokens [Token.new(:keyword, "if")]
     assert @ce.statement?
 
-    @ce.tokens = [Token.new(:keyword, "while")]
+    set_tokens [Token.new(:keyword, "while")]
     assert @ce.statement?
 
-    @ce.tokens = [Token.new(:keyword, "do")]
+    set_tokens [Token.new(:keyword, "do")]
     assert @ce.statement?
 
-    @ce.tokens = [Token.new(:keyword, "return")]
+    set_tokens [Token.new(:keyword, "return")]
     assert @ce.statement?
 
-    @ce.tokens = [Token.new(:symbol, "~")]
+    set_tokens [Token.new(:symbol, "~")]
     refute @ce.statement?
 
-    @ce.tokens = [Token.new(:keyword, "class")]
+    set_tokens [Token.new(:keyword, "class")]
     refute @ce.statement?
 
-    @ce.tokens = []
+    set_tokens []
     refute @ce.statement?
   end
 
   def test_type?
-    @ce.tokens = [Token.new(:keyword, "int")]
+    set_tokens [Token.new(:keyword, "int")]
     assert @ce.type?
 
-    @ce.tokens = [Token.new(:keyword, "char")]
+    set_tokens [Token.new(:keyword, "char")]
     assert @ce.type?
 
-    @ce.tokens = [Token.new(:keyword, "boolean")]
+    set_tokens [Token.new(:keyword, "boolean")]
     assert @ce.type?
 
-    @ce.tokens = [Token.new(:identifier, "Square")]
+    set_tokens [Token.new(:identifier, "Square")]
     assert @ce.type?
 
-    @ce.tokens = [Token.new(:keyword, "return")]
+    set_tokens [Token.new(:keyword, "return")]
     refute @ce.type?
 
-    @ce.tokens = [Token.new(:symbol, "~")]
+    set_tokens [Token.new(:symbol, "~")]
     refute @ce.type?
 
-    @ce.tokens = [Token.new(:keyword, "class")]
+    set_tokens [Token.new(:keyword, "class")]
     refute @ce.type?
 
-    @ce.tokens = []
+    set_tokens []
     refute @ce.type?
   end
 
   def test_subroutine?
-    @ce.tokens = [Token.new(:keyword, "constructor")]
+    set_tokens [Token.new(:keyword, "constructor")]
     assert @ce.subroutine?
 
-    @ce.tokens = [Token.new(:keyword, "function")]
+    set_tokens [Token.new(:keyword, "function")]
     assert @ce.subroutine?
 
-    @ce.tokens = [Token.new(:keyword, "method")]
+    set_tokens [Token.new(:keyword, "method")]
     assert @ce.subroutine?
 
-    @ce.tokens = [Token.new(:keyword, "return")]
+    set_tokens [Token.new(:keyword, "return")]
     refute @ce.subroutine?
 
-    @ce.tokens = [Token.new(:symbol, "~")]
+    set_tokens [Token.new(:symbol, "~")]
     refute @ce.subroutine?
 
-    @ce.tokens = [Token.new(:keyword, "class")]
+    set_tokens [Token.new(:keyword, "class")]
     refute @ce.subroutine?
 
-    @ce.tokens = []
+    set_tokens []
     refute @ce.subroutine?
   end
 
-  # compile_class
-  # compile_subroutine
+  def test_subroutine_call?
+    set_tokens [Token.new(:identifier, "Keyboard"),
+                Token.new(:symbol, "."),
+                Token.new(:identifier, "readInt"),
+                Token.new(:symbol, "("),
+                Token.new(:stringConstant, "HOW MANY NUMBERS? "),
+                Token.new(:symbol, ")"),]
 
+    assert @ce.subroutine_call?
+  end
+end
+
+class StubTokenizer
+  attr_accessor :tokens, :index
+
+  def initialize(tokens = [], index = 0)
+    @index = index
+    @tokens = tokens
+  end
+
+  def advance
+    @index += 1
+    current_token
+  end
+
+  def current_token
+    @tokens[@index]
+  end
+
+  def has_more_commands?
+    @index < @tokens.length
+  end
+
+  def look_ahead(index)
+    @tokens[@index + index]
+  end
 end
