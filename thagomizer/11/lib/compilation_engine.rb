@@ -145,7 +145,7 @@ class CompilationEngine
     ast << output_next_token
     if current_val == "."
       ast << output_next_token
-      raise "Invalid subroutine name" unless current_type == :identifier
+      raise "Invalid subroutine name #{current_token}" unless current_type == :identifier
       ast << output_next_token
     end
 
