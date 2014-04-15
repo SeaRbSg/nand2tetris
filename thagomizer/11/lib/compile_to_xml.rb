@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
 
 require_relative 'jack_tokenizer'
-require_relative 'compilation_engine'
+require_relative 'compilation_engine_ast'
 require 'builder'
 
 class CompileToXML
@@ -21,7 +21,7 @@ class CompileToXML
 
       tokenizer.advance
 
-      ce = CompilationEngine.new tokenizer
+      ce = CompilationEngineAst.new tokenizer
 
       ast = ce.compile_class
 
