@@ -2,7 +2,7 @@ gem "minitest"
 require 'minitest/autorun'
 
 require_relative '../lib/compilation_engine'
-require 'token'
+require_relative '../lib/token'
 
 class TestCompilationEngine < Minitest::Test
   make_my_diffs_pretty!
