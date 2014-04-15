@@ -2,7 +2,7 @@ require 'strscan'
 require_relative 'token'
 
 class JackTokenizer
-  KEYWORDS = Regexp.union(%w(class constructor function method field static var int char boolean void true false null this let do if else while return))
+  KEYWORDS = /#{Regexp.union(%w(class constructor function method field static var int char boolean void true false null this let do if else while return))}\b/
 
   SYMBOLS = Regexp.union("{}()[].,;+-*/&|<>=~".split(''))
 
