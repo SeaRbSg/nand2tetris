@@ -2,9 +2,7 @@
 
 require_relative 'jack_tokenizer'
 require_relative 'compilation_engine'
-require 'pp'
 require 'builder'
-require 'json'
 
 class CompileToXML
   def self.run path
@@ -36,7 +34,7 @@ class CompileToXML
   def self.generate_xml(ast)
     output = ""
 
-    builder = Builder::XmlMarkup.new(:target => output, :indent => 2)
+    builder = Builder::XmlMarkup.new(:target => output, :indent => 1)
 
     output_nodes(builder, ast)
 
@@ -46,7 +44,7 @@ class CompileToXML
   def self.output_nodes(builder, ast)
     return if ast.empty?
 
-    if ast.length == 2
+    if ast.length == 2 && (ast[1].class == String || ast[1].class == Fixnum)
       builder.tag! ast[0], ast[1]
     elsif ast.length == 1
       builder.tag! ast[0]
