@@ -9,9 +9,11 @@ classVarDec: ("static" | "field") type varName ("," varName)* ";"
 type: "int" | "char" | "boolean" | className
 
 subroutineDec: (("constructor" | "function" | "method")
-                ("void" | type)
+                returnType
                 subroutineName "(" parameterList ")"
                 subroutineBody)
+
+returnType: "void" | type
 
 parameterList: [(type varName) ("," type varName)*]
 
