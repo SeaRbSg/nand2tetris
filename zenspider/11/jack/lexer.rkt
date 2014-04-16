@@ -40,15 +40,15 @@
    ["while"       (token lexeme lexeme)]
    ["return"      (token lexeme lexeme)]
 
-   ["{" (token lexeme)]
-   ["}" (token lexeme)]
-   ["(" (token lexeme)]
-   [")" (token lexeme)]
-   ["[" (token lexeme)]
-   ["]" (token lexeme)]
-   ["." (token lexeme)]
-   ["," (token lexeme)]
-   [";" (token lexeme)]
+   ["{" (token lexeme lexeme)]
+   ["}" (token lexeme lexeme)]
+   ["(" (token lexeme lexeme)]
+   [")" (token lexeme lexeme)]
+   ["[" (token lexeme lexeme)]
+   ["]" (token lexeme lexeme)]
+   ["." (token lexeme lexeme)]
+   ["," (token lexeme lexeme)]
+   [";" (token lexeme lexeme)]
    ["+" (token lexeme lexeme)]
    ["-" (token lexeme lexeme)]
    ["*" (token lexeme lexeme)]
@@ -62,7 +62,7 @@
 
    [(:+ numeric)
     ; TODO: verify size of int? or let parser do it?
-    (token 'NUM lexeme)]
+    (token 'NUM (string->number lexeme))]
    [(:: alphabetic (:* (:or alphabetic numeric)))
     (token 'ID lexeme)]
    [(:: #\" (:* (:~ #\" #\newline)) #\" )
