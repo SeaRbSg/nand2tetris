@@ -1,3 +1,4 @@
+// -*- c -*-
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
@@ -7,54 +8,155 @@
  * Represents a String object. Implements the String type.
  */
 class String {
+  field int max, len;
+  field Array s;
 
     /** Constructs a new empty String with a maximum length of maxLength. */
     constructor String new(int maxLength) {
+      let len = 0;
+      let max = maxLength;
+
+      if (max > 0) {
+        let s = Array.new(max);
+      }
+
+      return this;
     }
 
     /** De-allocates the string and frees its space. */
     method void dispose() {
+      if (max > 0) {
+        do Memory.deAlloc(s);
+      }
+      return;
     }
 
     /** Returns the current length of this String. */
     method int length() {
+      return len;
     }
 
     /** Returns the character at location j. */
     method char charAt(int j) {
+      if (j < len) {
+        return s[j];
+      }
+      return 0;
     }
 
     /** Sets the j'th character of this string to be c. */
     method void setCharAt(int j, char c) {
+      if (j < len) {
+        let s[j] = c;
+      }
+      return;
     }
 
     /** Appends the character c to the end of this String.
      *  Returns this string as the return value. */
     method String appendChar(char c) {
+      if (len < max) {
+        let s[len] = c;
+        let len = len + 1;
+      }
+      return this;
     }
 
     /** Erases the last character from this String. */
     method void eraseLastChar() {
+      if (len > 0) {
+        let len = len - 1;
+      }
+      return;
     }
 
     /** Returns the integer value of this String until the first non
      *  numeric character. */
     method int intValue() {
+      var int i, n;
+      var char c;
+      var boolean neg;
+      
+      let neg = false;
+      let i = 0;
+      let n = 0;
+      
+      while (i < len) {
+        let c = s[i];
+        if ((47 < c) & (c < 58)) {
+          let n = (n * 10) + (c - 48);
+        } else {
+          if (c = 45) { // -
+            let neg = true;
+          } else {
+            // error handling?
+          }
+        }
+        let i = i + 1;
+      }
+
+      if (neg) {
+        let n = -n;
+      }
+
+      return n;
     }
 
     /** Sets this String to hold a representation of the given number. */
     method void setInt(int number) {
+      var Array ns;
+      var int i, n, m;
+      var boolean neg;
+
+      let neg = false;
+      let i = 0;
+
+      let ns = Array.new(6); // -32767
+
+      if (number < 0) {
+        let neg = true;
+        let number = -number;
+      }
+
+      while (number > 0) {
+        let n = Math.divide(number, 10);
+        let m = number - (n * 10); // cheap mod
+
+        let ns[i] = m + 48;
+        let i = i + 1;
+        let number = n;
+      }
+
+      if (neg) {
+        let ns[i] = 45;
+        let i = i + 1;
+      }
+
+      let len = i;
+      let i = 0;
+
+      while (i < len) {
+        let s[i] = ns[len-i-1];
+        let i = i + 1;
+      }
+
+      do ns.dispose();
+
+      return;
     }
 
     /** Returns the new line character. */
     function char newLine() {
+      return 128;
     }
 
     /** Returns the backspace character. */
     function char backSpace() {
+      return 129;
     }
 
     /** Returns the double quote (") character. */
     function char doubleQuote() {
+      return 34;
     }
 }
