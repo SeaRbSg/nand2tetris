@@ -49,7 +49,7 @@
         classvars:cvar ... subroutines ... "}")
        (define name (syntax-e #'class-name))
 
-       (printf "// class ~a~n" name)
+       ;; (printf "// class ~a~n" name)
 
        (define new-env
          (for/fold ([env (env-set env 'class-name name)])
@@ -146,22 +146,27 @@
        (define expr* (compile-expression #'expression env))
        (define var? (env-get env var*))
        (printf "pop ~a ~a~n" (var-scope var?) (var-idx var?))]
+
       [({~datum letStatement} "let" varname "[" idx "]" "=" expression ";")
        (error "not yet" stx)
        (list 'let ; TODO
              (compile-varname #'varname env)
              (compile-expression #'idx env)
              (compile-expression #'expression env))]
+
       [({~datum whileStatement} "while" "(" expression ")" "{" statements "}")
-       (error "not yet" stx)
        (list 'while ; TODO
              (compile-expression #'expression env)
              (compile-statements #'statements env))]
+
       [({~datum doStatement} "do" subroutineCall ";")
-       (compile-call #'subroutineCall env)]
+       (compile-call #'subroutineCall env)
+       (printf "pop temp 0~n")]
+
       [({~datum returnStatement} "return" ";")
        (printf "push constant 0~n")
        (printf "return~n")]
+
       [({~datum returnStatement} "return" expression ";")
        (compile-expression #'expression env)
        (printf "return~n")]))
@@ -189,6 +194,8 @@
   (define (compile-expression-list stx env)
     ;; expressionList: [expression ("," expression)*]
     (syntax-parse stx
+      [({~datum expressionList})        ; TODO: better way? ~optional maybe?
+       (list)]
       [({~datum expressionList} e0 (~seq "," exprs) ...)
        (cons (compile-expression #'e0 env)
              (map/compile compile-expression #'(exprs ...) env))]))
@@ -261,15 +268,14 @@
   (require racket/cmdline)
 
   (let ([paths (command-line #:args paths paths)])
-    
+
     (when (empty? paths)
       (set! paths (list "ConvertToBin/Main.jack"))
       (set! paths (list "ConvertToBin/Main.jack"))
       (set! paths (list "../09/grid/MathX.jack")))
-    
+
     (for ([path paths])
       (define xexpr (jack (open-input-file path)))
       ;; (pretty-print (syntax->datum xexpr))
       ;; (newline)
-      (jack/compile xexpr)
-      (newline))))
+      (jack/compile xexpr))))
