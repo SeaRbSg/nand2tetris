@@ -163,6 +163,12 @@
        (compile-call #'subroutineCall env)
        (printf "pop temp 0~n")]
 
+      [({~datum ifStatement} "if" "(" c ")" "{" t "}" "else" "{" f "}")
+       (error "not yet" stx)]
+
+      [({~datum ifStatement} "if" "(" c ")" "{" t "}")
+       (error "not yet" stx)]
+
       [({~datum returnStatement} "return" ";")
        (printf "push constant 0~n")
        (printf "return~n")]
@@ -221,6 +227,14 @@
       [({~datum op} val)
        (printf "~a~n" (hash-ref OPS (syntax-e #'val)))]))
 
+  (define (compile-keyword stx env)
+    (syntax-parse stx
+      ["true"
+       (printf "push constant 0\nnot\n")]
+      ["false"
+       (printf "push constant 0\n")]
+      [_ (error "Unknown keyword literal:" (syntax-e stx))]))
+
   (define (compile-term stx env)
     ;; (wtf 'term stx)
     (syntax-parse stx
@@ -232,8 +246,7 @@
        (printf "push ~a\n" (syntax-e #'val))]
 
       [({~datum term} ({~datum keywordConstant} val))
-       (error "not yet" stx)
-       (printf "push ~a\n" (syntax-e #'val))]
+       (compile-keyword #'val env)]
 
       [({~datum term} var:var "[" expr "]")
        (error "not yet" stx)
