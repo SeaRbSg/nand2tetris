@@ -1,3 +1,4 @@
+#!/MyApplications/dev/lisp/Racket/bin/racket
 #lang racket/base
 
 (require racket/list)
@@ -19,6 +20,13 @@
 
   (define-syntax-class cvar
     (pattern ({~datum classVarDec} scope type name0 (~seq "," names) ... ";")))
+
+  (define-syntax-class call
+    (pattern ({~datum subroutineCall} subroutineName "(" expressionList ")"))
+    (pattern ({~datum subroutineCall} recv "." subroutineName "(" expressionList ")")))
+
+  (define-syntax-class var
+    (pattern ({~datum varName} name)))
 
   ;; TODO
   ;; (define-syntax-class term
@@ -96,23 +104,23 @@
     (syntax-parse stx
       [({~datum parameterList})
        env]
-      [({~datum parameterList} (~seq type0 var0 (~seq "," ts vars) ...))
+      [({~datum parameterList} (~seq type0 name0 (~seq "," ts names) ...))
        (for/fold ([env env])
                  ([t (cons (compile-type #'type0 env)
                            (map/compile compile-type #'(ts ...) env))]
-                  [v (cons (compile-varname #'var0 env)
-                           (map/compile compile-varname #'(vars ...) env))])
-         (env-add env v t "argument"))]))
+                  [n (cons (compile-varname #'name0 env)
+                           (map/compile compile-varname #'(names ...) env))])
+         (env-add env n t "argument"))]))
 
   (define (compile-sub-var stx env)
     ;; (wtf 'subvar stx)
     (syntax-parse stx
       [({~datum varDec} "var" type name0 (~seq "," names) ... ";")
        (define type* (compile-type #'type env))
-       (define names* (cons (compile-varname #'name0 env)
-                            (map/compile compile-varname #'(names ...) env)))
-       (error "not yet")
-       (list type* names*)]))
+       (for/fold ([env env])
+                 ([n (cons (compile-varname #'name0 env)
+                           (map/compile compile-varname #'(names ...) env))])
+         (env-add env n type* "local"))]))
 
   (define (compile-type stx env)
     (syntax-parse stx
@@ -139,19 +147,20 @@
        (define var? (env-get env var*))
        (printf "pop ~a ~a~n" (var-scope var?) (var-idx var?))]
       [({~datum letStatement} "let" varname "[" idx "]" "=" expression ";")
-       (error "not yet")
+       (error "not yet" stx)
        (list 'let ; TODO
              (compile-varname #'varname env)
              (compile-expression #'idx env)
              (compile-expression #'expression env))]
       [({~datum whileStatement} "while" "(" expression ")" "{" statements "}")
-       (error "not yet")
+       (error "not yet" stx)
        (list 'while ; TODO
              (compile-expression #'expression env)
              (compile-statements #'statements env))]
       [({~datum doStatement} "do" subroutineCall ";")
        (compile-call #'subroutineCall env)]
       [({~datum returnStatement} "return" ";")
+       (printf "push constant 0~n")
        (printf "return~n")]
       [({~datum returnStatement} "return" expression ";")
        (compile-expression #'expression env)
@@ -163,7 +172,7 @@
         (subroutineName subname) "(" args ")")
        (define args* (compile-expression-list #'args env))
 
-       (error "not yet")
+       (error "not yet" stx)
        (list 'sub
              (syntax-e #'subname)
              (syntax->list #'args))]
@@ -185,7 +194,7 @@
              (map/compile compile-expression #'(exprs ...) env))]))
 
   (define (compile-expression stx env)
-    (wtf 'expression stx)
+    ;; (wtf 'expression stx)
     (syntax-parse stx
       [({~datum expression} t0 (~seq ops ts) ...)
        (compile-term #'t0 env)
@@ -200,41 +209,45 @@
                     "/" "call Math.divide 2"))
 
   (define (compile-op stx env)
-    (wtf 'op stx)
+    ;; (wtf 'op stx)
     (syntax-parse stx
       [({~datum op} val)
        (printf "~a~n" (hash-ref OPS (syntax-e #'val)))]))
 
   (define (compile-term stx env)
-    (wtf 'term stx)
+    ;; (wtf 'term stx)
     (syntax-parse stx
       [({~datum term} val:integer)
        (printf "push constant ~a\n" (syntax-e #'val))]
+
       [({~datum term} val:str)
-       (error "not yet")
+       (error "not yet" stx)
        (printf "push ~a\n" (syntax-e #'val))]
+
       [({~datum term} ({~datum keywordConstant} val))
-       (error "not yet")
+       (error "not yet" stx)
        (printf "push ~a\n" (syntax-e #'val))]
-      [({~datum term} var "[" expr "]")
-       (error "not yet")
+
+      [({~datum term} var:var "[" expr "]")
+       (error "not yet" stx)
        (compile-expression #'expr env)
        (printf "push ~a\n" (syntax-e #'var))]
-      [({~datum term} var)
-       ;; (error "wtf" (syntax->datum #'var))
+
+      [({~datum term} var:var)
        (define var* (compile-varname #'var env))
        (define var? (env-get env var*))
        (printf "push ~a ~a\n" (var-scope var?) (var-idx var?))]
-      ;; [({~datum term} call)
-      ;;  (compile-call #'call env)
-      ;;  (printf "push ~a\n" (syntax-e #'val))]
+
+      [({~datum term} c:call)
+       (compile-call #'c env)]
+
       [({~datum term} "(" expr ")")
        (compile-expression #'expr env)]
+
       [({~datum term} ({~datum unaryOp} op) term)
-       (error "not yet")
+       (error "not yet" stx)
        (compile-term #'term env)
-       (printf "~a~n" (hash-ref OPS (syntax-e #'op)))] ;; HACK
-      ))
+       (printf "~a~n" (hash-ref OPS (syntax-e #'op)))]))
 
   (compile-class stx (env-new)))
 
@@ -245,13 +258,15 @@
     (port-count-lines! ip)
     (jack/parser (lambda () (jack/lexer ip))))
 
-  (let ([paths (current-command-line-arguments)])
+  (require racket/cmdline)
+
+  (let ([paths (command-line #:args paths paths)])
+    
     (when (empty? paths)
-      (set! paths (list "ConvertToBin/Main.jack")))
-
-    ;; (set! paths (list "ConvertToBin/Main.jack"))
-    (set! paths (list "../09/grid/MathX.jack"))
-
+      (set! paths (list "ConvertToBin/Main.jack"))
+      (set! paths (list "ConvertToBin/Main.jack"))
+      (set! paths (list "../09/grid/MathX.jack")))
+    
     (for ([path paths])
       (define xexpr (jack (open-input-file path)))
       ;; (pretty-print (syntax->datum xexpr))
