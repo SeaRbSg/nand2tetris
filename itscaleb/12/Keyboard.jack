@@ -89,11 +89,12 @@ class Keyboard {
 			}
 			else
 			{
-				if(~(pressedKey = String.newLine())) {
-					do inputString.appendChar(pressedKey);
-				}
+				do inputString.appendChar(pressedKey);
 			}
 		}
+
+		// erase the newline
+		do inputString.eraseLastChar();
 
 		return inputString;
     }   
