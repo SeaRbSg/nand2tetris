@@ -15,6 +15,13 @@
   (pretty-print (cons where (syntax->datum what)) (current-error-port)))
 
 (define (jack/compile stx)
+  (define labels (make-hash))
+
+  (define (new-label name)
+    (define idx (hash-ref labels name 0))
+    (hash-set! labels name (add1 idx))
+    (format "~a~a" name idx))
+
   (define (map/compile fn xs env)
     (map (lambda (x) (fn x env)) (syntax->list xs)))
 
@@ -155,19 +162,17 @@
              (compile-expression #'expression env))]
 
       [({~datum whileStatement} "while" "(" expression ")" "{" statements "}")
-       (list 'while ; TODO
-             (compile-expression #'expression env)
-             (compile-statements #'statements env))]
+       (compile-while #'(expression statements) env)]
 
       [({~datum doStatement} "do" subroutineCall ";")
        (compile-call #'subroutineCall env)
        (printf "pop temp 0~n")]
 
       [({~datum ifStatement} "if" "(" c ")" "{" t "}" "else" "{" f "}")
-       (error "not yet" stx)]
+       (compile-if #'(c t f) env)]
 
       [({~datum ifStatement} "if" "(" c ")" "{" t "}")
-       (error "not yet" stx)]
+       (compile-if #'(c t #f) env)]
 
       [({~datum returnStatement} "return" ";")
        (printf "push constant 0~n")
@@ -176,6 +181,41 @@
       [({~datum returnStatement} "return" expression ";")
        (compile-expression #'expression env)
        (printf "return~n")]))
+
+  (define (compile-while stx env)
+    (define/syntax-parse (expression statements) stx)
+
+    (define while_exp (new-label "WHILE_EXP"))
+    (define while_end (new-label "WHILE_END"))
+
+    (printf "label ~a~n" while_exp)
+    (compile-expression #'expression env)
+    (printf "not~n")
+    (printf "if-goto ~a~n" while_end)
+    (compile-statements #'statements env)
+    (printf "goto ~a~n" while_exp)
+    (printf "label ~a~n" while_end))
+
+  (define (compile-if stx env)
+    (define/syntax-parse (c t f) stx)
+    (define labelt (new-label "IF_TRUE"))
+    (define labelf (new-label "IF_FALSE"))
+    (define labele (new-label "IF_END"))
+
+    (compile-expression #'c env)
+    (printf "if-goto ~a~n" labelt)
+    (printf "goto ~a~n" labelf)
+    (printf "label ~a~n" labelt)
+
+    (compile-statements #'t env)
+
+    (if (not (syntax-e #'f))
+        (printf "label ~a~n" labelf)
+        (begin
+          (printf "goto ~a~n" labele)
+          (printf "label ~a~n" labelf)
+          (compile-statements #'f env)
+          (printf "label ~a~n" labele))))
 
   (define (compile-call stx env)
     (syntax-parse stx
@@ -191,20 +231,26 @@
         ({~datum className} recvname) "."
         (subroutineName subname) "(" args ")")
 
-       (define recv* (syntax-e #'recvname))
+       (define recvname* (syntax-e #'recvname))
+       (define var   (env-get env recvname*))
+       (define recv* (or (and var (var-type var)) recvname*))
        (define name* (syntax-e #'subname))
        (define args* (compile-expression-list #'args env))
 
-       (printf "call ~a.~a ~a~n" recv* name* (length args*))]))
+       (unless (equal? recvname* recv*)
+         (printf "push ~a ~a~n" (var-scope var) (var-idx var))
+         (set! args* (add1 args*)))
+
+       (printf "call ~a.~a ~a~n" recv* name* args*)]))
 
   (define (compile-expression-list stx env)
     ;; expressionList: [expression ("," expression)*]
     (syntax-parse stx
       [({~datum expressionList})        ; TODO: better way? ~optional maybe?
-       (list)]
+       0]
       [({~datum expressionList} e0 (~seq "," exprs) ...)
-       (cons (compile-expression #'e0 env)
-             (map/compile compile-expression #'(exprs ...) env))]))
+       (compile-expression #'e0 env)
+       (add1 (length (map/compile compile-expression #'(exprs ...) env)))]))
 
   (define (compile-expression stx env)
     ;; (wtf 'expression stx)
@@ -265,7 +311,6 @@
        (compile-expression #'expr env)]
 
       [({~datum term} ({~datum unaryOp} op) term)
-       (error "not yet" stx)
        (compile-term #'term env)
        (printf "~a~n" (hash-ref OPS (syntax-e #'op)))]))
 

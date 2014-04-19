@@ -22,6 +22,6 @@
   (env-set (env-set env scope (add1 idx)) key (var type scope idx)))
 
 (define (env-get env key)
-  (hash-ref env key))
+  (hash-ref env key #f))
 
 (define env-length hash-count)
