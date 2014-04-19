@@ -58,12 +58,17 @@
 
        ;; (printf "// class ~a~n" name)
 
+       (define original (env-length env))
+
        (define new-env
-         (for/fold ([env (env-set env 'class-name name)])
+         (for/fold ([env (env-set env 'class-name name)]) ; + 1
                    ([cv (syntax->list #'(classvars ...))])
            (compile-classvar cv env)))
 
-       (map/compile compile-subroutine #'(subroutines ...) new-env)]))
+       (define classvar-count (- (env-length new-env) original 1))
+       
+       (map/compile compile-subroutine #'(subroutines ...)
+                    (env-set new-env 'class-fields classvar-count))]))
 
   (define (compile-classvar stx env)
     ;; (wtf 'classvar stx)
@@ -80,8 +85,9 @@
 
   (define (compile-scope stx env)
     (syntax-parse stx
-      ["static" "static"]
-      ["field" "field"]))
+      ["static" 'static]
+      ["field"  'this]
+      [_ (error "bad scope" (syntax-e stx))]))
 
   (define (compile-subroutine stx env)
     ;; (wtf 'subroutine stx)
@@ -104,6 +110,18 @@
        (define var-count (- (env-length newenv) original))
        (printf "function ~a.~a ~a~n" classname name* var-count)
 
+       (case scope*
+         [("method")
+          (printf "push argument 0\n")
+          (printf "pop pointer 0\n")]
+         [("constructor")
+          (printf "push constant ~a\n" (env-get env 'class-fields))
+          (printf "call Memory.alloc 1\n")
+          (printf "pop pointer 0\n")]
+         [("function") 'do-nothing]
+         [else
+          (error "unknown scope" scope*)])
+       
        (compile-statements #'statements newenv)]))
 
   (define (compile-params stx env)
@@ -117,7 +135,7 @@
                            (map/compile compile-type #'(ts ...) env))]
                   [n (cons (compile-varname #'name0 env)
                            (map/compile compile-varname #'(names ...) env))])
-         (env-add env n t "argument"))]))
+         (env-add env n t 'argument))]))
 
   (define (compile-sub-var stx env)
     ;; (wtf 'subvar stx)
@@ -127,7 +145,7 @@
        (for/fold ([env env])
                  ([n (cons (compile-varname #'name0 env)
                            (map/compile compile-varname #'(names ...) env))])
-         (env-add env n type* "local"))]))
+         (env-add env n type* 'local))]))
 
   (define (compile-type stx env)
     (syntax-parse stx
@@ -221,12 +239,12 @@
     (syntax-parse stx
       [({~datum subroutineCall}
         (subroutineName subname) "(" args ")")
-       (define args* (compile-expression-list #'args env))
+       (define classname (env-get env 'class-name))
+       (define name* (syntax-e #'subname))
+       (define args* (add1 (compile-expression-list #'args env)))
 
-       (error "not yet" stx)
-       (list 'sub
-             (syntax-e #'subname)
-             (syntax->list #'args))]
+       (printf "push pointer 0\n")
+       (printf "call ~a.~a ~a~n" classname name* args*)]
       [({~datum subroutineCall}
         ({~datum className} recvname) "."
         (subroutineName subname) "(" args ")")
@@ -279,6 +297,8 @@
        (printf "push constant 0\nnot\n")]
       ["false"
        (printf "push constant 0\n")]
+      ["this"
+       (printf "push pointer 0\n")]
       [_ (error "Unknown keyword literal:" (syntax-e stx))]))
 
   (define (compile-term stx env)

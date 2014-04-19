@@ -6,10 +6,12 @@
 (struct var (type scope idx) #:transparent)
 
 (define (env-new)
-  (hash "argument" 0
-        "field"    0
-        "local"    0
-        "static"   0))
+  (hash 'argument 0
+        'field    0
+        'local    0
+        'static   0
+        'this     0
+        ))
 
 (define (env-set env key val)
   (hash-set env key val))
