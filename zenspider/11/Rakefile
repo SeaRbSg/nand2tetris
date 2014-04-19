@@ -1,0 +1,21 @@
+task :default => :test
+
+task :test do
+  d = "zenspider/11"
+
+  files = []
+
+  files << "Main"
+  files << "MathX"
+  files << "Grid"
+  files << "Pew"
+  files << "Trig"
+  files << "Ship"
+
+  files.each do |name|
+    sh %[./jack.rkt ../09/grid/#{name}.jack > wtf.vm]
+    sh "diff -bu ../09/grid/#{name}.vm wtf.vm"
+  end
+
+  rm_f Dir["wtf.vm"]
+end
