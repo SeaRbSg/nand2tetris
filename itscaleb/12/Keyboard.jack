@@ -24,8 +24,8 @@ class Keyboard {
      * or 0 if no key is currently pressed.
      * Recognizes all ASCII characters, as well as the following extension
      * of action keys:
-     * New line = 128 = String.newline()
-     * Backspace = 129 = String.backspace()
+     * New line = 128 = String.newLine()
+     * Backspace = 129 = String.backSpace()
      * Left Arrow = 130
      * Up Arrow = 131
      * Right Arrow = 132
