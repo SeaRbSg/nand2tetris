@@ -10,10 +10,6 @@
 (require syntax/parse)
 (require (only-in srfi/1 zip))
 
-(require racket/pretty)
-(define (wtf where what)
-  (pretty-print (cons where (syntax->datum what)) (current-error-port)))
-
 (define (jack/compile stx)
   (define labels (make-hash))
 
@@ -51,12 +47,9 @@
 
   (define (compile-class stx env)
     (syntax-parse stx
-      ;; class: "class" className "{" classVarDec* subroutineDec* "}"
       [({~datum class} "class" ({~datum className} class-name) "{"
         classvars:cvar ... subroutines ... "}")
        (define name (syntax-e #'class-name))
-
-       ;; (printf "// class ~a~n" name)
 
        (define original (env-length env))
 
@@ -71,7 +64,6 @@
                     (env-set new-env 'class-fields classvar-count))]))
 
   (define (compile-classvar stx env)
-    ;; (wtf 'classvar stx)
     (syntax-parse stx
       [({~datum classVarDec} scope type name0 (~seq "," names) ... ";")
        (define scope* (compile-scope #'scope env))
@@ -90,7 +82,6 @@
       [_ (error "bad scope" (syntax-e stx))]))
 
   (define (compile-subroutine stx env)
-    ;; (wtf 'subroutine stx)
     (syntax-parse stx
       [({~datum subroutineDec} scope return-type ({~datum subroutineName} name)
         "(" params ")" ({~datum subroutineBody} "{" vars ... statements "}"))
@@ -125,7 +116,6 @@
        (compile-statements #'statements newenv)]))
 
   (define (compile-params stx env)
-    ;; (wtf 'params stx)
     (syntax-parse stx
       [({~datum parameterList})
        env]
@@ -138,7 +128,6 @@
          (env-add env n t 'argument))]))
 
   (define (compile-sub-var stx env)
-    ;; (wtf 'subvar stx)
     (syntax-parse stx
       [({~datum varDec} "var" type name0 (~seq "," names) ... ";")
        (define type* (compile-type #'type env))
@@ -155,7 +144,6 @@
       [({~datum returnType} type)              (compile-type #'type env)]))
 
   (define (compile-varname stx env)
-    ;; (wtf 'varname stx)
     (syntax-parse stx
       [({~datum varName} id) (syntax-e #'id)]))
 
@@ -262,7 +250,6 @@
        (printf "call ~a.~a ~a~n" recv* name* args*)]))
 
   (define (compile-expression-list stx env)
-    ;; expressionList: [expression ("," expression)*]
     (syntax-parse stx
       [({~datum expressionList})        ; TODO: better way? ~optional maybe?
        0]
@@ -271,7 +258,6 @@
        (add1 (length (map/compile compile-expression #'(exprs ...) env)))]))
 
   (define (compile-expression stx env)
-    ;; (wtf 'expression stx)
     (syntax-parse stx
       [({~datum expression} t0 (~seq ops ts) ...)
        (compile-term #'t0 env)
@@ -286,23 +272,18 @@
                     "/" "call Math.divide 2"))
 
   (define (compile-op stx env)
-    ;; (wtf 'op stx)
     (syntax-parse stx
       [({~datum op} val)
        (printf "~a~n" (hash-ref OPS (syntax-e #'val)))]))
 
   (define (compile-keyword stx env)
     (syntax-parse stx
-      ["true"
-       (printf "push constant 0\nnot\n")]
-      ["false"
-       (printf "push constant 0\n")]
-      ["this"
-       (printf "push pointer 0\n")]
+      ["true"  (printf "push constant 0\nnot\n")]
+      ["false" (printf "push constant 0\n")]
+      ["this"  (printf "push pointer 0\n")]
       [_ (error "Unknown keyword literal:" (syntax-e stx))]))
 
   (define (compile-term stx env)
-    ;; (wtf 'term stx)
     (syntax-parse stx
       [({~datum term} val:integer)
        (printf "push constant ~a\n" (syntax-e #'val))]
@@ -346,14 +327,6 @@
   (require racket/cmdline)
 
   (let ([paths (command-line #:args paths paths)])
-
-    (when (empty? paths)
-      (set! paths (list "ConvertToBin/Main.jack"))
-      (set! paths (list "ConvertToBin/Main.jack"))
-      (set! paths (list "../09/grid/MathX.jack")))
-
     (for ([path paths])
       (define xexpr (jack (open-input-file path)))
-      ;; (pretty-print (syntax->datum xexpr))
-      ;; (newline)
       (jack/compile xexpr))))
