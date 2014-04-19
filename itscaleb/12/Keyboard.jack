@@ -8,8 +8,15 @@
  */
 class Keyboard {
 
+	// A pointer to the keyboard io memory mapped address
+	static int KeyboardMemAddr;
+	static int MaxStringLength;
+
     /** Initializes the keyboard. */
     function void init() {
+		let KeyboardMemAddr = 24576;
+		let MaxStringLength = 50;
+		return;
     } 
 
     /**
@@ -33,6 +40,7 @@ class Keyboard {
      * F1 - F12 = 141 - 152
      */
     function char keyPressed() {
+		return Memory.peek(KeyboardMemAddr);
     }
 
     /**								
@@ -41,6 +49,21 @@ class Keyboard {
      * the key to the screen, and returns the value of the pressed key.
      */
     function char readChar() {
+		var char pressedKey, value;
+
+		while(pressedKey = 0)
+		{
+			let pressedKey = Memory.peek(KeyboardMemAddr);
+		}
+		let value = pressedKey;
+
+		while(~(pressedKey = 0))
+		{
+			let pressedKey = Memory.peek(KeyboardMemAddr);
+		}
+
+		do Output.printChar(value);
+		return value;
     }
 
     /**								
@@ -48,6 +71,31 @@ class Keyboard {
      * (until a newline character) from the keyboard, and returns its value.
      */
     function String readLine(String message) {
+		var String inputString;
+		var char pressedKey;
+
+		let inputString = String.new(MaxStringLength);
+		let pressedKey = 0;
+
+		do Output.printString(message);
+
+		while(~(pressedKey = String.newLine()))
+		{
+			let pressedKey = Keyboard.readChar();
+
+			if(pressedKey = String.backSpace())
+			{
+				do inputString.eraseLastChar();
+			}
+			else
+			{
+				if(~(pressedKey = String.newLine())) {
+					do inputString.appendChar(pressedKey);
+				}
+			}
+		}
+
+		return inputString;
     }   
 
     /**								
@@ -56,5 +104,8 @@ class Keyboard {
      * integer value (until the first non numeric character).
      */
     function int readInt(String message) {
+		var String inputString;
+		let inputString = Keyboard.readLine(message);
+		return inputString.intValue();
     }
 }
