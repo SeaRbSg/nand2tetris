@@ -1,0 +1,53 @@
+DEBUG = false
+
+def tool tool, input
+  sh "../../tools/#{tool} #{File.expand_path(input)}"
+end
+
+def with_os_files dir
+  os_files = Dir["../../tools/OS/*.vm"].reject { |f|
+    File.exist?(dir + "#{File.basename(f, ".vm")}.jack")
+  }.map {|f|
+    File.expand_path(f)
+  }
+
+  os_files.each {|os_file| symlink os_file, dir, verbose: DEBUG }
+
+  yield
+
+  os_files.each {|os_file| rm File.join(dir, File.basename(os_file)), verbose: DEBUG }
+end
+
+tests = %w[
+  Array
+  Keyboard
+  Math
+  Memory
+  Output
+  Screen
+  String
+  Sys
+]
+
+tests.each do |t|
+  test_dir = Pathname.new "#{t}Test"
+  tst_file = test_dir + "#{t}Test.tst"
+
+  task t => "#{t}:clean" do
+    tool "JackCompiler.sh", test_dir
+
+    with_os_files(test_dir) do
+      tool "VMEmulator.sh", tst_file
+    end
+  end
+
+  task "#{t}:clean" do
+    Dir[test_dir + "*.vm"].each {|f| rm(f) rescue nil }
+  end
+end
+
+task :default => :test
+
+task :test => tests
+
+task :clean => tests.map {|t| "#{t}:clean" }
