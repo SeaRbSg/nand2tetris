@@ -1,0 +1,40 @@
+def filename(f) f + "/" + f.split("/").last end
+
+tests = %w[
+  Seven
+  ConvertToBin
+  Square
+  Average
+  Pong
+  ComplexArrays
+]
+
+tests.each do |t|
+  jack_files = Dir[File.join(t, "*.jack")]
+  vm_files = jack_files.map do |jack|
+    File.join(t, File.basename(jack, ".jack")) + '.vm'
+  end
+
+  vm_files.zip(jack_files).each do |vm_file, jack_file|
+    task vm_file => jack_file do
+      their_file = "#{vm_file}_"
+      sh "../../tools/JackCompiler.sh #{File.expand_path(jack_file)}"
+      mv vm_file, their_file
+      sh "ruby compiler.rb #{jack_file} > #{vm_file}"
+      sh "diff #{vm_file} #{their_file}"
+    end
+  end
+
+  task t => vm_files
+
+  task "#{t}:clean" do
+    vm_files.each {|vm| rm(vm) rescue nil }
+    vm_files.each {|vm| rm("#{vm}_") rescue nil }
+  end
+end
+
+task :default => :test
+
+task :test => tests
+
+task :clean => tests.map {|t| "#{t}:clean" }
