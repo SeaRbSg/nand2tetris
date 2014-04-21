@@ -92,14 +92,18 @@ class Math {
     function int sqrt(int x) {
       var int j, y, temp, temp2, n;
 
-      let j = 15;
+      let j = 14;
 
-      while(j > -1) {
-        if(x < twoToThe[j]) {
-          let n = j;
+      if(x > twoToThe[14]) {
+        let n = 14;
+      } else {
+        while(j > -1) {
+          if(x < twoToThe[j]) {
+            let n = j;
+          }
+
+          let j = j - 1;
         }
-
-        let j = j - 1;
       }
 
       let y = 0;
