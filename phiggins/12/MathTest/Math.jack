@@ -28,7 +28,11 @@ class Math {
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
-      return 0;
+      if(x < 0) {
+        return x * -1;
+      } else {
+        return x;
+      }
     }
 
     /** Returns the product of x and y. */
@@ -53,22 +57,96 @@ class Math {
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
-      return 1;
+      var boolean negative;
+      var int q, result;
+
+      if(((x > 0) & (y > 0)) | ((x < 0) & (y < 0))) {
+        let negative = false;
+      } else {
+        let negative = true;
+      }
+
+      let x = Math.abs(x);
+      let y = Math.abs(y);
+
+      if(y > x) {
+        return 0;
+      }
+
+      let q = Math.divide(x, 2*y);
+
+      if( (x - (2 * q * y)) < y) {
+        let result = 2 * q;
+      } else {
+        let result = (2 * q) + 1;
+      }
+
+      if(negative) {
+        let result = result * -1;
+      }
+
+      return result;
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-      return 0;
+      var int j, y, temp, temp2, n;
+
+      let j = 15;
+
+      while(j > -1) {
+        if(x < twoToThe[j]) {
+          let n = j;
+        }
+
+        let j = j - 1;
+      }
+
+      let y = 0;
+      let j = n;
+
+      while(j > -1) {
+        let temp = y + twoToThe[j];
+        let temp2 = temp * temp;
+
+        if((temp2 - 1 < x) & (temp2 > 0)) {
+          let y = temp;
+        }
+
+        let j = j - 1;
+      }
+
+      return y;
+
+      /*
+      var int root, temp;
+      let root = 1;
+      let temp = 1;
+      while(temp < x) {
+        let root = root + 1;
+        let temp = root * root;
+      }
+
+      return root;
+      */
     }
 
     /** Returns the greater number. */
     function int max(int a, int b) {
-      return 0;
+      if(a > b) {
+        return a;
+      } else {
+        return b;
+      }
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
-      return 0;
+      if(a > b) {
+        return b;
+      } else {
+        return a;
+      }
     }
 
     function boolean bit(int number, int position) {
