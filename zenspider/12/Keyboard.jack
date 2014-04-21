@@ -8,9 +8,12 @@
  * A library for handling user input from the keyboard.
  */
 class Keyboard {
+  static Array kbd;
 
     /** Initializes the keyboard. */
     function void init() {
+      let kbd = 24576;
+      return;
     }
 
     /**
@@ -34,6 +37,7 @@ class Keyboard {
      * F1 - F12 = 141 - 152
      */
     function char keyPressed() {
+      return kbd[0];
     }
 
     /**
@@ -42,6 +46,15 @@ class Keyboard {
      * the key to the screen, and returns the value of the pressed key.
      */
     function char readChar() {
+      var int key;
+
+      while (~kbd[0]) { /* do nothing */ }
+
+      let key = kbd[0];
+
+      while (kbd[0]) { /* do nothing */ }
+
+      return key;
     }
 
     /**
@@ -49,6 +62,21 @@ class Keyboard {
      * (until a newline character) from the keyboard, and returns its value.
      */
     function String readLine(String message) {
+      var String s;
+      var char c, nl;
+
+      let s = String.new(8096); // HACK?
+      let nl = String.newline();
+
+      do Output.printString(message);
+
+      let c = Keyboard.readChar();
+      while (~(c = nl)) {
+        do s.appendChar(c);
+        let c = Keyboard.readChar();
+      }
+
+      return s;
     }
 
     /**
@@ -57,5 +85,10 @@ class Keyboard {
      * integer value (until the first non numeric character).
      */
     function int readInt(String message) {
+      var String s;
+
+      let s = Keyboard.readLine(message);
+
+      return s.intValue();
     }
 }
