@@ -1,0 +1,213 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+  static Array pows;
+
+
+  /** Initializes the library. */
+  function void init() {
+    let pows = Array.new(15);
+
+    let pows[0]  = 1;
+    let pows[1]  = 2;
+    let pows[2]  = 4;
+    let pows[3]  = 8;
+    let pows[4]  = 16;
+    let pows[5]  = 32;
+    let pows[6]  = 64;
+    let pows[7]  = 128;
+    let pows[8]  = 256;
+    let pows[9]  = 512;
+    let pows[10] = 1024;
+    let pows[11] = 2048;
+    let pows[12] = 4096;
+    let pows[13] = 8192;
+    let pows[14] = 16384;
+   
+    return;
+  }
+
+  /** Returns the absolute value of x. */
+  function int abs(int x) {
+    if (x < 0) {
+      return -x;
+    }
+    return x;
+  }
+
+  /** Returns the product of x and y. */
+  function int multiply(int x, int y) {
+    var int sum;
+    var boolean neg;
+    let sum = 0;
+    let neg = false;
+
+    if ((x = 0) | (y = 0)) {
+      return 0;
+    }
+
+    if ((x < 0) & (y > 0)) {
+      let neg = true;
+    }
+    if ((x > 0) & (y < 0)) {
+      let neg = true;
+    }
+      
+    let x = Math.abs(x);
+    let y = Math.abs(y);
+
+    while (x > 0) {
+      let sum = sum + y;
+      let x = x - 1;
+    }
+
+    if (neg) {
+      let sum = -sum;
+    }
+
+    return sum;
+  }
+
+  // x = 32766 
+  // y = 32767
+
+  /** Returns the integer part of x/y. */
+  function int divide(int x, int y) {
+    var int subtractions;
+    var boolean neg;
+
+    let subtractions = 1;
+    let neg = false;
+
+    if ((x < 0) & (y > 0)) {
+      let neg = true;
+    }
+    if ((x > 0) & (y < 0)) {
+      let neg = true;
+    }
+
+    let x = Math.abs(x);
+    let y = Math.abs(y);
+
+    if (y > x) { 
+      return 0;
+    }
+
+    while (x > y) {
+      let x = x - y;
+      let subtractions = subtractions + 1;
+    }
+
+    if (neg) {
+      return -subtractions;
+    }
+
+    return subtractions;
+  }
+
+  /** Returns the integer part of the square root of x. */
+  function int sqrt(int x) {
+    var int y;
+    var int temp;
+    var int tempSquared;
+    var int j;
+var int i;
+
+    let y = 0;
+    let i = 0;
+    let j = (Math.lengthBits(x) / 2) - 1;
+
+    while (j > -1) {
+      let temp = y + pows[j];
+      let tempSquared = temp * temp;
+
+      if (tempSquared > 0) {
+        if (tempSquared = x) {
+          return temp;
+        }
+
+        if (tempSquared < x) {
+          let y = temp;
+        }
+      } 
+
+      let j = j - 1;
+    }
+    
+    return y;
+  }
+
+  /** Returns the greater number. */
+  function int max(int a, int b) {
+    if (a > b) { 
+      return a;
+    }
+    return b;
+  }
+
+  /** Returns the smaller number. */
+  function int min(int a, int b) {
+    if (a < b) {
+      return a;
+    }
+    return b;
+  }
+
+  function int lengthBits(int x) {
+    if (x < 0) {
+      return 16;
+    }
+    if (x = 0) {
+      return 0;
+    }
+    if (x < 2) {
+      return 1;
+    }
+    if (x < 4) {
+      return 2;
+    }
+    if (x < 8) {
+      return 3;
+    }
+    if (x < 16) {
+      return 4;
+    }
+    if (x < 32) {
+      return 5;
+    }
+    if (x < 64) {
+      return 6;
+    }
+    if (x < 128) {
+      return 7;
+    }
+    if (x < 256) {
+      return 8;
+    }
+    if (x < 512) {
+      return 9;
+    }
+    if (x < 1024) {
+      return 10;
+    }
+    if (x < 2048) {
+      return 11;
+    }
+    if (x < 4096) {
+      return 12;
+    }
+    if (x < 8192) {
+      return 13;
+    }
+    if (x < 16384) {
+      return 14;
+    }
+    return 15;
+  }
+}
