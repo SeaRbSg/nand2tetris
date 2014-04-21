@@ -1,7 +1,7 @@
-DEBUG = false
+DEBUG = ENV['DEBUG']
 
 def tool tool, input
-  sh "../../tools/#{tool} #{File.expand_path(input)}"
+  `#{File.expand_path("../../tools/#{tool}")} #{File.expand_path(input)}`
 end
 
 def with_os_files dir
@@ -20,29 +20,41 @@ end
 
 tests = %w[
   Array
-  Keyboard
   Math
+]
+=begin
+  Keyboard
   Memory
   Output
   Screen
   String
   Sys
 ]
+=end
 
 tests.each do |t|
   test_dir = Pathname.new "#{t}Test"
   tst_file = test_dir + "#{t}Test.tst"
+  cmp_file = test_dir + "#{t}Test.cmp"
+  out_file = test_dir + "#{t}Test.out"
 
   task t => "#{t}:clean" do
     tool "JackCompiler.sh", test_dir
+    abort unless $?.success?
 
     with_os_files(test_dir) do
       tool "VMEmulator.sh", tst_file
+
+      unless $?.success?
+        msg = ["Expected:", File.read(cmp_file), "Got:", File.read(out_file)].join("\n")
+        rm out_file
+        abort msg
+      end
     end
   end
 
   task "#{t}:clean" do
-    Dir[test_dir + "*.vm"].each {|f| rm(f) rescue nil }
+    Dir[test_dir + "*.vm"].each {|f| rm f, force: true, verbose: DEBUG }
   end
 end
 
