@@ -62,4 +62,8 @@ class VmWriter
   def write_return
     @output.puts "return"
   end
+
+  def write_comment(comment)
+    @output.puts "// #{comment}"
+  end
 end

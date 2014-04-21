@@ -1,8 +1,13 @@
+require_relative 'symbol_table'
+require_relative 'vm_writer'
+
 class CompilationEngine
-  attr_accessor :tokenizer
+  attr_accessor :tokenizer, :prefix, :vm_writer, :symbol_table
 
   def initialize(tokenizer = nil)
     @tokenizer = tokenizer
+    @vm_writer = VmWriter.new
+    @symbol_table = SymbolTable.new
   end
 
   def output_token token
@@ -320,31 +325,30 @@ class CompilationEngine
   end
 
   def compile_subroutine
-    ast = [:subroutine_dec]
-
     raise "Not a subroutine starting token #{current_token}" unless subroutine?
 
     # constructor | function | method
-    ast <<  output_next_token
+    @tokenizer.advance
 
     # void | type
     raise "Not a valid return type #{current_token}" unless return_type?
-    ast <<  output_next_token
+    @tokenizer.advance
 
     raise "Not a valid subroutine name #{current_token}" unless subroutine_name?
-    ast << output_next_token
+    subroutine_name = "#{@prefix}.#{current_value}"
+    @tokenizer.advance
 
     raise_unless_value "("
-    ast << output_next_token
+    @tokenizer.advance
 
-    ast << compile_parameter_list
+    compile_parameter_list
 
     raise_unless_value ")"
-    ast << output_next_token
+    @tokenizer.advance
 
-    ast << compile_subroutine_body
+    # TODO count the number of locals
 
-    ast
+    compile_subroutine_body
   end
 
   def compile_subroutine_body
@@ -365,28 +369,25 @@ class CompilationEngine
   end
 
   def compile_class
-    ast = [:class]
-
     raise_unless_value "class"
-    ast << output_next_token    # class
+    @tokenizer.advance
 
     raise "Expected className, got #{current_token}" unless class_name?
-    ast << output_next_token    # className
+    @prefix = current_token.value
+    @tokenizer.advance
 
     raise_unless_value "{"
-    ast << output_next_token    # {
+    @tokenizer.advance
 
     var_decs = compile_class_var_decs
-    ast += var_decs if var_decs
+    # ast += var_decs if var_decs
 
     while(subroutine?)
-      ast << compile_subroutine
+      compile_subroutine
     end
 
     raise_unless_value "}"
-    ast << output_next_token    # }
-
-    ast.compact
+    @tokenizer.advance
   end
 
   # ## FUNCTIONS FOR FIGURING OUT WHAT THE NEXT THING IS
