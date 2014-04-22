@@ -38,18 +38,18 @@ class Memory {
   function int alloc(int size) {
     var int pointer;
 
-    /* if (size < 0) {  */
-    /*   do Sys.error(5);   //  Allocated memory size must be positive */
-    /*   return -1; */
-    /* } */
+    if (size < 0) {
+      do Sys.error(5);   //  Allocated memory size must be positive
+      return -1;
+    }
 
     let pointer = free;
     let free = free + size;
 
-    /* if (free > memEnd) { */
-    /*   do Sys.error(6);   // Heap overflow */
-    /*   return -1; */
-    /* } */
+    if (free > memEnd) {
+      do Sys.error(6);   // Heap overflow
+      return -1;
+    }
 
     return pointer;
   }
