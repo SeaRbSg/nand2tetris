@@ -23,12 +23,12 @@ tests = %w[
   Math
   Keyboard
   Memory
+  Sys
 ]
 =begin
   Output
   Screen
   String
-  Sys
 ]
 =end
 
