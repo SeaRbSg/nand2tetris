@@ -151,17 +151,17 @@
 <symbol> + </symbol>
 <identifier> size </identifier>
 <symbol> ) </symbol>
-<symbol> < </symbol>
+<symbol> &lt; </symbol>
 <integerConstant> 254 </integerConstant>
 <symbol> ) </symbol>
-<symbol> & </symbol>
+<symbol> &amp; </symbol>
 <symbol> ( </symbol>
 <symbol> ( </symbol>
 <identifier> x </identifier>
 <symbol> + </symbol>
 <identifier> size </identifier>
 <symbol> ) </symbol>
-<symbol> < </symbol>
+<symbol> &lt; </symbol>
 <integerConstant> 510 </integerConstant>
 <symbol> ) </symbol>
 <symbol> ) </symbol>
@@ -196,7 +196,7 @@
 <keyword> if </keyword>
 <symbol> ( </symbol>
 <identifier> size </identifier>
-<symbol> > </symbol>
+<symbol> &gt; </symbol>
 <integerConstant> 2 </integerConstant>
 <symbol> ) </symbol>
 <symbol> { </symbol>
@@ -230,7 +230,7 @@
 <keyword> if </keyword>
 <symbol> ( </symbol>
 <identifier> y </identifier>
-<symbol> > </symbol>
+<symbol> &gt; </symbol>
 <integerConstant> 1 </integerConstant>
 <symbol> ) </symbol>
 <symbol> { </symbol>
@@ -316,7 +316,7 @@
 <symbol> + </symbol>
 <identifier> size </identifier>
 <symbol> ) </symbol>
-<symbol> < </symbol>
+<symbol> &lt; </symbol>
 <integerConstant> 254 </integerConstant>
 <symbol> ) </symbol>
 <symbol> { </symbol>
@@ -398,7 +398,7 @@
 <keyword> if </keyword>
 <symbol> ( </symbol>
 <identifier> x </identifier>
-<symbol> > </symbol>
+<symbol> &gt; </symbol>
 <integerConstant> 1 </integerConstant>
 <symbol> ) </symbol>
 <symbol> { </symbol>
@@ -484,7 +484,7 @@
 <symbol> + </symbol>
 <identifier> size </identifier>
 <symbol> ) </symbol>
-<symbol> < </symbol>
+<symbol> &lt; </symbol>
 <integerConstant> 510 </integerConstant>
 <symbol> ) </symbol>
 <symbol> { </symbol>

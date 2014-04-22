@@ -26,7 +26,7 @@ class Tokenizer
   end
 
   def tokenwrite(output,xml,val)
-    File.open(output, "a") { |f| f.write "<#{xml}> #{val} </#{xml}>\n" }
+    output.write "<#{xml}> #{val} </#{xml}>\n"
   end
 
 end

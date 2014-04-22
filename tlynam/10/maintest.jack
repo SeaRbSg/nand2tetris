@@ -1,0 +1,19 @@
+class Main {
+
+    // Location on the screen
+    field int x, y;
+
+//    function void main() {
+
+//        var SquareGame game;
+//
+//        let game = game;
+//        do game.run();
+//  do game.dispose();
+//
+//        return;
+//    }
+
+}
+
+
