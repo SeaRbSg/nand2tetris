@@ -21,9 +21,9 @@ end
 tests = %w[
   Array
   Math
+  Keyboard
 ]
 =begin
-  Keyboard
   Memory
   Output
   Screen
@@ -38,10 +38,12 @@ tests.each do |t|
   cmp_file = test_dir + "#{t}Test.cmp"
   out_file = test_dir + "#{t}Test.out"
 
-  task t => "#{t}:clean" do
+  task "#{t}:compile" do
     tool "JackCompiler.sh", test_dir
     abort unless $?.success?
+  end
 
+  task "#{t}:test" => ["#{t}:clean", "#{t}:compile"] do
     with_os_files(test_dir) do
       tool "VMEmulator.sh", tst_file
 
@@ -56,6 +58,12 @@ tests.each do |t|
   task "#{t}:clean" do
     Dir[test_dir + "*.vm"].each {|f| rm f, force: true, verbose: DEBUG }
   end
+
+  if File.exist?(tst_file)
+    task t => "#{t}:test"
+  else
+    task t => "#{t}:compile"
+  end
 end
 
 task :default => :test
@@ -63,3 +71,7 @@ task :default => :test
 task :test => tests
 
 task :clean => tests.map {|t| "#{t}:clean" }
+
+task :vm => :test do
+  sh "../../tools/VMEmulator.sh"
+end
