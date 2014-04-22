@@ -7,26 +7,39 @@
  * Memory operations library.
  */ 
 class Memory {
+	static int FreePointer;
+	static Array MemoryPointer;
 
     /** Initializes memory parameters. */
     function void init() {
+		let FreePointer = 2048;
+		let MemoryPointer = 0;
+		return;
     }
 
     /** Returns the value of the main memory at the given address. */
     function int peek(int address) {
+		return MemoryPointer[address];
     }
 
     /** Sets the value of the main memory at this address
      *  to the given value. */
     function void poke(int address, int value) {
+		let MemoryPointer[address] = value;
+		return;
     }
 
     /** finds and allocates from the heap a memory block of the 
      *  specified size and returns a reference to its base address. */
     function int alloc(int size) {
+		var int pointer;
+		let pointer = FreePointer;
+		let FreePointer = FreePointer + size;
+		return pointer;
     }
 
     /** De-allocates the given object and frees its space. */
     function void deAlloc(int object) {
+		return;
     }    
 }
