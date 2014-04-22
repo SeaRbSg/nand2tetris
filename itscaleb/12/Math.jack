@@ -35,6 +35,9 @@ class Math {
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
+		if(x < 0) {
+			return -x;
+		}
 		return x;
     }
 
@@ -58,14 +61,37 @@ class Math {
 		return sum;
     }
 
-	function bool bit(int x, int j)
-	{
-		return (~(x & twoToThe[j] = 0));
-	}
+
+	/** returns true if the j'th bit of x is set */
+    function bool bit(int x, int j)
+    {
+	    return (~(x & twoToThe[j] = 0));
+    }
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
-		return x;
+		var int absX, absY, q, result;
+        var boolean negative;
+		let negative = ~(((x > 0) & (y > 0)) | ((x < 0) & (y < 0)));
+        let absX = Math.abs(x);
+        let absY = Math.abs(y);
+
+        if( absY > absX ) {
+            return 0;
+        }
+
+        let q = Math.divide(absX, absY + absY);
+
+        if (absX - ((q + q) * absY) < absY ) {
+            let result = q + q;
+        }
+		else {
+			let result = q + q + 1;
+		}
+        if (negative) {
+            return -result;
+        }
+		return result;
     }
 
     /** Returns the integer part of the square root of x. */
