@@ -9,10 +9,14 @@
  */
 class Keyboard {
   static Array kbd;
+  static char nl, bs;
 
     /** Initializes the keyboard. */
     function void init() {
       let kbd = 24576;
+      let nl  = String.newLine();
+      let bs  = String.backSpace();
+
       return;
     }
 
@@ -48,11 +52,13 @@ class Keyboard {
     function char readChar() {
       var int key;
 
-      while (~kbd[0]) { /* do nothing */ }
+      let key = 0;
+      while (key = 0) { let key = kbd[0]; }
 
-      let key = kbd[0];
+      // while (kbd[0]) { /* do nothing */ } // WHY DOESN'T THIS WORK?!?!?!
+      while (~(kbd[0] = 0)) { /* do nothing */ }
 
-      while (kbd[0]) { /* do nothing */ }
+      do Output.printChar(key);
 
       return key;
     }
@@ -63,16 +69,20 @@ class Keyboard {
      */
     function String readLine(String message) {
       var String s;
-      var char c, nl;
+      var char c;
 
-      let s = String.new(8096); // HACK?
-      let nl = String.newline();
+      let s = String.new(64);
 
       do Output.printString(message);
 
       let c = Keyboard.readChar();
-      while (~(c = nl)) {
-        do s.appendChar(c);
+
+      while (c = nl = 0) {
+        if (c = bs = 0) {
+          do s.appendChar(c);
+        } else {
+          do s.eraseLastChar();
+        }
         let c = Keyboard.readChar();
       }
 
