@@ -21,11 +21,15 @@ task :vm do
   sh "../../tools/VMEmulator.sh"
 end
 
-# wire "Array"
-# wire "Keyboard"
-# wire "Math"
-# wire "Memory"
-# wire "Output"
-# wire "Screen"
+wire "Array"
+wire "Keyboard"
+wire "Math"
+wire "Memory"
+wire "Output"
+wire "Screen"
 wire "String"
-# wire "Sys"
+wire "Sys"
+
+task :go do
+  sh "../../tools/VMEmulator.sh $PWD/MathTest/MathTest.tst; diff -u MathTest/MathTest.{cmp,out}"
+end
