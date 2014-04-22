@@ -49,8 +49,9 @@ class Keyboard {
   function char readChar() {
     var char c;
 
-    //    do Output.printChar(0);          // use black square as cursor
+    do Output.printChar(0);          // use black square as cursor
 
+    let c = 0;
     while (c = 0) {
       let c = Keyboard.keyPressed();
     }
@@ -58,7 +59,8 @@ class Keyboard {
     while (~(Keyboard.keyPressed() = 0)) {
       // wait for the user to let go
     }
-    //    do Output.backSpace();
+
+    do Output.backSpace();          // remove the cursor
     do Output.printChar(c);
     return c;
   }
