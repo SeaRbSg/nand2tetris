@@ -11,17 +11,55 @@ class Sys {
 
     /** Performs all the initializations required by the OS. */
     function void init() {
+      do Memory.init();         /* first we init memory                    */
+      do Screen.init();         /* then the memory mapped hardware: screen */
+      do Keyboard.init();       /* and keyboard                            */
+      do Output.init();         /* then anything needing output            */
+      do Math.init();           /* finally math                            */
+
+      do Main.main();
+
+      return;
     }
 
     /** Halts execution. */
     function void halt() {
+      while (true) { /* weee */ }
+      return;
     }
 
     /** Waits approximately duration milliseconds and then returns. */
     function void wait(int duration) {
+      var int i, j, k;
+
+      // 1000x1000 ~= 8s
+      // 500x1000 ~= 5s
+      // 100x1000 ~= 2s
+      // 1000x500 ~= 5s
+      // 2000x100 ~= 2s
+
+      let i = duration;
+      while (i > 0) {
+        let j = 100;
+        while (j > 0) {
+          let j = j - 1;
+        }
+        let i = i - 1;
+      }
+
+      return;
     }
 
     /** Prints the given error code in the form "ERR<errorCode>", and halts. */
     function void error(int errorCode) {
+      var String s;
+
+      let s = String.new(6);
+      let s = s.intValue(errorCode);
+
+      do Output.printString("ERR");
+      do Output.printString(s);
+
+      return;
     }
 }
