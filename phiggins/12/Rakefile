@@ -22,9 +22,9 @@ tests = %w[
   Array
   Math
   Keyboard
+  Memory
 ]
 =begin
-  Memory
   Output
   Screen
   String
