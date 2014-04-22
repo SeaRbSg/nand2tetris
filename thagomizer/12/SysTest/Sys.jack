@@ -10,13 +10,12 @@ class Sys {
 
     /** Performs all the initializations required by the OS. */
     function void init() {
-      do Array.init();
-      do Keyboard.init();
-      do Math.init();
       do Memory.init();
-      do Output.init();
       do Screen.init();
-      do String.init();
+      do Keyboard.init();
+      do Output.init();
+      do Math.init();
+
       do Main.main();
       return;
     }
@@ -44,7 +43,6 @@ class Sys {
     function void error(int errorCode) {
       do Output.printString("ERR");
       do Output.printInt(errorCode);
-      do Sys.halt();
 
       return;
     }
