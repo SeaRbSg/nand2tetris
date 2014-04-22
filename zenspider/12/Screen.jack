@@ -46,14 +46,6 @@ class Screen {
       return;
     }
 
-    function void debug(int n) {
-      var int idx;
-      let idx = ptr[0];
-      let ptr[idx] = n;
-      let ptr[0] = idx + 1;
-      return;
-    }
-
     /** Erases the whole screen. */
     function void clearScreen() {
       var int i;
