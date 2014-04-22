@@ -70,13 +70,59 @@ class String {
     /** Returns the integer value of this String until the first non
      *  numeric character. */
     method int intValue() {
-		return 0;
+		var int value, i, currDigit;
+		var boolean negative;
+		let value = 0;
+		let i = 0;
+		while(i < stringLength) {
+			if (charArray[i] = 45) {
+				let negative = true;
+			}
+			else {
+				let currDigit = charArray[i] - 48;
+				let value = value * 10 + currDigit;
+			}
+			let i = i + 1;
+		}
+		if (negative) {
+			return -value;
+		}
+		return value;
     }
 
     /** Sets this String to hold a representation of the given number. */
     method void setInt(int number) {
+		var int currNum, i;
+		var boolean negative;
+		let i = 0;
+		let maxStrLength = 6;
+		if (number < 0) {
+			let negative = true;
+			let number = -number;
+		}
+		do charArray.dispose();
+		let charArray = Array.new(maxStrLength);
+		let stringLength = 0;
+		while(number > 0) {
+			let currNum = String.mod(number, 10);
+			let charArray[i] = (currNum + 48);
+			let i = i + 1;
+			let number = Math.divide(number, 10);
+			let stringLength = stringLength + 1;
+		}
+		if (negative) {
+			let charArray[stringLength] = 45;
+			let stringLength = stringLength + 1;
+		}
+		do String.reverse(charArray, stringLength);
 		return;
     }
+
+	function int mod(int x, int y) {
+		var int q;
+		let q = Math.divide(x, y);
+		return x - (y * q);
+	}
 
     /** Returns the new line character. */
     function char newLine() {
@@ -92,4 +138,21 @@ class String {
     function char doubleQuote() {
 		return 34;
     }
+
+	function void reverse(Array string, int stringLength) {
+		var char temp;
+		var Array startPointer;
+		var Array endPointer;
+		let startPointer = string;
+		let endPointer = string + stringLength - 1;
+		while(startPointer < endPointer)
+		{
+			let temp = startPointer[0];
+			let startPointer[0] = endPointer[0];
+			let endPointer[0] = temp;
+			let startPointer = startPointer + 1;
+			let endPointer = endPointer - 1;
+		}
+		return;
+	}
 }
