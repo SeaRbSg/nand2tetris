@@ -8,32 +8,142 @@
  * A basic math library.
  */
 class Math {
+    static Array bits;
 
     /** Initializes the library. */
     function void init() {
+      var int n;
+
+      let n = 1;
+      let bits = Array.new(16);
+      let bits[0] = 1;
+      let bits[1] = 2;
+      let bits[2] = 4;
+      let bits[3] = 8;
+      let bits[4] = 16;
+      let bits[5] = 32;
+      let bits[6] = 64;
+      let bits[7] = 128;
+      let bits[8] = 256;
+      let bits[9] = 512;
+      let bits[10] = 1024;
+      let bits[11] = 2048;
+      let bits[12] = 4096;
+      let bits[13] = 8192;
+      let bits[14] = 16384;
+      // let bits[15] = -32768; // BUG in jack compiler?
+      let bits[15] = bits[14] + bits[14];
+
+      return;
     }
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
+      if (x < 0) {
+        return -x;
+      } else {
+        return x;
+      }
     }
 
     /** Returns the product of x and y. */
     function int multiply(int x, int y) {
+      var boolean neg;
+      var int sum, i, pow;
+
+      if ((y=0) | (x=0)) { return 0; }
+
+      let sum = 0;
+      let pow = x;
+      let i = 0;
+      while (i < 16) {
+        if (bits[i] & y) {
+          let sum = sum + pow;
+        }
+        let pow = pow + pow;
+        let i = i + 1;
+      }
+
+      return sum;
     }
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
+      var int yy, q, r;
+      var bool neg;
+
+      let neg = ((x < 0) & (y > 0)) | ((x > 0) & (y < 0));
+
+      let x = Math.abs(x);
+      let y = Math.abs(y);
+
+      if (y > x) { return 0; }
+
+      let yy = y + y;
+
+      if (yy < 0) { return 0; } // overflow
+
+      let q = Math.divide(x, yy);
+
+      if ((x - (q * yy)) < y) {
+        let r = q + q;
+      } else {
+        let r = q + q + 1;
+      }
+
+      if (neg) { let r = -r; }
+
+      return r;
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
+      var int y;
+      var int temp;
+      var int temp2;
+      var int i;
+
+      if (x < 0) {
+        let i = 16;
+      } else {
+        let i = 0;
+        while ((bits[i]) < x & (i < 16)) {
+          let i = i + 1;
+        }
+      }
+
+      let y = 0;
+
+      while (i > -1) {
+        let temp = y + bits[i];
+        let temp2 = temp * temp;
+
+        if (temp2 > 0) {
+          if (temp2 = x) { return temp; }
+          if (temp2 < x) { let y = temp; }
+        }
+
+        let i = i - 1;
+      }
+
+      return y;
     }
 
     /** Returns the greater number. */
     function int max(int a, int b) {
+      if (a > b) {
+        return a;
+      } else {
+        return b;
+      }
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
+      if (a < b) {
+        return a;
+      } else {
+        return b;
+      }
     }
 }
