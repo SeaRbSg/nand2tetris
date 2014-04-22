@@ -82,6 +82,11 @@ class Math {
     var int subtractions;
     var boolean neg;
 
+    if (y = 0) {
+      do Sys.error(3);
+      return -1;
+    }
+
     let subtractions = 1;
     let neg = false;
 
@@ -117,10 +122,13 @@ class Math {
     var int temp;
     var int tempSquared;
     var int j;
-var int i;
+
+    if (x < 0) {
+      do Sys.error(4);
+      return -1;
+    }
 
     let y = 0;
-    let i = 0;
     let j = (Math.lengthBits(x) / 2) - 1;
 
     while (j > -1) {
