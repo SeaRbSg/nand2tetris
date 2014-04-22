@@ -12,7 +12,7 @@ class Math {
 
     /** Initializes the library. */
     function void init() {
-		let numberBitLength = 15;
+		let numberBitLength = 16;
 		let twoToThe = Array.new(numberBitLength);
 		let twoToThe[0] = 1;
 		let twoToThe[1] = 2;
@@ -29,7 +29,7 @@ class Math {
 		let twoToThe[12] = 4096;
 		let twoToThe[13] = 8192;
 		let twoToThe[14] = 16384;
-		let twoToThe[15] = twoToThe[14] + twoToThe[14];
+		let twoToThe[15] = 16384 + 16384;
 		return;
     }
 
@@ -96,8 +96,19 @@ class Math {
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-		return x;
-    }
+		var int y, j, yPlus2ToTheJ, yPlus2ToTheJSquared;
+		let y = 0;
+		let j = Math.divide(numberBitLength, 2) - 1;
+		while(j > -1) {
+			let yPlus2ToTheJ = y + twoToThe[j];
+			let yPlus2ToTheJSquared = yPlus2ToTheJ * yPlus2ToTheJ;
+			if(~(yPlus2ToTheJSquared > x)) {
+				let y = yPlus2ToTheJ;
+			}
+			let j = j - 1;
+		}
+		return y;
+	}
 
     /** Returns the greater number. */
     function int max(int a, int b) {
