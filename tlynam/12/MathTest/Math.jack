@@ -10,29 +10,62 @@ class Math {
 
     /** Initializes the library. */
     function void init() {
+    return;
     }
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
+      if (x = 0) {
+        let x = x;
+      }
+      if (x > 0) {
+        let x = x;
+      }
+      if (x < 0) {
+        let x = -x;
+      }
+      return x;
     }
 
     /** Returns the product of x and y. */
+    // How do we implement the book's function?
     function int multiply(int x, int y) {
+      var int sum;
+      let sum = 0;
+      
+      return sum;
     }
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
+    
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
+    return 0;
     }
 
     /** Returns the greater number. */
     function int max(int a, int b) {
+      var int number;
+      if (a > b) {
+        number = a;
+      }
+      if (b > a) {
+        number = b;
+      }
+      return number;
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
-    }
+      var int number;
+      if (a < b) {
+        number = a;
+      }
+      if (b < a) {
+        number = b;
+      }
+      return number;    }
 }

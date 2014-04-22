@@ -17,6 +17,9 @@ class Output {
 
     /** Initializes the screen and locates the cursor at the screen's top-left. */
     function void init() {
+      do Screen.clearScreen();
+      do Output.initMap();
+      return;
     }
 
     // Initalizes the character map array
@@ -171,28 +174,34 @@ class Output {
     /** Moves the cursor to the j’th column of the i’th row,
      *  and erases the character that was there. */
     function void moveCursor(int i, int j) {
+      
     }
 
     /** Prints c at the cursor location and advances the cursor one
      *  column forward. */
     function void printChar(char c) {
+      
     }
 
     /** Prints s starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printString(String s) {
+      
     }
 
     /** Prints i starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printInt(int i) {
+      
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+      
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+      
     }
 }
