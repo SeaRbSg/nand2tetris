@@ -8,10 +8,16 @@
  */ 
 class Memory {
   static Array memory;
+  static int memStart;
+  static int memEnd;
+  static int free;
 
   /** Initializes memory parameters. */
   function void init() {
     let memory = 0;
+    let memStart = 2048;
+    let memEnd = 16383;
+    let free = 2048;
     return;
   }
 
@@ -30,11 +36,27 @@ class Memory {
   /** finds and allocates from the heap a memory block of the 
    *  specified size and returns a reference to its base address. */
   function int alloc(int size) {
-    return 8000;
+    var int pointer;
+
+    /* if (size < 0) {  */
+    /*   do Sys.error(5);   //  Allocated memory size must be positive */
+    /*   return -1; */
+    /* } */
+
+    let pointer = free;
+    let free = free + size;
+
+    /* if (free > memEnd) { */
+    /*   do Sys.error(6);   // Heap overflow */
+    /*   return -1; */
+    /* } */
+
+    return pointer;
   }
 
   /** De-allocates the given object and frees its space. */
   function void deAlloc(int object) {
+    // no-op in naive implementation
     return;
   }    
 }
