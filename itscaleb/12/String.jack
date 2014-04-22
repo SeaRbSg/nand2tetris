@@ -7,54 +7,89 @@
  * Represents a String object. Implements the String type.
  */
 class String {
+	field Array charArray;
+	field int stringLength, maxStrLength;
 
     /** Constructs a new empty String with a maximum length of maxLength. */
     constructor String new(int maxLength) {
+		let maxStrLength = maxLength;
+		if (maxLength > 0) {
+			let charArray = Array.new(maxLength);
+		}
+		let stringLength = 0;
+		return this;
     }
 
     /** De-allocates the string and frees its space. */
     method void dispose() {
+		if (maxStrLength > 0) {
+			do Memory.deAlloc(charArray);
+		}
+		return;
     }
 
     /** Returns the current length of this String. */
     method int length() {
+		return stringLength;
     }
 
     /** Returns the character at location j. */
     method char charAt(int j) {
+		if (j < stringLength) {
+			return charArray[j];
+		}
+		return 0;
     }
 
     /** Sets the j'th character of this string to be c. */
     method void setCharAt(int j, char c) {
+		if (j < stringLength) {
+			let charArray[j] = c;
+		}
+		return;
     }
 
     /** Appends the character c to the end of this String.
      *  Returns this string as the return value. */
     method String appendChar(char c) {
+		if (stringLength < maxStrLength) {
+			let charArray[stringLength] = c;
+			let stringLength = stringLength + 1;
+		}
+		return this;
     }
 
     /** Erases the last character from this String. */
     method void eraseLastChar() {
+		if (stringLength > 0) {
+			let stringLength = stringLength - 1;
+		}
+		return;
     }
 
     /** Returns the integer value of this String until the first non
      *  numeric character. */
     method int intValue() {
+		return 0;
     }
 
     /** Sets this String to hold a representation of the given number. */
     method void setInt(int number) {
+		return;
     }
 
     /** Returns the new line character. */
     function char newLine() {
+		return 128;
     }
 
     /** Returns the backspace character. */
     function char backSpace() {
+		return 129;
     }
 
     /** Returns the double quote (") character. */
     function char doubleQuote() {
+		return 34;
     }
 }
