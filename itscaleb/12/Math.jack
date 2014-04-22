@@ -101,11 +101,17 @@ class Math {
 
     /** Returns the greater number. */
     function int max(int a, int b) {
-		return a;
+		if(a > b) {
+			return a;
+		}
+		return b;
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
-		return a;
+		if(a < b) {
+			return a;
+		}
+		return b;
     }
 }
