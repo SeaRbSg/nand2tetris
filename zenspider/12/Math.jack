@@ -98,29 +98,17 @@ class Math {
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-      var int y;
-      var int temp;
-      var int temp2;
-      var int i;
-
-      if (x < 0) {
-        let i = 16;
-      } else {
-        let i = 0;
-        while ((bits[i]) < x & (i < 16)) {
-          let i = i + 1;
-        }
-      }
+      var int i, y, y2i, y2i2;
 
       let y = 0;
-
+      let i = Math.min(14, (x / 2) - 1); // y + bits[15] always overflows
       while (i > -1) {
-        let temp = y + bits[i];
-        let temp2 = temp * temp;
+        let y2i = y + bits[i];
+        let y2i2 = y2i * y2i;
 
-        if (temp2 > 0) {
-          if (temp2 = x) { return temp; }
-          if (temp2 < x) { let y = temp; }
+        if (y2i2 > 0) { // check for overflow
+          if (y2i2 = x) { return y2i; }
+          if (y2i2 < x) { let y = y2i; }
         }
 
         let i = i - 1;
