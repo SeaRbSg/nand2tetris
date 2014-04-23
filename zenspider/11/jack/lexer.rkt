@@ -61,7 +61,7 @@
    [(:+ numeric)
     ; TODO: verify size of int? or let parser do it?
     (token 'NUM (string->number lexeme))]
-   [(:: (:or "_" alphabetic) (:* (:or alphabetic numeric)))
+   [(:: (:or "_" alphabetic) (:* (:or "_" alphabetic numeric)))
     (token 'ID lexeme)]
    [(:: #\" (:* (:~ #\" #\newline)) #\" )
     (token 'STR lexeme)]))
