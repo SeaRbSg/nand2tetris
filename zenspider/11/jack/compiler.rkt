@@ -83,7 +83,9 @@
        (define name*        (syntax-e #'name))
        (define classname    (env-get env 'class-name))
 
-       (define newenv (compile-params #'params env))
+       (define newenv (compile-params #'params (if (equal? scope* "method")
+                                                   (env-bump env 'argument)
+                                                   env)))
        (define original (env-length newenv))
 
        (reset-labels)
@@ -93,7 +95,7 @@
                    ([var (syntax->list #'(vars ...))])
            (compile-sub-var var env)))
 
-       (define var-count (- (env-length newenv) original))
+       (define var-count (- (env-length newenv) original))  ; FIX: actually count
        (printf "function ~a.~a ~a~n" classname name* var-count)
 
        (case scope*
@@ -101,7 +103,7 @@
           (printf "push argument 0\n")
           (printf "pop pointer 0\n")]
          [("constructor")
-          (printf "push constant ~a\n" (env-get env 'class-fields))
+          (printf "push constant ~a\n" (env-get newenv 'class-fields))
           (printf "call Memory.alloc 1\n")
           (printf "pop pointer 0\n")]
          [("function") 'do-nothing]
@@ -230,9 +232,9 @@
         (subroutineName subname) "(" args ")")
        (define classname (env-get env 'class-name))
        (define name* (syntax-e #'subname))
-       (define args* (add1 (compile-expression-list #'args env)))
 
        (printf "push pointer 0\n")
+       (define args* (add1 (compile-expression-list #'args env)))
        (printf "call ~a.~a ~a~n" classname name* args*)]
       [({~datum subroutineCall}
         ({~datum className} recvname) "."
@@ -242,13 +244,15 @@
        (define var   (env-get env recvname*))
        (define recv* (or (and var (var-type var)) recvname*))
        (define name* (syntax-e #'subname))
+       (define bonus 0)
+
+       (unless (equal? recvname* recv*) ; instance.meth() instead of MyClass.func()
+         (printf "push ~a ~a~n" (var-scope var) (var-idx var))
+         (set! bonus 1))
+
        (define args* (compile-expression-list #'args env))
 
-       (unless (equal? recvname* recv*)
-         (printf "push ~a ~a~n" (var-scope var) (var-idx var))
-         (set! args* (add1 args*)))
-
-       (printf "call ~a.~a ~a~n" recv* name* args*)]))
+       (printf "call ~a.~a ~a~n" recv* name* (+ bonus args*))]))
 
   (define (compile-expression-list stx env)
     (syntax-parse stx
@@ -284,6 +288,7 @@
     (syntax-parse stx
       ["true"  (printf "push constant 0\nnot\n")]
       ["false" (printf "push constant 0\n")]
+      ["null"  (printf "push constant 0\n")]
       ["this"  (printf "push pointer 0\n")]
       [_ (error "Unknown keyword literal:" (syntax-e stx))]))
 
