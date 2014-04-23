@@ -107,7 +107,7 @@
          [("function") 'do-nothing]
          [else
           (error "unknown scope" scope*)])
-       
+
        (compile-statements #'statements newenv)]))
 
   (define (compile-params stx env)
@@ -332,4 +332,3 @@
        (printf "~a~n" (hash-ref UOPS (syntax-e #'op)))]))
 
   (compile-class stx (env-new)))
-
