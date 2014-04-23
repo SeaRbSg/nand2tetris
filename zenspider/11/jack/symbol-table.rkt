@@ -1,7 +1,7 @@
 #lang racket/base
 
 (provide (struct-out var)
-         env-new env-get env-set env-add env-length
+         env-new env-get env-set env-add env-length env-bump
          is-this?)
 
 (struct var (type scope idx) #:transparent)
@@ -20,9 +20,12 @@
 (define (env-idx env scope)
   (hash-ref env scope))
 
+(define (env-bump env scope)
+  (env-set env scope (add1 (env-idx env scope))))
+
 (define (env-add env key type scope)
   (define idx (env-idx env scope))
-  (env-set (env-set env scope (add1 idx)) key (var type scope idx)))
+  (env-set (env-bump env scope) key (var type scope idx)))
 
 (define (env-get env key)
   (hash-ref env key #f))
