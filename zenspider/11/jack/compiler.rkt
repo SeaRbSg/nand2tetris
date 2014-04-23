@@ -151,17 +151,23 @@
     (syntax-parse stx
       [({~datum letStatement} "let" varname "=" expression ";")
        (define var* (compile-varname #'varname env))
-       (define expr* (compile-expression #'expression env))
        (define var? (env-get env var*))
+
+       (compile-expression #'expression env)
        (printf "pop ~a ~a~n" (var-scope var?) (var-idx var?))]
 
       [({~datum letStatement} "let" varname "[" idx "]" "=" expression ";")
-       (error "not yet" stx)
-       (list 'let ; TODO
-             (compile-varname #'varname env)
-             (compile-expression #'idx env)
-             (compile-expression #'expression env))]
+       (define var* (compile-varname #'varname env))
+       (define var? (env-get env var*))
 
+       (compile-expression #'idx env)
+       (printf "push ~a ~a~n" (var-scope var?) (var-idx var?))
+       (printf "add~n")
+       (compile-expression #'expression env)
+       (printf "pop temp 0~n")          ; HACK?
+       (printf "pop pointer 1~n")
+       (printf "push temp 0~n")         ; HACK?
+       (printf "pop that 0~n")]
       [({~datum whileStatement} "while" "(" expression ")" "{" statements "}")
        (compile-while #'(expression statements) env)]
 
@@ -262,9 +268,12 @@
          (compile-op o env))]))
 
   (define OPS (hash "+" "add" "-" "sub" "&" "and" "|" "or"
-                    "<" "lt"  ">" "gt"  "=" "eq"  "~" "not"
+                    "<" "lt"  ">" "gt"  "=" "eq"
                     "*" "call Math.multiply 2"
                     "/" "call Math.divide 2"))
+
+  (define UOPS (hash "~" "not"
+                     "-" "neg"))
 
   (define (compile-op stx env)
     (syntax-parse stx
@@ -291,9 +300,15 @@
        (compile-keyword #'val env)]
 
       [({~datum term} var:var "[" expr "]")
-       (error "not yet" stx)
+       ;; (term (varName "xs") "[" (expression (term 0)) "]")
+       (define var* (compile-varname #'var env))
+       (define var? (env-get env var*))
+
        (compile-expression #'expr env)
-       (printf "push ~a\n" (syntax-e #'var))]
+       (printf "push ~a ~a~n" (var-scope var?) (var-idx var?))
+       (printf "add~n")
+       (printf "pop pointer 1~n")
+       (printf "push that 0~n")]
 
       [({~datum term} var:var)
        (define var* (compile-varname #'var env))
@@ -308,7 +323,7 @@
 
       [({~datum term} ({~datum unaryOp} op) term)
        (compile-term #'term env)
-       (printf "~a~n" (hash-ref OPS (syntax-e #'op)))]))
+       (printf "~a~n" (hash-ref UOPS (syntax-e #'op)))]))
 
   (compile-class stx (env-new)))
 
