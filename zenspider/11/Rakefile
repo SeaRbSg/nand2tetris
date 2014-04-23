@@ -1,5 +1,19 @@
 task :default => :test
 
+rule ".vm" => ".jack" do |t|
+  base = t.source.sub(/\.jack$/, "")
+  full = File.expand_path base
+  sh "../../tools/JackCompiler.sh #{full}.jack"
+end
+
+def wire base
+  file "#{base}.vm" => [ "Rakefile", "#{base}.jack"]
+
+  task :extra => "#{base}.vm" do
+    sh %[./jack.rkt #{base}.jack > wtf.vm && diff -bu #{base}.vm wtf.vm]
+  end
+end
+
 task :test do
   d = "zenspider/11"
 
@@ -18,4 +32,10 @@ task :test do
   end
 
   rm_f Dir["wtf.vm"]
+end
+
+%w[ Average/Main ComplexArrays/Main ConvertToBin/Main Pong/Ball Pong/Bat
+    Pong/Main Pong/PongGame Seven/Main Square/Main Square/Square
+    Square/SquareGame ].each do |f|
+  wire f
 end
