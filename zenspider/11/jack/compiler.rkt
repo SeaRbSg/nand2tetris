@@ -293,8 +293,14 @@
        (printf "push constant ~a\n" (syntax-e #'val))]
 
       [({~datum term} val:str)
-       (error "not yet" stx)
-       (printf "push ~a\n" (syntax-e #'val))]
+       (define str* (syntax-e #'val))
+       (define len (string-length str*))
+       (printf "push constant ~a~n" (- len 2))
+       (printf "call String.new 1~n")
+
+       (for ([c (in-string str* 1 (sub1 (string-length str*)) 1)])
+         (printf "push constant ~a~n" (char->integer c))
+         (printf "call String.appendChar 2~n"))]
 
       [({~datum term} ({~datum keywordConstant} val))
        (compile-keyword #'val env)]
