@@ -27,8 +27,8 @@ task :test do
   files << "Ship"
 
   files.each do |name|
-    sh %[./jack.rkt ../09/grid/#{name}.jack > wtf.vm]
-    sh "diff -bu ../09/grid/#{name}.vm wtf.vm"
+    base = "../09/grid/#{name}"
+    sh %[./jack.rkt #{base}.jack > wtf.vm && diff -bu #{base}.vm wtf.vm]
   end
 
   rm_f Dir["wtf.vm"]
