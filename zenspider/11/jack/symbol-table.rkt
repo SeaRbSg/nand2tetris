@@ -1,7 +1,8 @@
 #lang racket/base
 
 (provide (struct-out var)
-         env-new env-get env-set env-add env-length)
+         env-new env-get env-set env-add env-length
+         is-this?)
 
 (struct var (type scope idx) #:transparent)
 
@@ -27,3 +28,7 @@
   (hash-ref env key #f))
 
 (define env-length hash-count)
+
+(define (is-this? x)
+  (and (var? x)
+       (equal? 'this (var-scope x))))

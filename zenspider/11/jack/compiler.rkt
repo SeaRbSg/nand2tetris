@@ -45,16 +45,12 @@
       [({~datum class} "class" ({~datum className} class-name) "{"
         classvars:cvar ... subroutines ... "}")
        (define name (syntax-e #'class-name))
-
-       (define original (env-length env))
-
        (define new-env
          (for/fold ([env (env-set env 'class-name name)]) ; + 1
                    ([cv (syntax->list #'(classvars ...))])
            (compile-classvar cv env)))
+       (define classvar-count (length (filter is-this? (hash-values new-env))))
 
-       (define classvar-count (- (env-length new-env) original 1))
-       
        (map/compile compile-subroutine #'(subroutines ...)
                     (env-set new-env 'class-fields classvar-count))]))
 
