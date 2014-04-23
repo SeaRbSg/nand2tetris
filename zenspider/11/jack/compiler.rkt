@@ -8,6 +8,8 @@
 (define (jack/compile stx)
   (define labels (make-hash))
 
+  (define (reset-labels) (set! labels (make-hash)))
+
   (define (new-label name)
     (define idx (hash-ref labels name 0))
     (hash-set! labels name (add1 idx))
@@ -83,6 +85,8 @@
 
        (define newenv (compile-params #'params env))
        (define original (env-length newenv))
+
+       (reset-labels)
 
        (set! newenv
          (for/fold ([env newenv])
