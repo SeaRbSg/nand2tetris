@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "rltk", :github => 'chriswailes/RLTK'
+gem "builder"
 
 group :development do
     gem 'byebug'

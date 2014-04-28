@@ -70,8 +70,7 @@ module Jack
         rule(/[0-9]+/)          { |t| [ :INTEGER, t.to_i ] }
         
         # strings
-        rule(/"[^"]+"/)         { |t| [ :STRING, t.match(/"([^"]+)"/)[1] ]
-        }
+        rule(/"[^"]+"/)         { |t| [ :STRING, t.match(/"([^"]+)"/)[1] ] }
         
         # identifier
         rule(/[a-zA-Z_][\w_]*/) { |t| [ :IDENT, t.to_sym ] }
