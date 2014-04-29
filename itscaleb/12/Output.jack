@@ -177,6 +177,7 @@ class Output {
     /** Moves the cursor to the j’th column of the i’th row,
      *  and erases the character that was there. */
     function void moveCursor(int i, int j) {
+        let col = (i * 11 * 64) + j;
 		return;
     }
 
@@ -213,12 +214,24 @@ class Output {
     /** Prints s starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printString(String s) {
+        var int i;
+        let i = 0;
+
+        while(i < s.length()) {
+            do Output.printChar(s.charAt(i));
+            let i = i + 1;
+        }
+
 		return;
     }
 
     /** Prints i starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printInt(int i) {
+        var String s;
+        let s = String.new(6);
+        do s.setInt(i);
+        do Output.printString(s);
 		return;
     }
 
