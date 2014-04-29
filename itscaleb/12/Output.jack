@@ -183,25 +183,25 @@ class Output {
     /** Prints c at the cursor location and advances the cursor one
      *  column forward. */
     function void printChar(char c) {
-		var Array map;
-		var int i, address, pointer, even;
+        var Array map;
+        var int i, address, pointer, even;
 
-		let map = charMaps[c];
-		let i = 0;
+        let map = charMaps[c];
+        let i = 0;
         let pointer = col / 2;
         let even = Output.mod(col, 2);
-		while(i < 12) {
-			if(even) {
-				let SCREEN[pointer] = (SCREEN[pointer] & 255) | (map[i] * 256);
-			}
-			else {
-				let SCREEN[pointer] = (SCREEN[pointer] & (-1 & 256)) | map[i];
-			}
+        while(i < 12) {
+            if(even) {
+                let SCREEN[pointer] = (SCREEN[pointer] & 255) | (map[i] * 256);
+            }
+            else {
+                let SCREEN[pointer] = (SCREEN[pointer] & (-1 & 256)) | map[i];
+            }
             let pointer = pointer + 32;
-			let i = i + 1;
-		}
-		let col = col + 1;
-		return;
+            let i = i + 1;
+        }
+        let col = col + 1;
+        return;
     }
 
 	function int mod(int x, int y) {
