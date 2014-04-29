@@ -163,7 +163,7 @@ class Compiler
       when 1 then
         asm "@#{name}", "A=M+1"
       else
-        asm "@#{name}", "D=M", "@#{offset}", "A=A+D"
+        asm "@#{name}", "D=M", "@#{offset}", "A=D+A"
       end
     end
 
@@ -268,9 +268,9 @@ class Compiler
     def neg; unary "M=-M";      end
     def not; unary "M=!M";      end
 
-    def add; binary "D=A+D";    end
-    def and; binary "D=A&D";    end
-    def or;  binary "D=A|D";    end
+    def add; binary "D=D+A";    end
+    def and; binary "D=D&A";    end
+    def or;  binary "D=D|A";    end
     def sub; binary "D=A-D";    end
 
     def eq;  binary_test "JEQ"; end
@@ -337,7 +337,7 @@ class Compiler
       when 1, 2 then # 4n=5+2n == 2n=5 == n=2.5
         asm [push_d("AM=M+1", "0")] * size
       else
-        asm "@#{size}", "D=A", "@SP", "AM=M+D", "A=A-D", ["M=0", "A=A+1"] * size
+        asm "@#{size}", "D=A", "@SP", "AM=D+M", "A=A-D", ["M=0", "A=A+1"] * size
       end
     end
 
