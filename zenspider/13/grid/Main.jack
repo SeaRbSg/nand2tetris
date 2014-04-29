@@ -1,0 +1,19 @@
+// -*- c -*-
+
+class Main {
+  function void main() {
+    do Main.init();
+    do Grid.go();
+
+    return;
+  }
+
+  function void init() {
+    do Trig.init();
+    do Grid.init();
+    do Ship.init();
+    do MathX.init();
+
+    return;
+  }
+}

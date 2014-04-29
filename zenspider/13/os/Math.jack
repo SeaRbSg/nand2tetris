@@ -1,0 +1,137 @@
+// -*- c -*-
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+    static Array bits;
+
+    /** Initializes the library. */
+    function void init() {
+      var int n;
+
+      let n = 1;
+      let bits = Array.new(16);
+      let bits[0] = 1;
+      let bits[1] = 2;
+      let bits[2] = 4;
+      let bits[3] = 8;
+      let bits[4] = 16;
+      let bits[5] = 32;
+      let bits[6] = 64;
+      let bits[7] = 128;
+      let bits[8] = 256;
+      let bits[9] = 512;
+      let bits[10] = 1024;
+      let bits[11] = 2048;
+      let bits[12] = 4096;
+      let bits[13] = 8192;
+      let bits[14] = 16384;
+      // let bits[15] = -32768; // BUG in jack compiler?
+      let bits[15] = bits[14] + bits[14];
+
+      return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+      if (x < 0) {
+        return -x;
+      } else {
+        return x;
+      }
+    }
+
+    /** Returns the product of x and y. */
+    function int multiply(int x, int y) {
+      var boolean neg;
+      var int sum, i, pow;
+
+      if ((y=0) | (x=0)) { return 0; }
+
+      let sum = 0;
+      let pow = x;
+      let i = 0;
+      while (i < 16) {
+        if (bits[i] & y) {
+          let sum = sum + pow;
+        }
+        let pow = pow + pow;
+        let i = i + 1;
+      }
+
+      return sum;
+    }
+
+    /** Returns the integer part of x/y. */
+    function int divide(int x, int y) {
+      var int yy, q, r;
+      var bool neg;
+
+      let neg = ((x < 0) & (y > 0)) | ((x > 0) & (y < 0));
+
+      let x = Math.abs(x);
+      let y = Math.abs(y);
+
+      if (y > x) { return 0; }
+
+      let yy = y + y;
+
+      if (yy < 0) { return 0; } // overflow
+
+      let q = Math.divide(x, yy);
+
+      if ((x - (q * yy)) < y) {
+        let r = q + q;
+      } else {
+        let r = q + q + 1;
+      }
+
+      if (neg) { let r = -r; }
+
+      return r;
+    }
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+      var int i, y, y2i, y2i2;
+
+      let y = 0;
+      let i = Math.min(14, (x / 2) - 1); // y + bits[15] always overflows
+      while (i > -1) {
+        let y2i = y + bits[i];
+        let y2i2 = y2i * y2i;
+
+        if (y2i2 > 0) { // check for overflow
+          if (y2i2 = x) { return y2i; }
+          if (y2i2 < x) { let y = y2i; }
+        }
+
+        let i = i - 1;
+      }
+
+      return y;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+      if (a > b) {
+        return a;
+      } else {
+        return b;
+      }
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+      if (a < b) {
+        return a;
+      } else {
+        return b;
+      }
+    }
+}

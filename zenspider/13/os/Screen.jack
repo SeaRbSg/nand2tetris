@@ -1,0 +1,181 @@
+// -*- c -*-
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * Graphic screen library.
+ */
+class Screen {
+  static Array ptr;
+    static Array screen;
+    static int width;
+    static int height;
+    static boolean black;
+    static Array bits;
+
+
+    /** Initializes the Screen. */
+    function void init() {
+      let ptr = 4000;
+      let ptr[0] = 1;
+      let screen = 16384;
+      let width = 512;
+      let height = 256;
+      let black = true;
+
+      let bits = Array.new(16); // TODO: reuse math's bits
+      let bits[0] = 1;
+      let bits[1] = 2;
+      let bits[2] = 4;
+      let bits[3] = 8;
+      let bits[4] = 16;
+      let bits[5] = 32;
+      let bits[6] = 64;
+      let bits[7] = 128;
+      let bits[8] = 256;
+      let bits[9] = 512;
+      let bits[10] = 1024;
+      let bits[11] = 2048;
+      let bits[12] = 4096;
+      let bits[13] = 8192;
+      let bits[14] = 16384;
+      let bits[15] = bits[14] + bits[14];
+
+      return;
+    }
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+      var int i;
+      let i = screen;
+      while (i < 8192) { // 512/16 * 256
+        let screen[i] = 0;
+        let i = i + 1;
+      }
+      return;
+    }
+
+    /** Sets the color to be used in further draw commands
+     *  where white = false, black = true. */
+    function void setColor(boolean b) {
+      let black = b;
+      return;
+    }
+
+    /** Draws the (x, y) pixel. */
+    function void drawPixel(int x, int y) {
+      var int word;
+      var int bit;
+
+      let word = (y * 32) + (x / 16);
+      let bit = bits[x - (x / 16 * 16)];
+
+      if (black) {
+        let screen[word] = screen[word] | bit;
+      } else {
+        let screen[word] = screen[word] & ~bit;
+      }
+
+      return;
+    }
+
+    /** Draws a line from (x1, y1) to (x2, y2). */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+      var int dx, dy, sx, i;
+
+      if (y1 > y2) {
+        do Screen.drawLine(x2, y2, x1, y1);
+        return;
+      }
+
+      let dx = x2 - x1;
+
+      let sx = 1;
+
+      if (dx < 0) {
+        let sx = -1;
+        let dx = -dx;
+      }
+
+      let dy = y2 - y1;
+
+      if (dy = 0) { // horizontal
+        let i = x1;
+        while (~(i = x2)) {
+          do Screen.drawPixel(i, y1);
+          let i = i + sx;
+        }
+        return;
+      }
+
+      if (dx = 0) { // vertical
+        let i = y1;
+        while (~(i = y2)) {
+          do Screen.drawPixel(x1, i);
+          let i = i + 1;
+        }
+        return;
+      }
+
+      if (dx = dy) { // diagonal
+        let i = x1;
+        while (~(i = x2)) {
+          do Screen.drawPixel(i, y1);
+          let i = i + sx;
+          let y1 = y1 + 1;
+        }
+        return;
+      }
+
+      // point(x1, y1, color)
+      // e_acc = 0
+      // if dy > dx then # vertical displacement
+      //   e = (dx << 16) / dy
+      //   (y1...y2-1).each do |i|
+      //     e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xFFFF
+      //     x1 = x1 + sx if (e_acc <= e_acc_temp)
+      //     w = 0xFF-(e_acc >> 8)
+      //     point(x1, y1, color.intensity(w))
+      //     y1 = y1 + 1
+      //     point(x1 + sx, y1, color.intensity(0xFF-w))
+      //   end
+      //   point(x2, y2, color)
+      //   return
+      // end
+
+      // # horizontal displacement
+      // e = (dy << 16) / dx
+      // (dx - 1).downto(0) do |i|
+      //   e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xFFFF
+      //   y1 += 1 if (e_acc <= e_acc_temp)
+      //   w = 0xFF-(e_acc >> 8)
+      //   point(x1, y1, color.intensity(w))
+      //   x1 += sx
+      //   point(x1, y1 + 1, color.intensity(0xFF-w))
+      // end
+      // point(x2, y2, color)
+
+      return;
+    }
+
+    /** Draws a filled rectangle where the top left corner
+     *  is (x1, y1) and the bottom right corner is (x2, y2). */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+
+      while (~(y1 = y2)) {
+        do Screen.drawLine(x1, y1, x2, y1);
+        let y1 = y1 + 1;
+      }
+
+      return;
+    }
+
+    /** Draws a filled circle of radius r around (cx, cy). */
+    function void drawCircle(int cx, int cy, int r) {
+      do Screen.drawRectangle(cx - r, cy - r, cx + r, cy + r);
+
+      return;
+    }
+}

@@ -1,0 +1,35 @@
+file "vm2.rb"
+
+rule ".vm" => ".jack" do |t|
+  base = t.source.sub(/\.jack$/, "")
+  full = File.expand_path base
+  sh "../../tools/JackCompiler.sh #{full}.jack"
+end
+
+def wire base
+  file "#{base}.vm" => [ "Rakefile", "#{base}.jack"]
+  file "#{base}Test/Main.vm" => [ "Rakefile", "#{base}Test/Main.jack"]
+  file "#{base}Test/#{base}.vm" => "#{base}.vm" do |t|
+    cp t.prerequisites.first, t.name
+  end
+  task :default => ["#{base}.vm",
+                    "#{base}Test/#{base}.vm",
+                    "#{base}Test/Main.vm"]
+end
+
+task :vm do
+  sh "../../tools/VMEmulator.sh"
+end
+
+wire "Array"
+wire "Keyboard"
+wire "Math"
+wire "Memory"
+wire "Output"
+wire "Screen"
+wire "String"
+wire "Sys"
+
+task :go do
+  sh "../../tools/VMEmulator.sh $PWD/MathTest/MathTest.tst; diff -u MathTest/MathTest.{cmp,out}"
+end

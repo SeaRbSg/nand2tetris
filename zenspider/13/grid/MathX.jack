@@ -1,0 +1,25 @@
+// -*- c -*-
+
+class MathX {
+  static int seed;
+
+  function void init() {
+    let seed = 12345;
+    return;
+  }
+
+  function int mod(int a, int n) {
+    return a - Math.multiply(n, Math.divide(a, n));
+  }
+
+  function void seed(int n) {
+    let seed = n;
+    return;
+  }
+
+  function int rand() {
+    // a & m from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.1024
+    let seed = MathX.mod(219 * seed, 32749);
+    return seed;
+  }
+}
