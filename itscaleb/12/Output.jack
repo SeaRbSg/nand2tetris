@@ -14,9 +14,15 @@ class Output {
 
     // Character map for printing on the left of a screen word
     static Array charMaps; 
+	static Array SCREEN;
+	static int col;
 
     /** Initializes the screen and locates the cursor at the screen's top-left. */
     function void init() {
+		let col = 0;
+		let SCREEN = 16384;
+		do Output.initMap();
+		return;
     }
 
     // Initalizes the character map array
@@ -171,28 +177,58 @@ class Output {
     /** Moves the cursor to the j’th column of the i’th row,
      *  and erases the character that was there. */
     function void moveCursor(int i, int j) {
+		return;
     }
 
     /** Prints c at the cursor location and advances the cursor one
      *  column forward. */
     function void printChar(char c) {
+		var Array map;
+		var int i, address, pointer, even;
+
+		let map = charMaps[c];
+		let i = 0;
+        let pointer = col / 2;
+        let even = Output.mod(col, 2);
+		while(i < 12) {
+			if(even) {
+				let SCREEN[pointer] = (SCREEN[pointer] & 255) | (map[i] * 256);
+			}
+			else {
+				let SCREEN[pointer] = (SCREEN[pointer] & (-1 & 256)) | map[i];
+			}
+            let pointer = pointer + 32;
+			let i = i + 1;
+		}
+		let col = col + 1;
+		return;
     }
+
+	function int mod(int x, int y) {
+		var int q;
+		let q = Math.divide(x, y);
+		return x - (y * q);
+	}
 
     /** Prints s starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printString(String s) {
+		return;
     }
 
     /** Prints i starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printInt(int i) {
+		return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+		return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+		return;
     }
 }
