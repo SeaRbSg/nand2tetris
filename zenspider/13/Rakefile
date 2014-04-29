@@ -1,35 +1,52 @@
 file "vm2.rb"
 
 rule ".vm" => ".jack" do |t|
-  base = t.source.sub(/\.jack$/, "")
-  full = File.expand_path base
-  sh "../../tools/JackCompiler.sh #{full}.jack"
+  sh "./jack.rkt #{t.source} > #{t.name}"
+end
+
+rule ".asm" => ".vm" do |t|
+  sh "./vm.rb #{t.source} > #{t.name}"
+end
+
+rule ".hack" => ".asm" do |t|
+  sh "./asm.rkt #{t.source} > #{t.name}"
 end
 
 def wire base
-  file "#{base}.vm" => [ "Rakefile", "#{base}.jack"]
-  file "#{base}Test/Main.vm" => [ "Rakefile", "#{base}Test/Main.jack"]
-  file "#{base}Test/#{base}.vm" => "#{base}.vm" do |t|
-    cp t.prerequisites.first, t.name
+  file "#{base}.vm" => [ "Rakefile", "#{base}.jack", "jack.rkt"]
+  file "#{base}.asm" => ["#{base}.vm", "vm.rb"]
+  file "#{base}.hack" => ["#{base}.asm", "asm.rkt"]
+
+  output = ["#{base}.vm", "#{base}.asm", "#{base}.hack"]
+
+  task :default => output
+
+  task :clean do
+    rm_f output
   end
-  task :default => ["#{base}.vm",
-                    "#{base}Test/#{base}.vm",
-                    "#{base}Test/Main.vm"]
 end
 
-task :vm do
-  sh "../../tools/VMEmulator.sh"
-end
+# task :vm do
+#   sh "../../tools/VMEmulator.sh"
+# end
 
-wire "Array"
-wire "Keyboard"
-wire "Math"
-wire "Memory"
-wire "Output"
-wire "Screen"
-wire "String"
-wire "Sys"
+wire "os/Array"
+wire "os/Keyboard"
+wire "os/Math"
+wire "os/Memory"
+wire "os/Output"
+wire "os/Screen"
+wire "os/String"
+wire "os/Sys"
 
-task :go do
-  sh "../../tools/VMEmulator.sh $PWD/MathTest/MathTest.tst; diff -u MathTest/MathTest.{cmp,out}"
-end
+wire "grid/Grid"
+wire "grid/Main"
+wire "grid/MathX"
+wire "grid/Pew"
+wire "grid/Ship"
+wire "grid/Trig"
+
+
+# task :go do
+#   sh "../../tools/VMEmulator.sh $PWD/MathTest/MathTest.tst; diff -u MathTest/MathTest.{cmp,out}"
+# end
