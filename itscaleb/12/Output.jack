@@ -237,11 +237,15 @@ class Output {
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        var int currCol;
+        let currCol = Output.mod(col, 64);
+        let col =  col - currCol + (64 * 11);
 		return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        let col = col - 1;
 		return;
     }
 }
