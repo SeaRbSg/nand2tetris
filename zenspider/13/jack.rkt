@@ -1,4 +1,4 @@
-#!/MyApplications/dev/lisp/Racket/bin/racket
+#!/usr/bin/env racket
 #lang racket/base
 
 (require (rename-in (prefix-in jack/ "jack/parser.rkt")
