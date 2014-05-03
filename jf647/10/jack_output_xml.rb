@@ -213,7 +213,7 @@ module Jack
             xml.expression do |xml_expr|
                 @expr.each do |e|
                     xml_expr.term do |xml_term|
-                        xml_term.identifier e.name.to_s
+                        e.render xml_term
                     end
                 end
             end
