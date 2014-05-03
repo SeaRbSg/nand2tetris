@@ -112,8 +112,8 @@ module Jack
         # a jack expression
         nonempty_list(:exprlist, [ :term, :op ])
         p(:expression) do
-            c('exprlist')        { |e| Jack::Expression.new e }
-            c('unaryop term')    { |op,term| Jack::Expression.new [ op, term ] }
+            c('exprlist')        { |e| Jack::Expression.new [e] }
+            c('unaryop term')    { |op,term| Jack::Expression.new [op,term] }
         end
 
         # an expression term
@@ -128,34 +128,34 @@ module Jack
 
         # an expression operator
         p(:op) do
-            c('PLUS')           { |t| t }
-            c('MINUS')          { |t| t }
-            c('MULT')           { |t| t }
-            c('DIV')            { |t| t }
-            c('AND')            { |t| t }
-            c('OR')             { |t| t }
-            c('LT')             { |t| t }
-            c('GT')             { |t| t }
-            c('EQUALS')         { |t| t }
+            c('PLUS')           { |t| Jack::Op.new '+' }
+            c('MINUS')          { |t| Jack::Op.new '-' }
+            c('MULT')           { |t| Jack::Op.new '*' }
+            c('DIV')            { |t| Jack::Op.new '/' }
+            c('AND')            { |t| Jack::Op.new '&' }
+            c('OR')             { |t| Jack::Op.new '|' }
+            c('LT')             { |t| Jack::Op.new '<' }
+            c('GT')             { |t| Jack::Op.new '>' }
+            c('EQUALS')         { |t| Jack::Op.new '=' }
         end
 
         # a unary operation
         p(:unaryop) do
-            c('MINUS')              { |t| t }
-            c('NEG')                { |t| t }
+            c('MINUS')              { |t| Jack::Op.new '-' }
+            c('NEG')                { |t| Jack::Op.new '!' }
         end
 
         # a constant
         p(:const) do
-            c('TRUE')   { |c| c }
-            c('FALSE')  { |c| c }
-            c('NULL')   { |c| c }
-            c('THIS')   { |c| c }
+            c('TRUE')   { |c| Jack::Const.new(:true) }
+            c('FALSE')  { |c| Jack::Const.new(:false) }
+            c('NULL')   { |c| Jack::Const.new(:null) }
+            c('THIS')   { |c| Jack::Const.new(:this) }
         end
 
         # an index to an array var
         p(:arrindex, 'LBRACKET expression RBRACKET') do |_, expr, _|
-            Jack::Expression.new expr
+            Jack::Expression.new [expr]
         end
 
         # a variable reference with optional array index

@@ -15,6 +15,14 @@ module Jack
         end
     end
 
+    class Const < RLTK::ASTNode
+        value :type, Symbol
+    end
+
+    class Op < RLTK::ASTNode
+        value :op, String
+    end
+
     class ClassVarDec < RLTK::ASTNode
         value :scope, Symbol
         value :names, [Symbol]
@@ -28,6 +36,9 @@ module Jack
 
     class Expression < RLTK::ASTNode
         value :expr, Array
+        def empty?
+            ! @expr.flatten.any?
+        end
     end
 
     class Var < RLTK::ASTNode

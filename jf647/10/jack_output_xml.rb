@@ -196,7 +196,7 @@ module Jack
 
             xml.returnStatement do |xml_return|
                 xml_return.keyword 'return'
-                if @expr
+                if ! @expr.nil? && ! @expr.empty?
                     @expr.render xml_return
                 end
                 xml_return.symbol ';'
@@ -211,9 +211,20 @@ module Jack
         def render xml
 
             xml.expression do |xml_expr|
-                @expr.each do |e|
-                    xml_expr.term do |xml_term|
-                        e.render xml_term
+                @expr.flatten.compact.each do |e|
+                    case e.class.to_s
+                        when 'Jack::Op'
+                            xml_expr.symbol e.op
+                        when 'Jack::Expression'
+                            xml_expr.term do |xml_term|
+                                xml_expr.symbol '('
+                                e.render xml_term
+                                xml_expr.symbol ')'
+                            end
+                        else
+                            xml_expr.term do |xml_term|
+                                e.render xml_term
+                            end
                     end
                 end
             end
@@ -271,6 +282,38 @@ module Jack
 
         end
 
+    end
+
+    class VarRef
+
+        def render xml
+            xml.identifier @name.to_s
+        end
+
+    end
+
+    class Const
+
+        def render xml
+            xml.keyword @type.to_s
+        end
+
+    end
+
+    class Op
+
+        def render xml
+            xml.symbol @op
+        end
+
+    end
+
+end
+
+class Fixnum
+
+    def render xml
+        xml.integerConstant self
     end
 
 end
