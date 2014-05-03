@@ -2,15 +2,28 @@ require 'rltk/ast'
 
 module Jack
 
+    class VarType < RLTK::ASTNode
+        value :type, Symbol
+
+        class Primitive < VarType
+        end
+
+        class Class < VarType
+        end
+
+        class Void < VarType
+        end
+    end
+
     class ClassVarDec < RLTK::ASTNode
         value :scope, Symbol
-        value :type, Symbol
-        value :name, Symbol
+        value :names, [Symbol]
+        child :type, Jack::VarType
     end
 
     class VarDec < RLTK::ASTNode
-        value :type, Symbol
-        value :name, Symbol
+        value :names, [Symbol]
+        child :type, Jack::VarType
     end
 
     class Expression < RLTK::ASTNode
@@ -19,6 +32,11 @@ module Jack
 
     class Var < RLTK::ASTNode
         value :name, Symbol
+        child :type, Jack::VarType
+    end
+
+    class VarRef < RLTK::ASTNode
+        value :name, Symbol
         child :index, Jack::Expression
     end
 
@@ -26,14 +44,14 @@ module Jack
     end
 
     class SubBody < RLTK::ASTNode
-        child :vardec, [Jack::VarDec]
+        child :vardecs, [Jack::VarDec]
         child :statements, [Jack::Statement]
     end
 
     class Sub < RLTK::ASTNode
         value :klass, Class
-        value :rettype, Symbol
         value :name, Symbol
+        child :rettype, Jack::VarType
         child :params, [Jack::Var]
         child :body, Jack::SubBody
     end
@@ -58,12 +76,12 @@ module Jack
 
     class Class < RLTK::ASTNode
         value :klass, Symbol
-        child :cvars, [Jack::ClassVarDec]
+        child :cvardecs, [Jack::ClassVarDec]
         child :subs, [Jack::Sub]
     end
 
     class LetStatement < Statement
-        child :var, Jack::Var
+        child :var, Jack::VarRef
         child :expr, Jack::Expression
     end
 
@@ -96,6 +114,7 @@ module Jack
         value :op, Symbol
         value :term, Symbol
     end
+
 
 end
 

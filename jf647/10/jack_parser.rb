@@ -12,35 +12,37 @@ module Jack
         end
 
         # a class variable declaration
-        p(:cvardec, 'cvarscope vartype varnamelist SEMICOLON') do |scope, type, names,_|
-            names.map{|e| Jack::ClassVarDec.new(scope, type, e)}
+        p(:cvardec, 'cvarscope vartype identlist SEMICOLON') do |scope,type,names,_|
+            Jack::ClassVarDec.new(scope, names, type)
         end
 
         # a variable declaration
-        p(:vardec, 'VAR varlist SEMICOLON')   { |_,vars,_| vars }
+        p(:vardec, 'VAR vartype identlist SEMICOLON')   do |_,type,names,_|
+            Jack::VarDec.new(names, type)
+        end
 
         # a class variable scope
         p(:cvarscope) do
-            c('STATIC')     { |s| s }
-            c('FIELD')      { |s| s }
+            c('STATIC')     { |s| :static }
+            c('FIELD')      { |s| :field }
         end
 
         # variable type
         p(:vartype) do
-            c('INT')        { |t| :int }
-            c('CHAR')       { |t| :char }
-            c('BOOLEAN')    { |t| :boolean }
-            c('IDENT')      { |t| t }
+            c('INT')        { |t| Jack::VarType::Primitive.new(:int) }
+            c('CHAR')       { |t| Jack::VarType::Primitive.new(:char) }
+            c('BOOLEAN')    { |t| Jack::VarType::Primitive.new(:boolean) }
+            c('IDENT')      { |t| Jack::VarType::Class.new(t) }
         end
 
         # a nonempty list of variable names
-        nonempty_list(:varnamelist, :IDENT, :COMMA)
+        nonempty_list(:identlist, :IDENT, :COMMA)
 
         # a subroutine declaration
         p(:subdec) do
             c('subtype rettype IDENT LPAREN varlist RPAREN LBRACE subbody RBRACE') do |klass,rettype,name,_,params,_,_,body,_|
                 klass = Module.const_get(klass)
-                klass.new(klass, rettype, name, params, body)
+                klass.new(klass, name, rettype, params, body)
             end
         end
 
@@ -53,19 +55,19 @@ module Jack
 
         # subroutine return type
         p(:rettype) do
-            c('VOID')           { |t| :void }
+            c('VOID')           { |t| Jack::VarType::Void.new }
             c('vartype')        { |t| t }
         end
 
         # a variable declration
-        p(:typedvar, 'vartype IDENT')   { |type,name| Jack::VarDec.new(type, name) }
+        p(:typedvar, 'vartype IDENT')   { |type,name| Jack::Var.new(name, type) }
 
         # a nonempty list of typed variables
         empty_list(:varlist, :typedvar, :COMMA)
 
         # a subroutine body
         p(:subbody, 'vardec* statements') do |vars,statements|
-            Jack::SubBody.new(vars[0], statements)
+            Jack::SubBody.new(vars, statements)
         end
 
         # a possibly empty list of statements
@@ -73,11 +75,15 @@ module Jack
 
         # a jack statement
         p(:statement) do
-            c('LET IDENT arrindex? EQUALS expression SEMICOLON') do |_,name,index,_,expr,_|
-                Jack::LetStatement.new(Jack::Var.new(name, index), expr)
+            c('LET varref EQUALS expression SEMICOLON') do |_,var,_,expr,_|
+                Jack::LetStatement.new(var, expr)
             end
             c('IF LPAREN expression RPAREN LBRACE statements RBRACE elseclause?') do |_,_,expr,_,_,ifstatements,_,elsestatements|
-                Jack::IfStatement.new(expr, ifstatements, elsestatements)
+                if ! elsestatements.nil?
+                    Jack::IfStatement.new(expr, ifstatements, elsestatements)
+                else
+                    Jack::IfStatement.new(expr, ifstatements, [])
+                end
             end
             c('WHILE LPAREN expression RPAREN LBRACE statements RBRACE') do |_,_,expr,_,_,statements,_|
                 Jack::WhileStatement.new(expr, statements)
@@ -100,27 +106,24 @@ module Jack
             statements
         end
 
-        # an index to an array var
-        p(:arrindex, 'LBRACKET expression RBRACKET') do |_, expr, _|
-            Jack::Expression.new expr
-        end
-
         # a prefix
         p(:prefix, 'IDENT DOT')    { |prefix,_| prefix }
 
         # a jack expression
-        nonempty_list(:expr, [ :term, :op ])
-        p(:expression, 'expr') { |e| Jack::Expression.new e }
+        nonempty_list(:exprlist, [ :term, :op ])
+        p(:expression) do
+            c('exprlist')        { |e| Jack::Expression.new e }
+            c('unaryop term')    { |op,term| Jack::Expression.new [ op, term ] }
+        end
 
         # an expression term
         p(:term) do
             c('INTEGER')            { |t| t }
             c('STRING')             { |t| t }
             c('const')              { |t| t }
-            c('IDENT arrindex?')    { |name,index| Jack::Var.new(name, index) }
+            c('varref')             { |t| t }
             c('subcall')            { |t| t }
             c('LPAREN expression RPAREN')   { |_,expr,_| expr }
-            c('unaryop term')       { |op,t| Jack::UnaryOp.new(op, term) }
         end
 
         # an expression operator
@@ -149,6 +152,14 @@ module Jack
             c('NULL')   { |c| c }
             c('THIS')   { |c| c }
         end
+
+        # an index to an array var
+        p(:arrindex, 'LBRACKET expression RBRACKET') do |_, expr, _|
+            Jack::Expression.new expr
+        end
+
+        # a variable reference with optional array index
+        p(:varref, 'IDENT arrindex?') { |name,expr| Jack::VarRef.new(name, expr) }
 
         # a nonempty list of expressions
         empty_list(:expressionlist, :expression, :COMMA)
