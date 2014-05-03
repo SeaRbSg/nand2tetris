@@ -160,7 +160,16 @@ module Jack
 
             xml.whileStatement do |xml_while|
                 xml_while.keyword 'while'
-                xml_while.symbol ';'
+                xml_while.symbol '('
+                @expr.render xml_while
+                xml_while.symbol ')'
+                xml_while.symbol '{'
+                xml_while.statements do |xml_stmts|
+                    @statements.each do |stmt|
+                        stmt.render xml_stmts
+                    end
+                end
+                xml_while.symbol '}'
             end
 
         end
