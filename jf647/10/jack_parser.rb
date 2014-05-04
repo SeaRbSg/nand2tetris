@@ -159,7 +159,13 @@ module Jack
         end
 
         # a variable reference with optional array index
-        p(:varref, 'IDENT arrindex?') { |name,expr| Jack::VarRef.new(name, expr) }
+        p(:varref, 'IDENT arrindex?') do |name,expr|
+            if ! expr.nil?
+                Jack::VarRef.new(name, expr.expr[0])
+            else
+                Jack::VarRef.new(name)
+            end
+        end
 
         # a nonempty list of expressions
         empty_list(:expressionlist, :expression, :COMMA)

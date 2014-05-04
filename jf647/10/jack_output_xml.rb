@@ -123,7 +123,7 @@ module Jack
         def render xml
             xml.letStatement do |xml_let|
                 xml_let.keyword 'let'
-                xml_let.identifier @var.name.to_s
+                @var.render xml_let
                 xml_let.symbol '='
                 @expr.render xml_let
                 xml_let.symbol ';'
@@ -211,7 +211,6 @@ module Jack
         def render xml
 
             xml.expression do |xml_expr|
-                #byebug if( @expr.flatten.compact.select{|e| e.is_a?(Jack::Term::Int)} )
                 @expr.flatten.compact.each do |e|
                     e.render xml_expr
                 end
@@ -276,6 +275,11 @@ module Jack
 
         def render xml
             xml.identifier @name.to_s
+            if ! @index.nil?
+                xml.symbol '['
+                @index.render xml
+                xml.symbol ']'
+            end
         end
 
     end
