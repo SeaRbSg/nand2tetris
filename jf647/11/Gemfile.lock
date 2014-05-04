@@ -1,0 +1,27 @@
+GIT
+  remote: git://github.com/chriswailes/RLTK.git
+  revision: 85da8a83507163f5172f400fd826e3e802d89978
+  specs:
+    rltk (3.0.0)
+      ffi (>= 1.0.0)
+      filigree (>= 0.2.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (3.1.2)
+      columnize (~> 0.8)
+      debugger-linecache (~> 1.2)
+    columnize (0.8.9)
+    debugger-linecache (1.2.0)
+    ffi (1.9.3)
+    filigree (0.2.1)
+    rb-readline (0.5.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  byebug
+  rb-readline
+  rltk!
