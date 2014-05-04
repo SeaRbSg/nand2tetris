@@ -211,21 +211,9 @@ module Jack
         def render xml
 
             xml.expression do |xml_expr|
+                #byebug if( @expr.flatten.compact.select{|e| e.is_a?(Jack::Term::Int)} )
                 @expr.flatten.compact.each do |e|
-                    case e.class.to_s
-                        when 'Jack::Op'
-                            xml_expr.symbol e.op
-                        when 'Jack::Expression'
-                            xml_expr.term do |xml_term|
-                                xml_expr.symbol '('
-                                e.render xml_term
-                                xml_expr.symbol ')'
-                            end
-                        else
-                            xml_expr.term do |xml_term|
-                                e.render xml_term
-                            end
-                    end
+                    e.render xml_expr
                 end
             end
 
@@ -308,12 +296,90 @@ module Jack
 
     end
 
-end
+    class Term
 
-class Fixnum
+        class Int < Term
 
-    def render xml
-        xml.integerConstant self
+            def render xml
+                xml.term do |xml_term|
+                    xml_term.integerConstant @value
+                end
+            end
+
+        end
+
+        class String < Term
+
+            def render xml
+                xml.term do |xml_term|
+                    xml_term.stringConstant @value
+                end
+            end
+
+        end
+
+        class Const < Term
+
+            def render xml
+                xml.term do |xml_term|
+                    xml_term.keyword @value.to_s
+                end
+            end
+
+        end
+
+        class VarRef < Term
+
+            def render xml
+                xml.term do |xml_term|
+                    @value.render xml_term
+                end
+            end
+
+        end
+
+        class SubCall < Term
+
+            def render xml
+                xml.term do |xml_term|
+                    @value.render xml_term
+                end
+            end
+
+        end
+
+        class Expression < Term
+
+            def render xml
+                xml.term do|xml_term|
+                    xml_term.symbol '('
+                    @value.render xml_term
+                    xml_term.symbol ')'
+                end
+            end
+
+        end
+
+        class OpTerm < Term
+
+            def render xml
+                @op.render xml
+                @term.render xml
+            end
+
+        end
+
+        class UnaryOp < Term
+
+            def render xml
+                xml.term do |xml_term|
+                    @op.render xml_term
+                    @term.render xml_term
+                end
+            end
+
+        end
+
     end
 
 end

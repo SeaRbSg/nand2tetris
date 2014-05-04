@@ -110,20 +110,20 @@ module Jack
         p(:prefix, 'IDENT DOT')    { |prefix,_| prefix }
 
         # a jack expression
-        nonempty_list(:exprlist, [ :term, :op ])
-        p(:expression) do
-            c('exprlist')        { |e| Jack::Expression.new [e] }
-            c('unaryop term')    { |op,term| Jack::Expression.new [op,term] }
+        p(:opterm, 'op term')       { |op,term| Jack::Term::OpTerm.new(op, term) }
+        p(:expression, 'term opterm*') do |t,t2|
+            Jack::Expression.new( [ t,t2 ] )
         end
 
         # an expression term
         p(:term) do
-            c('INTEGER')            { |t| t }
-            c('STRING')             { |t| t }
+            c('INTEGER')            { |t| Jack::Term::Int.new t }
+            c('STRING')             { |t| Jack::Term::String.new t }
             c('const')              { |t| t }
-            c('varref')             { |t| t }
-            c('subcall')            { |t| t }
-            c('LPAREN expression RPAREN')   { |_,expr,_| expr }
+            c('varref')             { |t| Jack::Term::VarRef.new t }
+            c('subcall')            { |t| Jack::Term::SubCall.new t }
+            c('LPAREN expression RPAREN')   { |_,expr,_| Jack::Term::Expression.new expr }
+            c('unaryop term')       { |op,term| Jack::Term::UnaryOp.new op, term }
         end
 
         # an expression operator
@@ -142,15 +142,15 @@ module Jack
         # a unary operation
         p(:unaryop) do
             c('MINUS')              { |t| Jack::Op.new '-' }
-            c('NEG')                { |t| Jack::Op.new '!' }
+            c('NEG')                { |t| Jack::Op.new '~' }
         end
 
         # a constant
         p(:const) do
-            c('TRUE')   { |c| Jack::Const.new(:true) }
-            c('FALSE')  { |c| Jack::Const.new(:false) }
-            c('NULL')   { |c| Jack::Const.new(:null) }
-            c('THIS')   { |c| Jack::Const.new(:this) }
+            c('TRUE')   { |c| Jack::Term::Const.new(:true) }
+            c('FALSE')  { |c| Jack::Term::Const.new(:false) }
+            c('NULL')   { |c| Jack::Term::Const.new(:null) }
+            c('THIS')   { |c| Jack::Term::Const.new(:this) }
         end
 
         # an index to an array var

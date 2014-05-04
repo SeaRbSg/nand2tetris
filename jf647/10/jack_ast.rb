@@ -15,10 +15,6 @@ module Jack
         end
     end
 
-    class Const < RLTK::ASTNode
-        value :type, Symbol
-    end
-
     class Op < RLTK::ASTNode
         value :op, String
     end
@@ -41,14 +37,14 @@ module Jack
         end
     end
 
-    class Var < RLTK::ASTNode
-        value :name, Symbol
-        child :type, Jack::VarType
-    end
-
     class VarRef < RLTK::ASTNode
         value :name, Symbol
         child :index, Jack::Expression
+    end
+
+    class Var < RLTK::ASTNode
+        value :name, Symbol
+        child :type, Jack::VarType
     end
 
     class Statement < RLTK::ASTNode
@@ -121,11 +117,43 @@ module Jack
         child :expr, Jack::Expression
     end
 
-    class UnaryOp < RLTK::ASTNode
-        value :op, Symbol
-        value :term, Symbol
-    end
+    class Term < RLTK::ASTNode
 
+        class Int < Term
+            value :value, ::Fixnum
+        end
+
+        class String < Term
+            value :value, ::String
+        end
+
+        class Const < Term
+            value :value, ::Symbol
+        end
+
+        class VarRef < Term
+            child :value, Jack::VarRef
+        end
+
+        class SubCall < Term
+            child :value, Jack::SubCall
+        end
+
+        class Expression < Term
+            child :value, Jack::Expression
+        end
+
+        class OpTerm < Term
+            child :op, Jack::Op
+            child :term, Jack::Term
+        end
+
+        class UnaryOp < Term
+            child :op, Jack::Op
+            child :term, Jack::Term
+        end
+
+    end
 
 end
 
