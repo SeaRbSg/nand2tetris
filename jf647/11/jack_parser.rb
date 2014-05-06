@@ -135,12 +135,12 @@ module Jack
             c('PLUS')           { |t| Jack::Op.new '+', 'add' }
             c('MINUS')          { |t| Jack::Op.new '-', 'sub' }
             c('MULT')           { |t| Jack::Op.new '*', 'call Math.multiply 2' }
-            c('DIV')            { |t| Jack::Op.new '/', '' }
-            c('AND')            { |t| Jack::Op.new '&', '' }
-            c('OR')             { |t| Jack::Op.new '|', '' }
-            c('LT')             { |t| Jack::Op.new '<', '' }
-            c('GT')             { |t| Jack::Op.new '>', '' }
-            c('EQUALS')         { |t| Jack::Op.new '=', '' }
+            c('DIV')            { |t| Jack::Op.new '/', 'call Math.divide 2' }
+            c('AND')            { |t| Jack::Op.new '&', 'and' }
+            c('OR')             { |t| Jack::Op.new '|', 'or' }
+            c('LT')             { |t| Jack::Op.new '<', 'lt' }
+            c('GT')             { |t| Jack::Op.new '>', 'gt' }
+            c('EQUALS')         { |t| Jack::Op.new '=', 'eq' }
         end
 
         # a unary operation
