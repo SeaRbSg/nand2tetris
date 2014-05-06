@@ -10,15 +10,21 @@ $: << '.'
 require 'jack_compiler'
 
 infname = Pathname.new ARGV[0]
-outfname = nil
+infnames = nil
 if infname.file?
-    outfname = infname.parent + "#{infname.basename(infname.extname)}.mine.xml"
+    infnames = [ Pathname.new(infname) ]
 else
-    raise 'input must be a filename'
+    infnames = Pathname.glob "#{infname}/*.jack"
 end
 
-File.open(outfname, 'w') do |f|
-    ast = Jack::Compiler.new.compile(infname) do |ast|
-        f.puts ast.render
+infnames.each do |infname|
+    ns = infname.basename(infname.extname)
+    outfname = infname.parent + "#{infname.basename(infname.extname)}.vm"
+    ast = Jack::Compiler.new.compile(infname, ns) do |ast|
+        File.open(outfname, 'w') do |f|
+            ast.render do |vm|
+                f.puts vm
+            end
+        end
     end
 end

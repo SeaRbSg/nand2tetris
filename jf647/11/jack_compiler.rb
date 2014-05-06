@@ -1,17 +1,19 @@
 require 'jack_lexer'
 require 'jack_ast'
 require 'jack_parser'
-require 'jack_output_xml'
+require 'jack_output_vm'
 
 module Jack
 
     class Compiler
 
-        def compile(infname)
+        def compile(infname, ns)
             path = Pathname.new(infname)
+            parser = Jack::Parser.new
+            parser.env.ns = ns.to_s.downcase
             begin
                 tokens = Jack::Lexer::lex_file( path.to_s )
-                ast = Jack::Parser.new.parse( tokens, :verbose => ENV.key?('DEBUG_PARSER') )
+                ast = parser.parse( tokens, :verbose => ENV.key?('DEBUG_PARSER') )
                 if ast.is_a?(Jack::Class)
                     yield ast if block_given?
                 else

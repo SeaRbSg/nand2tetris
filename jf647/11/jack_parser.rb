@@ -4,6 +4,10 @@ module Jack
 
     class Parser < RLTK::Parser
 
+        class Environment < Environment
+            attr_accessor :ns
+        end
+
         # a jack compilation unit / class
         p(:class) do
             c('CLASS IDENT LBRACE cvardec* subdec* RBRACE') do |_,klass,_,cvars,subs,_|
@@ -128,21 +132,21 @@ module Jack
 
         # an expression operator
         p(:op) do
-            c('PLUS')           { |t| Jack::Op.new '+' }
-            c('MINUS')          { |t| Jack::Op.new '-' }
-            c('MULT')           { |t| Jack::Op.new '*' }
-            c('DIV')            { |t| Jack::Op.new '/' }
-            c('AND')            { |t| Jack::Op.new '&' }
-            c('OR')             { |t| Jack::Op.new '|' }
-            c('LT')             { |t| Jack::Op.new '<' }
-            c('GT')             { |t| Jack::Op.new '>' }
-            c('EQUALS')         { |t| Jack::Op.new '=' }
+            c('PLUS')           { |t| Jack::Op.new '+', 'add' }
+            c('MINUS')          { |t| Jack::Op.new '-', 'sub' }
+            c('MULT')           { |t| Jack::Op.new '*', 'call Math.multiply 2' }
+            c('DIV')            { |t| Jack::Op.new '/', '' }
+            c('AND')            { |t| Jack::Op.new '&', '' }
+            c('OR')             { |t| Jack::Op.new '|', '' }
+            c('LT')             { |t| Jack::Op.new '<', '' }
+            c('GT')             { |t| Jack::Op.new '>', '' }
+            c('EQUALS')         { |t| Jack::Op.new '=', '' }
         end
 
         # a unary operation
         p(:unaryop) do
-            c('MINUS')              { |t| Jack::Op.new '-' }
-            c('NEG')                { |t| Jack::Op.new '~' }
+            c('MINUS')              { |t| Jack::Op.new '-', 'neg' }
+            c('NEG')                { |t| Jack::Op.new '~', 'not' }
         end
 
         # a constant

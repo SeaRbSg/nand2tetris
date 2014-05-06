@@ -16,7 +16,8 @@ module Jack
     end
 
     class Op < RLTK::ASTNode
-        value :op, String
+        value :xmlsym, String
+        value :vmop, String
     end
 
     class ClassVarDec < RLTK::ASTNode
