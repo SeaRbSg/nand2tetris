@@ -5,7 +5,7 @@ rule ".vm" => ".jack" do |t|
 end
 
 rule ".asm" => ".vm" do |t|
-  sh "./vm.rb #{t.source} > #{t.name}"
+  sh "./vm.rkt #{t.source} > #{t.name}"
 end
 
 rule ".hack" => ".asm" do |t|
@@ -14,7 +14,7 @@ end
 
 def wire base
   file "#{base}.vm" => [ "Rakefile", "#{base}.jack", "jack.rkt"]
-  file "#{base}.asm" => ["#{base}.vm", "vm.rb"]
+  file "#{base}.asm" => ["#{base}.vm", "vm.rkt"]
   file "#{base}.hack" => ["#{base}.asm", "asm.rkt"]
 
   output = ["#{base}.vm", "#{base}.asm", "#{base}.hack"]
@@ -25,10 +25,6 @@ def wire base
     rm_f output
   end
 end
-
-# task :vm do
-#   sh "../../tools/VMEmulator.sh"
-# end
 
 wire "os/Array"
 wire "os/Keyboard"
@@ -45,8 +41,3 @@ wire "grid/MathX"
 wire "grid/Pew"
 wire "grid/Ship"
 wire "grid/Trig"
-
-
-# task :go do
-#   sh "../../tools/VMEmulator.sh $PWD/MathTest/MathTest.tst; diff -u MathTest/MathTest.{cmp,out}"
-# end
