@@ -9,7 +9,6 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    builder (3.2.2)
     byebug (3.1.2)
       columnize (~> 0.8)
       debugger-linecache (~> 1.2)
@@ -23,7 +22,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  builder
   byebug
   rb-readline
   rltk!

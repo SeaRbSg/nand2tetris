@@ -12,7 +12,7 @@ require 'jack_tokenizer'
 infname = Pathname.new ARGV[0]
 outfname = nil
 if infname.file?
-    outfname = infname.parent + "#{infname.basename(infname.extname)}T.xml.mine"
+    outfname = infname.parent + "#{infname.basename(infname.extname)}T.mine.xml"
 else
     raise 'input must be a filename'
 end
