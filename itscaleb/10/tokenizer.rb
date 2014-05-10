@@ -27,7 +27,7 @@ class Tokenizer
       when @scanner.scan(@@whitespace)
         scan_next.()
       else
-        raise "couldn't tokenize " + @scanner.matched
+        raise "couldn't tokenize"
       end
     }
 

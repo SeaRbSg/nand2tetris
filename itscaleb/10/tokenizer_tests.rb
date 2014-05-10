@@ -26,7 +26,6 @@ class ParserTests < Minitest::Test
   def test_tokenizes_class_with_instance_var
     tokenizer = Tokenizer.new "class Person\n{\nvar name;\}"
 
-    binding.pry
     var_keyword = tokenizer.find {|token| token.value == "var"}
     var_identifier = tokenizer.find {|token| token.value == "name"}
     semicolon = tokenizer.find {|token| token.value == ";"}
