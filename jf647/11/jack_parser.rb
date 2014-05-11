@@ -4,10 +4,6 @@ module Jack
 
     class Parser < RLTK::Parser
 
-        class Environment < Environment
-            attr_accessor :ns
-        end
-
         # a jack compilation unit / class
         p(:class) do
             c('CLASS IDENT LBRACE cvardec* subdec* RBRACE') do |_,klass,_,cvars,subs,_|
@@ -36,7 +32,7 @@ module Jack
             c('INT')        { |t| Jack::VarType::Primitive.new(:int) }
             c('CHAR')       { |t| Jack::VarType::Primitive.new(:char) }
             c('BOOLEAN')    { |t| Jack::VarType::Primitive.new(:boolean) }
-            c('IDENT')      { |t| Jack::VarType::Class.new(t) }
+            c('IDENT')      { |t| Jack::VarType::Ident.new(t) }
         end
 
         # a nonempty list of variable names
@@ -116,7 +112,7 @@ module Jack
         # a jack expression
         p(:opterm, 'op term')       { |op,term| Jack::Term::OpTerm.new(op, term) }
         p(:expression, 'term opterm*') do |t,t2|
-            Jack::Expression.new( [ t,t2 ] )
+            Jack::Expression.new( [ t,t2 ].flatten )
         end
 
         # an expression term

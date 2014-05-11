@@ -8,7 +8,7 @@
  */
 class Main {
 
-    /** Initializes a new game and starts it. */    
+    /** Initializes a new game and starts it. */
     function void main() {
         var SquareGame game;
 

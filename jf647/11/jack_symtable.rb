@@ -6,7 +6,13 @@ module Jack
 
         include Singleton
 
+        attr_accessor :classname
+
         def initialize
+            newclass
+        end
+
+        def newclass
             @table = { :class => Hash.new }
             @i = Hash.new
         end

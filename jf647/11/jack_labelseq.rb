@@ -7,12 +7,12 @@ module Jack
         include Singleton
 
         def initialize
-            @seq = 0
+            @seq = Hash.new(0)
         end
 
         def nextlabel(prefix = 'LABEL_%x')
-            label = sprintf(prefix, @seq)
-            @seq += 1
+            label = sprintf(prefix, @seq[prefix])
+            @seq[prefix] += 1
             label
         end
 

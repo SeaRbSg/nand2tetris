@@ -10,7 +10,6 @@ module Jack
         def compile(infname, ns)
             path = Pathname.new(infname)
             parser = Jack::Parser.new
-            parser.env.ns = ns.to_s.downcase
             begin
                 tokens = Jack::Lexer::lex_file( path.to_s )
                 ast = parser.parse( tokens, :verbose => ENV.key?('DEBUG_PARSER') )

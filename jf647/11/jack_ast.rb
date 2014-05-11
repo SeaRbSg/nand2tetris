@@ -8,7 +8,7 @@ module Jack
         class Primitive < VarType
         end
 
-        class Class < VarType
+        class Ident < VarType
         end
 
         class Void < VarType
@@ -31,8 +31,11 @@ module Jack
         child :type, Jack::VarType
     end
 
+    class Term < RLTK::ASTNode
+    end
+
     class Expression < RLTK::ASTNode
-        value :expr, Array
+        child :expr, [Jack::Term]
         def empty?
             ! @expr.flatten.any?
         end
@@ -86,6 +89,10 @@ module Jack
         value :klass, Symbol
         child :cvardecs, [Jack::ClassVarDec]
         child :subs, [Jack::Sub]
+        def initialize(a,b,c)
+            super
+            Jack::SymTable.instance.classname = klass
+        end
     end
 
     class LetStatement < Statement
@@ -152,6 +159,21 @@ module Jack
         class UnaryOp < Term
             child :op, Jack::Op
             child :term, Jack::Term
+        end
+
+    end
+
+    def self.walk_up_to(start, klass)
+
+        ptr = start
+        while true
+            if ptr.is_a?(klass)
+                return ptr
+            elsif ptr.respond_to?(:parent) && ! ptr.parent.nil?
+                ptr = ptr.parent
+            else
+                raise "hit top of tree searching for #{klass}"
+            end
         end
 
     end

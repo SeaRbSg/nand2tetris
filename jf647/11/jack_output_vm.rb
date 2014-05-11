@@ -7,6 +7,8 @@ module Jack
     class Class
 
         def render &block
+            st = Jack::SymTable.instance
+            st.newclass
             @subs.each do |sub|
                 sub.render block
             end
@@ -34,6 +36,63 @@ module Jack
 
     end
 
+    class Constructor
+
+        def render block
+            st = Jack::SymTable.instance
+            st.newsub
+            numlocals = @body.vardecs.reduce(0) { |n,e| n += e.names.size }
+            numfields = 0
+            @parent.cvardecs.select{|e| e.scope == :field}.each do |e|
+                e.names.each do |name|
+                    st.add(name, e.type, :field)
+                    numfields += 1
+                end
+            end
+            @parent.cvardecs.select{|e| e.scope == :static}.each do |e|
+                e.names.each do |name|
+                    st.add(name, e.type, :static)
+                end
+            end
+            block.call "function #{@parent.klass.to_s}.#{@name.to_s} #{numlocals}"
+            block.call "push constant #{numfields}"
+            block.call "call Memory.alloc 1"
+            block.call "pop pointer 0"
+            @params.each do |param|
+                st.add(param.name, param.type, :arg)
+            end
+            @body.vardecs.each do |vd|
+                vd.render block
+            end
+            @body.statements.each do |statement|
+                statement.render block
+            end
+        end
+
+    end
+
+    class Method
+
+        def render block
+            st = Jack::SymTable.instance
+            st.newsub
+            numlocals = @body.vardecs.reduce(0) { |n,e| n += e.names.size }
+            block.call "function #{@parent.klass.to_s}.#{@name.to_s} #{numlocals}"
+            @params.each do |param|
+                st.add(param.name, param.type, :arg)
+            end
+            @body.vardecs.each do |vd|
+                vd.render block
+            end
+            block.call "push argument 0"
+            block.call "pop pointer 0"
+            @body.statements.each do |statement|
+                statement.render block
+            end
+        end
+
+    end
+
     class VarDec
 
         def render block
@@ -54,6 +113,10 @@ module Jack
                 block.call "push local #{st.index(@name)}"
             when :arg
                 block.call "push argument #{st.index(@name)}"
+            when :static
+                block.call "push static #{st.index(@name)}"
+            when :field
+                block.call "push this #{st.index(@name)}"
             else
                 raise "NYI: unknown kind for var #{@name}"
             end
@@ -66,33 +129,21 @@ module Jack
 
         def render block
             @subcall.render block
+            block.call "pop temp 0"
         end
     end
 
     class ReturnStatement
 
         def render block
-            # walk up the AST until we find something that
-            # responds to rettype
-            ptr = self
-            while true
-                if ptr.respond_to?(:rettype)
-                    case ptr.rettype
-                    when Jack::VarType::Void
-                        block.call "push constant 0"
-                    else
-                        @expr.render block
-                    end
-                    block.call "return"
-                    return
-                else
-                    if ptr.respond_to?(:parent) && ! ptr.parent.nil?
-                        ptr = ptr.parent
-                    else
-                        raise 'hit top of tree searching for return type'
-                    end
-                end
+            ptr = Jack.walk_up_to(self, Jack::Sub)
+            case ptr.rettype
+            when Jack::VarType::Void
+                block.call "push constant 0"
+            else
+                @expr.render block
             end
+            block.call "return"
         end
 
     end
@@ -110,6 +161,10 @@ module Jack
                 block.call "pop local #{st.index(@var.name)}"
             when :arg
                 block.call "pop argument #{st.index(@var.name)}"
+            when :static
+                block.call "pop static #{st.index(@var.name)}"
+            when :field
+                block.call "pop this #{st.index(@var.name)}"
             else
                 raise "NYI: unknown kind for var #{@name} in let statement"
             end
@@ -121,11 +176,11 @@ module Jack
 
         def render block
             ls = Jack::LabelSeq.instance
-            l1 = ls.nextlabel
-            l2 = ls.nextlabel
+            l1 = ls.nextlabel('WHILE_EXP%x')
+            l2 = ls.nextlabel('WHILE_END%x')
             block.call "label #{l1}"
             @expr.render block
-            block.call "not"
+            block.call 'not'
             block.call "if-goto #{l2}"
             @statements.each do |statement|
                 statement.render block
@@ -140,17 +195,16 @@ module Jack
 
         def render block
             ls = Jack::LabelSeq.instance
-            l1 = ls.nextlabel
-            l2 = ls.nextlabel
+            l1 = ls.nextlabel('IF_TRUE%x')
+            l2 = ls.nextlabel('IF_FALSE%x')
             @expr.render block
-            block.call "not"
             block.call "if-goto #{l1}"
-            @ifstatements.each do |statement|
+            @elsestatements.each do |statement|
                 statement.render block
             end
             block.call "goto #{l2}"
             block.call "label #{l1}"
-            @elsestatements.each do |statement|
+            @ifstatements.each do |statement|
                 statement.render block
             end
             block.call "label #{l2}"
@@ -161,17 +215,55 @@ module Jack
     class SubCall
 
         def render block
+            st = Jack::SymTable.instance
+            exprcount = @exprlist.size
+            # if we don't have a prefix, we look in this class to
+            # determine if the name is a function or method
+            if @prefix.nil?
+                @prefix = st.classname
+                exprcount += 1
+                block.call "push pointer 0"
+            else
+                # is the prefix in the symbol table?
+                type = st.type(@prefix)
+                if type.is_a?(Jack::VarType::Ident)
+                    type = type.type
+                end
+                if :none != type
+                    exprcount += 1
+                    # the prefix is the type of the var
+                    kind = st.kind(@prefix)
+                    index = st.index(@prefix)
+                    @prefix = type
+                    case kind
+                    when :var
+                        block.call "push local #{index}"
+                    when :arg
+                        block.call "push argument #{index}"
+                    when :static
+                        block.call "push static #{index}"
+                    when :field
+                        block.call "push this #{index}"
+                    else
+                        raise "NYI: unknown kind for var #{@prefix} in let statement"
+                    end
+                end
+            end
+            # push the params
             @exprlist.each do |e|
                 e.render block
             end
-            block.call "call #{@prefix.to_s}.#{@name.to_s} #{@exprlist.size}"
+            # call the func
+            block.call "call #{@prefix.to_s}.#{@name.to_s} #{exprcount}"
+            # if the thing we're calling has a void return, pop the dummy result
+
         end
     end
 
     class Expression
 
         def render block
-            @expr.flatten.compact.each do |e|
+            @expr.compact.each do |e|
                 e.render block
             end
         end
@@ -242,12 +334,14 @@ module Jack
 
                 case @value
                 when :true
-                    block.call 'push constant 1'
-                    block.call 'neg'
+                    block.call 'push constant 0'
+                    block.call 'not'
                 when :false, :null
                     block.call 'push constant 0'
+                when :this
+                    block.call 'push pointer 0'
                 else
-                    raise 'NYI: non true/false/null constant'
+                    raise "NYI: non true/false/null constant #{@value}"
                 end
 
             end
