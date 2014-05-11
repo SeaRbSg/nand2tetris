@@ -108,19 +108,33 @@ module Jack
 
         def render block
             st = Jack::SymTable.instance
-            case st.kind(@name)
-            when :var
-                block.call "push local #{st.index(@name)}"
-            when :arg
-                block.call "push argument #{st.index(@name)}"
-            when :static
-                block.call "push static #{st.index(@name)}"
-            when :field
-                block.call "push this #{st.index(@name)}"
+            if ! @index.nil?
+                @index.render block
+                case st.kind(@name)
+                when :var
+                    block.call "push local #{st.index(@name)}"
+                when :arg
+                    block.call "push argument #{st.index(@name)}"
+                when :static
+                    block.call "push static #{st.index(@name)}"
+                when :field
+                    block.call "push this #{st.index(@name)}"
+                end
+                block.call "add"
+                block.call "pop pointer 1"
+                block.call "push that 0"
             else
-                raise "NYI: unknown kind for var #{@name}"
+                case st.kind(@name)
+                when :var
+                    block.call "push local #{st.index(@name)}"
+                when :arg
+                    block.call "push argument #{st.index(@name)}"
+                when :static
+                    block.call "push static #{st.index(@name)}"
+                when :field
+                    block.call "push this #{st.index(@name)}"
+                end
             end
-
         end
 
     end
@@ -153,20 +167,35 @@ module Jack
         def render block
             st = Jack::SymTable.instance
             if ! @var.index.nil?
-                raise 'NYI: let with indexed LHS'
-            end
-            @expr.render block
-            case st.kind(@var.name)
-            when :var
-                block.call "pop local #{st.index(@var.name)}"
-            when :arg
-                block.call "pop argument #{st.index(@var.name)}"
-            when :static
-                block.call "pop static #{st.index(@var.name)}"
-            when :field
-                block.call "pop this #{st.index(@var.name)}"
+                @var.index.render block
+                case st.kind(@var.name)
+                when :var
+                    block.call "push local #{st.index(@var.name)}"
+                when :arg
+                    block.call "push argument #{st.index(@var.name)}"
+                when :static
+                    block.call "push static #{st.index(@var.name)}"
+                when :field
+                    block.call "push this #{st.index(@var.name)}"
+                end
+                block.call "add"
+                @expr.render block
+                block.call "pop temp 0"
+                block.call "pop pointer 1"
+                block.call "push temp 0"
+                block.call "pop that 0"
             else
-                raise "NYI: unknown kind for var #{@name} in let statement"
+                @expr.render block
+                case st.kind(@var.name)
+                when :var
+                    block.call "pop local #{st.index(@var.name)}"
+                when :arg
+                    block.call "pop argument #{st.index(@var.name)}"
+                when :static
+                    block.call "pop static #{st.index(@var.name)}"
+                when :field
+                    block.call "pop this #{st.index(@var.name)}"
+                end
             end
         end
 
@@ -284,6 +313,19 @@ module Jack
 
             def render block
                 block.call "push constant #{@value}"
+            end
+
+        end
+
+        class String
+
+            def render block
+                block.call "push constant #{@value.length}"
+                block.call "call String.new 1"
+                @value.each_codepoint do |i|
+                    block.call "push constant #{i}"
+                    block.call "call String.appendChar 2"
+                end
             end
 
         end

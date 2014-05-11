@@ -154,14 +154,12 @@ module Jack
         end
 
         # an index to an array var
-        p(:arrindex, 'LBRACKET expression RBRACKET') do |_, expr, _|
-            Jack::Expression.new [expr]
-        end
+        p(:arrindex, 'LBRACKET expression RBRACKET') { |_,e,_| e }
 
         # a variable reference with optional array index
-        p(:varref, 'IDENT arrindex?') do |name,expr|
-            if ! expr.nil?
-                Jack::VarRef.new(name, expr.expr[0])
+        p(:varref, 'IDENT arrindex?') do |name,index|
+            if ! index.nil?
+                Jack::VarRef.new(name, index)
             else
                 Jack::VarRef.new(name)
             end
