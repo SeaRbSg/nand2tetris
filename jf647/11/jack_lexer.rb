@@ -5,7 +5,7 @@ module Jack
     class Lexer < RLTK::Lexer
 
         # ignore whitespace
-        rule(/\s/) 
+        rule(/\s/)
 
         # line comments
         rule(/\/\/.*/)              { push_state(:linecomment) }
@@ -21,7 +21,7 @@ module Jack
         rule(/./, :apicomment)
         rule(/\n/, :apicomment)
         rule(/\*\//, :apicomment)   { pop_state }
-        
+
         # keywords
         rule('class')           { :CLASS }
         rule('constructor')     { :CONSTRUCTOR }
@@ -44,7 +44,7 @@ module Jack
         rule('else')            { :ELSE }
         rule('while')           { :WHILE }
         rule('return')          { :RETURN }
-        
+
         # symbols
         rule('{')               { :LBRACE }
         rule('}')               { :RBRACE }
@@ -60,21 +60,21 @@ module Jack
         rule('\*')              { :MULT }
         rule('\/')              { :DIV }
         rule('&')               { :AND }
-        rule('|')               { :OR }
+        rule('\|')               { :OR }
         rule('<')               { :LT }
         rule('>')               { :GT }
         rule('=')               { :EQUALS }
         rule('~')               { :NEG }
-        
+
         # integers
         rule(/[0-9]+/)          { |t| [ :INTEGER, t.to_i ] }
-        
+
         # strings
         rule(/"[^"]+"/)         { |t| [ :STRING, t.match(/"([^"]+)"/)[1] ] }
-        
+
         # identifier
         rule(/[a-zA-Z_][\w_]*/) { |t| [ :IDENT, t.to_sym ] }
-        
+
     end
 
 end

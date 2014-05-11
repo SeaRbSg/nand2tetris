@@ -78,6 +78,7 @@ module Jack
             st.newsub
             numlocals = @body.vardecs.reduce(0) { |n,e| n += e.names.size }
             block.call "function #{@parent.klass.to_s}.#{@name.to_s} #{numlocals}"
+            st.bumpi(:arg)
             @params.each do |param|
                 st.add(param.name, param.type, :arg)
             end

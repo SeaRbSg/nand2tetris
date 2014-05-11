@@ -14,13 +14,21 @@ module Jack
 
         def newclass
             @table = { :class => Hash.new }
-            @i = Hash.new
+            @i = Hash.new(0)
         end
 
         def newsub
             @table[:sub] = Hash.new
             %i(arg var).each do |kind|
                 @i.delete(kind)
+            end
+        end
+
+        def bumpi(kind)
+            if @i.key?(kind)
+                @i[kind] += 1
+            else
+                @i[kind] = 0
             end
         end
 
@@ -44,11 +52,7 @@ module Jack
         private
 
         def nexti(kind)
-            if @i.key?(kind)
-                @i[kind] += 1
-            else
-                @i[kind] = 0
-            end
+            bumpi(kind)
             return @i[kind]
         end
 
